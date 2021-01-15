@@ -1,0 +1,19 @@
+.Chats {
+
+    background-color: darkcyan;
+
+    display: grid;
+    grid-template-rows: 50px minmax(50px, 90%);
+    grid-template-columns: 1fr;
+}
+
+.Chats > .title {
+    background-color: darkgoldenrod;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Chats > .container {
+
+}

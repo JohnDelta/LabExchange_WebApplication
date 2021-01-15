@@ -1,0 +1,10 @@
+.Messenger {
+    width: 650px;
+    height: 600px;
+    background-color: gray;
+    margin-top: 50px;
+
+    display: grid;
+    grid-template-columns: 0.35fr 0.65fr;
+    grid-template-rows: auto;
+}

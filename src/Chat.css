@@ -1,0 +1,29 @@
+.Chat {
+
+    background-color: rgb(96, 247, 9);
+
+    display: grid;
+    grid-template-rows: 50px minmax(50px, 100%);
+    grid-template-columns: 1fr;
+}
+
+.Chat > .title {
+    background-color: rgb(201, 109, 97);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Chat > .container {
+    display: grid;
+    grid-template-rows: 0.75fr 0.25fr;
+    grid-template-columns: 1fr;
+}
+
+.Chat > .container > .keyboard {
+    background-color: rgb(97, 113, 201);
+}
+
+.Chat > .container > .chat {
+    background-color: rgb(201, 97, 175);
+}
