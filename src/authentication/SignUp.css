@@ -1,3 +1,74 @@
+/*
+    colour palette
+    Dark1: 11151C;
+    Dark2: 212D40;
+    Dark3: 364156;
+    Light1: 00d9fb;
+    Light2: f86624; orange (white text)
+*/
 .SignUp {
+    margin-top: 50px;
+    background-color: aquamarine;
     
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.SignUp > div {
+    display: grid;
+    grid-template-columns: 35px minmax(100px, 100%);
+}
+
+.SignUp .title {
+    padding-bottom: 20px;
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+}
+
+.SignUp .error {
+    padding: 15px;
+    font-size: 18px;
+    color: #f86624;
+}
+
+.SignUp .input .icon {
+    height: 35px;
+    width: 35px;
+    background-color: #364156;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.SignUp .input > input[type=text] {
+    height: 35px;
+    font-size: 15px;
+    border: none;
+    margin-bottom: 10px;
+    color: #11151C;
+    outline: none;
+}
+
+.SignUp .input > input[type="password"] {
+    height: 35px;
+    font-size: 15px;
+    border: none;
+    margin-bottom: 10px;
+    color: #11151C;
+    outline: none;
+}
+
+.SignUp .SignUp-button {
+    border: none;
+    font-size: 20px;
+    padding: 6px;
+    background-color: #364156;
+}
+
+.SignUp .SignUp-button:active {
+    color: #f86624;
 }
