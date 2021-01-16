@@ -9,3 +9,9 @@
     display: grid;
     grid-template-columns: 0.35fr 0.65fr;
 }
+
+.logout {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+}
