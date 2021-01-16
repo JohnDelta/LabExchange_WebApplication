@@ -18,11 +18,42 @@ class Chat extends React.Component {
                 <div className="container">
 
                     <div className="chat">
-                        chat here
+                        
+                        <div className="message-body received">
+                            <div className="message received">
+                                Ela man o mixalhs eimai
+                            </div>
+                            <div className="info">
+                                Received 20 Hours ago
+                            </div>
+                        </div>
+
+                        <div className="message-body sended">
+                            <div className="message sended">
+                                poios?
+                            </div>
+                            <div className="info">
+                                Received 20 Hours ago
+                            </div>
+                        </div>
+
+                        <div className="message-body received">
+                            <div className="message received">
+                                apo ti PASP eimaste theleis tpt shmeiwsoules?
+                            </div>
+                            <div className="info">
+                                Received 20 Hours ago
+                            </div>
+                        </div>
+
                     </div>
 
                     <div className="keyboard">
-                        keyboard here
+                        
+                        <textarea defaultValue="message"  />
+
+                        <button>Send</button>
+
                     </div>
 
                 </div>

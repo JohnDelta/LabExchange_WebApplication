@@ -1,19 +1,57 @@
 .Chats {
-
-    background-color: darkcyan;
-
+    grid-column: 1/2;
+    background-color: #90E0EF;
     display: grid;
-    grid-template-rows: 50px minmax(50px, 90%);
+    grid-template-rows: 50px minmax(50px, 100%);
     grid-template-columns: 1fr;
 }
 
+@media only screen and (max-width: 700px) {
+    .Chats {
+        display: none;
+    }   
+}
+
 .Chats > .title {
-    background-color: darkgoldenrod;
+    background-color: #48CAE4;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .Chats > .container {
+    display: grid;
+    margin: 10px;
+    row-gap: 10px;
+    align-content: start;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    background-color: #FFFFFF;
+}
 
+.Chats .container > .chat {
+    background-color: #CAF0F8;
+    padding: 10px;
+    display: grid;
+    cursor: pointer;
+}
+
+.Chats .chat > .title {
+    font-size: 18px;
+    pointer-events: none;
+}
+
+.Chats .chat > .message {
+    white-space: nowrap; 
+    width: 100%; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none; 
+}
+
+.Chats .chat > .info {
+    pointer-events: none;
+    font-size: 11px;
+    text-align: right;
+    font-weight: 400;
 }

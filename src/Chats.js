@@ -17,7 +17,17 @@ class Chats extends React.Component {
 
                 <div className="container">
 
-                    container
+                    <div className="chat">
+                        <div className="title">
+                            Mike
+                        </div>
+                        <div className="message">
+                            Ela man o mixalhs eima sdfgds dfgds dsfg sdfsdf sdf d
+                        </div>
+                        <div className="info">
+                            Received 20 Hours ago
+                        </div>
+                    </div>
 
                 </div>
 
