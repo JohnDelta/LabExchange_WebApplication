@@ -1,33 +1,94 @@
 class Auth {
 
     constructor() {
-        var auth = localStorage.getItem("auth");
-        if(auth !== undefined) {
-            if(auth === "true") {
-                this.authenticated = true;
-            } else {
-                this.authenticated = false;
-            }    
+
+        var auth = localStorage.getItem("jwt");
+        
+        if(auth !== undefined && auth !== null && auth !== "") {
+            this.authenticated = true; 
         } else {
             this.authenticated = false;
-            localStorage.setItem("auth", "false")
         }
+    
     }
 
-    login(cb) {
-        this.authenticated = true;
-        localStorage.setItem("auth", "true"); // do some magic here
-        cb();
+    async login(credentials, success, error) {
+        
+        var url = "http://localhost:8081/account/login"
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(credentials),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    this.authenticated = true;
+
+                    localStorage.setItem("jwt", res.jwt);    
+
+                    success();
+
+                });
+            
+            } else {
+                error();
+            }
+
+        } catch (error) {
+            error();
+        }
+
     }
 
-    logout(cb) {
+    logout(callback) {
+    
         this.authenticated = false;
-        localStorage.removeItem("auth");
-        cb();
+        localStorage.removeItem("jwt");
+    
+        callback();
     }
 
     isAuthenticated() {
         return this.authenticated;
+    }
+
+
+
+    async signup(credentials, success, error) { // temporal
+        
+        var url = "http://localhost:8081/account/create"
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(credentials),
+            });
+
+            if(response.status === 200) {
+                success();
+            
+            } else {
+                error();
+            }
+
+        } catch (error) {
+            error();
+        }
+
     }
     
 }

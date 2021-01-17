@@ -1,14 +1,6 @@
-/*
-    colour palette
-    Dark1: 11151C;
-    Dark2: 212D40;
-    Dark3: 364156;
-    Light1: 00d9fb;
-    Light2: f86624; orange (white text)
-*/
 .SignUp {
     margin-top: 50px;
-    background-color: aquamarine;
+    background-color: #CAF0F8;
     
     padding: 20px;
     display: flex;
@@ -33,12 +25,13 @@
     padding: 15px;
     font-size: 18px;
     color: #f86624;
+    display: flex;
 }
 
 .SignUp .input .icon {
     height: 35px;
     width: 35px;
-    background-color: #364156;
+    background-color: #90E0EF;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -66,9 +59,11 @@
     border: none;
     font-size: 20px;
     padding: 6px;
-    background-color: #364156;
+    background-color: #023E8A;
+    outline: none;
+    color: #FFFFFF;
 }
 
 .SignUp .SignUp-button:active {
-    color: #f86624;
+    background-color: #03045E;
 }

@@ -19,9 +19,24 @@ class Login extends React.Component {
     }
 
     handleSubmit() {
-        Authentication.login(() => {
-            this.props.history.push("/messenger");
-        });
+
+        var credentials = {
+            username: this.state.username,
+            password: this.state.password
+        };
+
+        Authentication.login(
+            credentials,
+            () => {
+                this.props.history.push("/messenger");
+            },
+            () => {
+                this.setState({
+                    error: "Unable to login"
+                });
+            }
+        );
+        
     }
 
     onInputChange(e) {
@@ -59,6 +74,9 @@ class Login extends React.Component {
                     </div>
                     <input type="password" id="login_password" value={this.password} placeholder="user123" onChange={this.onInputChange} />
                 </div>
+                
+                <a href="signup" style={{"marginBottom":"5px"}}>Go to Sign Up</a>
+
                 <button className="login-button" onClick={this.handleSubmit}>
                     Submit
                 </button>

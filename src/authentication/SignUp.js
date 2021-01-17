@@ -19,9 +19,22 @@ class SignUp extends React.Component {
     }
 
     handleSubmit() {
-        Authentication.SignUp(() => {
-            this.props.history.push("/messenger");
-        });
+        var credentials = {
+            username: this.state.username,
+            password: this.state.password
+        };
+
+        Authentication.signup(
+            credentials,
+            () => {
+                this.props.history.push("/login");
+            },
+            () => {
+                this.setState({
+                    error: "Unable to create account"
+                });
+            }
+        );
     }
 
     onInputChange(e) {
@@ -59,6 +72,9 @@ class SignUp extends React.Component {
                     </div>
                     <input type="password" id="SignUp_password" value={this.password} placeholder="user123" onChange={this.onInputChange} />
                 </div>
+
+                <a href="login" style={{"marginBottom":"5px"}}>Go to Login</a>
+
                 <button className="SignUp-button" onClick={this.handleSubmit}>
                     Submit
                 </button>
