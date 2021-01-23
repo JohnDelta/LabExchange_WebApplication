@@ -24,7 +24,7 @@ class Auth {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(credentials),
+                body: JSON.stringify({body:credentials}),
             });
 
             if(response.status === 200) {
@@ -33,7 +33,7 @@ class Auth {
 
                     this.authenticated = true;
 
-                    localStorage.setItem("jwt", res.jwt);    
+                    localStorage.setItem("jwt", res.body.jwt);    
 
                     success();
 
@@ -75,7 +75,7 @@ class Auth {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(credentials),
+                body: JSON.stringify({body:credentials}),
             });
 
             if(response.status === 200) {

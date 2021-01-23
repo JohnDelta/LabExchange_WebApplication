@@ -7,7 +7,47 @@ class Chat extends React.Component {
         super(props);
     }
 
+    /*
+
+<div className="message-body received">
+    <div className="message received">
+        Ela man o mixalhs eimai
+    </div>
+    <div className="info">
+        Received 20 Hours ago
+    </div>
+</div>
+
+<div className="message-body sended">
+    <div className="message sended">
+        poios?
+    </div>
+    <div className="info">
+        Received 20 Hours ago
+    </div>
+</div>
+
+<div className="message-body received">
+    <div className="message received">
+        apo ti PASP eimaste theleis tpt shmeiwsoules?
+    </div>
+    <div className="info">
+        Received 20 Hours ago
+    </div>
+</div>
+    */
+
     render() {
+
+        var conversation = "Select a user to chat with";
+
+        if(this.props.activeChatUsername !== "") {
+            
+            conversation = "Write a message to " + this.props.activeChatUsername + "!";
+
+            
+        }
+
         return(
             <div className="Chat">
 
@@ -15,39 +55,14 @@ class Chat extends React.Component {
                     <button onClick={this.props.toggleChats} >
                         <i className="fa fa-users" />
                     </button>
-                    <p>John</p>
+                    <p>{this.props.activeChatUsername}</p>
                 </div>
 
                 <div className="container">
 
                     <div className="chat">
                         
-                        <div className="message-body received">
-                            <div className="message received">
-                                Ela man o mixalhs eimai
-                            </div>
-                            <div className="info">
-                                Received 20 Hours ago
-                            </div>
-                        </div>
-
-                        <div className="message-body sended">
-                            <div className="message sended">
-                                poios?
-                            </div>
-                            <div className="info">
-                                Received 20 Hours ago
-                            </div>
-                        </div>
-
-                        <div className="message-body received">
-                            <div className="message received">
-                                apo ti PASP eimaste theleis tpt shmeiwsoules?
-                            </div>
-                            <div className="info">
-                                Received 20 Hours ago
-                            </div>
-                        </div>
+                        {conversation}
 
                     </div>
 

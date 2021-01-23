@@ -20,6 +20,9 @@
         left: 0px;
         transition-duration: 0.4s;
     }
+    .Chats {
+        min-width: 300px;
+    }
 }
 
 .Chats > .title {
@@ -65,7 +68,6 @@
 
 .Chats .chat > .title {
     font-size: 18px;
-    pointer-events: none;
 }
 
 .Chats .chat > .message {
