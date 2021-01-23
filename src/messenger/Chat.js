@@ -1,4 +1,6 @@
 import React from 'react';
+import SockJs from 'sockjs-client';
+import Stomp from 'stompjs';
 import './Chat.css';
 
 class Chat extends React.Component {
@@ -13,6 +15,7 @@ class Chat extends React.Component {
         };
 
         this.getConversation = this.getConversation.bind(this);
+        this.subscribeToConversation = this.subscribeToConversation.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.onMessageChange = this.onMessageChange.bind(this);
     }
@@ -65,11 +68,39 @@ class Chat extends React.Component {
                         conversation: res.body
                     });
 
+                    this.subscribeToConversation();
+
                 });
             
             } else {}
 
         } catch (error) {console.log(error);}
+
+    }
+
+    async subscribeToConversation() {
+
+        var url = "http://localhost:15674/ws";
+        var ws = new SockJs(url);
+        var client = Stomp.over(ws);
+
+        var headers = {
+          login: 'guest',
+          passcode: 'guest',
+          // additional header
+          'client-id': 'my-client-id'
+        };
+
+        client.connect(headers, ()=>{
+            console.log("success");
+        },
+        (error) => {
+            console.log("error: " + error);
+        });
+
+        var subscription = client.subscribe("/queue/mikejohn", (message) => {
+            console.log(message)
+        });
 
     }
 
