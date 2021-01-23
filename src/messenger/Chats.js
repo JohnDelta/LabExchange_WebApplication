@@ -8,11 +8,21 @@ class Chats extends React.Component {
     }
 
     render() {
+
+        var showChatsCss = "";
+
+        if(this.props.showChats) {
+            showChatsCss = "showPanelFromLeft";
+        }
+
         return(
-            <div className="Chats">
+            <div className={"Chats hidePanelToLeft " + showChatsCss}>
 
                 <div className="title">
                     <p>Conversations</p>
+                    <button onClick={this.props.toggleChats} >
+                        <i className="fa fa-times-circle" />
+                    </button>
                 </div>
 
                 <div className="container">

@@ -3,7 +3,7 @@
     font-size: 14px;
     width: 100%;
     max-width: 800px;
-    height: 600px;
+    max-height: 800px;
     margin-top: 50px;
 
     display: grid;
@@ -12,6 +12,19 @@
 
 .logout {
     position: absolute;
-    top: 50px;
-    right: 50px;
+    top: 0px;
+    right: 0px;
+}
+
+.Messenger button {
+    border: none;
+    background-color: #023E8A;
+    color: #FFFFFF;
+    outline: none;
+    cursor: pointer;
+}
+
+.Messenger button i {
+    font-size: 18px;
+    pointer-events: none;
 }

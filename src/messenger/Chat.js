@@ -12,6 +12,9 @@ class Chat extends React.Component {
             <div className="Chat">
 
                 <div className="title">
+                    <button onClick={this.props.toggleChats} >
+                        <i className="fa fa-users" />
+                    </button>
                     <p>John</p>
                 </div>
 

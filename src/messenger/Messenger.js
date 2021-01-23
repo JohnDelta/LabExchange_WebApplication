@@ -8,6 +8,18 @@ class Messenger extends React.Component {
 
     constructor(props) {
         super(props);
+    
+        this.state = {
+            "showChats": false
+        };
+    
+        this.toggleChats = this.toggleChats.bind(this);
+    }
+
+    toggleChats() {
+        this.setState({
+            showChats: !this.state.showChats
+        });
     }
 
     render() {
@@ -26,9 +38,9 @@ class Messenger extends React.Component {
                 >
                     Logout</button>
 
-                <Chats />
+                <Chats toggleChats={this.toggleChats} showChats={this.state.showChats} />
 
-                <Chat />
+                <Chat toggleChats={this.toggleChats} />
 
             </div>
         );
