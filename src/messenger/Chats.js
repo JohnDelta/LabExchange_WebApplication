@@ -69,7 +69,7 @@ class Chats extends React.Component {
 
         if(this.state.conversations.length > 0) {
             chats = [];
-            this.state.conversations.forEach((conv) => {
+            this.state.conversations.forEach((conv, index) => {
 
                 var otherUsername = conv.username1;
                 if(conv.username2 !== "") {
@@ -77,7 +77,7 @@ class Chats extends React.Component {
                 }
 
                 chats.push(
-                    <div className="chat">
+                    <div className="chat" key={"chats_index"+index}>
                         <div className="title" 
                             id={"conversations_"+otherUsername}
                             onClick={this.activateChat}>
