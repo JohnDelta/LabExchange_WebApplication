@@ -97,10 +97,9 @@ class Chat extends React.Component {
                 console.log("success");
         
                 var subscription = client.subscribe(
-                    headers,
                     "/queue/mikejohn", (message) => {
                         console.log(message)
-                    });
+                    }, {'X-Authorization': localStorage.getItem("jwt")});
 
             },(error) => {
                     console.log("error: " + error);
