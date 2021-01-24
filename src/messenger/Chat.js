@@ -1,5 +1,5 @@
 import React from 'react';
-import SockJs from 'sockjs-client';
+import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import './Chat.css';
 
@@ -80,29 +80,34 @@ class Chat extends React.Component {
 
     async subscribeToConversation() {
 
-        var url = "http://localhost:15674/ws";
-        var ws = new SockJs(url);
+        // var url = "http://localhost:8082/ws";
+        // var client = Stomp.client(url);
+        var ws = new SockJS('http://localhost:8082/ws');
         var client = Stomp.over(ws);
 
         var headers = {
-          login: 'guest',
-          passcode: 'guest',
-          // additional header
-          'client-id': 'my-client-id'
+          "login": "guest",
+          "passcode": "guest",
+          'X-Authorization': localStorage.getItem("jwt")
         };
 
-        client.connect(headers, ()=>{
-            console.log("success");
-        },
-        (error) => {
-            console.log("error: " + error);
-        });
+        client.connect(
+            headers, 
+            () => {
+                console.log("success");
+        
+                var subscription = client.subscribe(
+                    headers,
+                    "/queue/mikejohn", (message) => {
+                        console.log(message)
+                    });
 
-        var subscription = client.subscribe("/queue/mikejohn", (message) => {
-            console.log(message)
-        });
+            },(error) => {
+                    console.log("error: " + error);
+            }
+        );
 
-    }
+    }      
 
     async sendMessage() {
 
