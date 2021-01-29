@@ -10,12 +10,15 @@ class Chat extends React.Component {
 
         this.state = {
             activeChatUsername: "",
+            activeChatQueue: "",
             conversation: [],
             message: ""
         };
 
         this.getConversation = this.getConversation.bind(this);
         this.subscribeToConversation = this.subscribeToConversation.bind(this);
+        this.subscribeCallback = this.subscribeCallback.bind(this);
+        this.messageReceived = this.messageReceived.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.onMessageChange = this.onMessageChange.bind(this);
     }
@@ -24,7 +27,8 @@ class Chat extends React.Component {
 
         if(this.state.activeChatUsername !== this.props.activeChatUsername) {
             this.setState({
-                activeChatUsername: this.props.activeChatUsername
+                activeChatUsername: this.props.activeChatUsername,
+                activeChatQueue: this.props.activeChatQueue
             }, 
                 ()=>{this.getConversation()}
             );
@@ -36,7 +40,8 @@ class Chat extends React.Component {
 
         if(this.state.activeChatUsername !== this.props.activeChatUsername) {
             this.setState({
-                activeChatUsername: this.props.activeChatUsername
+                activeChatUsername: this.props.activeChatUsername,
+                activeChatQueue: this.props.activeChatQueue
             }, 
                 ()=>{this.getConversation()}
             );
@@ -64,11 +69,21 @@ class Chat extends React.Component {
 
                 response.json().then((res) => {
 
-                    this.setState({
-                        conversation: res.body
+                    var conversation = [];
+
+                    res.body.forEach((message) => {
+                        if(message.receiverUsername === "") {
+                            conversation.push(message);
+                        }
                     });
 
-                    this.subscribeToConversation();
+                    this.setState({
+                        conversation: conversation
+                    }, () => {
+
+                        this.subscribeToConversation();
+
+                    });
 
                 });
             
@@ -80,8 +95,6 @@ class Chat extends React.Component {
 
     async subscribeToConversation() {
 
-        // var url = "http://localhost:8082/ws";
-        // var client = Stomp.client(url);
         var ws = new SockJS('http://localhost:8082/ws');
         var client = Stomp.over(ws);
 
@@ -94,19 +107,52 @@ class Chat extends React.Component {
         client.connect(
             headers, 
             () => {
-                console.log("success");
-        
-                var subscription = client.subscribe(
-                    "/queue/mikejohn", (message) => {
-                        console.log(message)
-                    }, {'X-Authorization': localStorage.getItem("jwt")});
 
-            },(error) => {
-                    console.log("error: " + error);
-            }
+                client.heartbeat.outgoing = 20000;
+                client.heartbeat.incoming = 20000;
+
+                var subscription = client.subscribe(
+                    "/queue/" + this.state.activeChatQueue, 
+                    this.subscribeCallback,
+                    {'X-Authorization': localStorage.getItem("jwt")}
+                );
+
+            },(error) => { console.log(error); }
         );
 
-    }      
+    }
+
+    subscribeCallback(message) {
+
+        console.log(JSON.parse(message.body));
+
+    }
+
+    async messageReceived(message) {
+
+        var url = "http://localhost:8082/messenger/message-received"
+
+        var body = {message};
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:body}),
+            });
+
+            if(response.status === 200) {
+                // seen message
+            }
+
+        } catch (error) {console.log(error);}
+
+    }
 
     async sendMessage() {
 
@@ -133,7 +179,7 @@ class Chat extends React.Component {
                 this.setState({
                     message: ""
                 });
-                document.getElementById("")
+                //document.getElementById("")
             }
 
         } catch (error) {console.log(error);}

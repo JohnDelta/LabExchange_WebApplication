@@ -53,8 +53,10 @@ class Chats extends React.Component {
     }
 
     activateChat(e) {
-        var username = e.target.id.split("_")[1];
-        this.props.activateChat(username);
+        var args = e.target.id.split("_");
+        var username = args[1];
+        var queue = args[2];
+        this.props.activateChat(username, queue);
     }
 
     render() {
@@ -79,7 +81,7 @@ class Chats extends React.Component {
                 chats.push(
                     <div className="chat" key={"chats_index"+index}>
                         <div className="title" 
-                            id={"conversations_"+otherUsername}
+                            id={"conversations_"+otherUsername+"_"+conv.queue}
                             onClick={this.activateChat}>
                                 {otherUsername}
                         </div>

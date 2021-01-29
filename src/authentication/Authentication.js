@@ -33,7 +33,9 @@ class Auth {
 
                     this.authenticated = true;
 
-                    localStorage.setItem("jwt", res.body.jwt);    
+                    localStorage.setItem("jwt", res.body.jwt);
+
+                    localStorage.setItem("username", credentials.username);   
 
                     success();
 
