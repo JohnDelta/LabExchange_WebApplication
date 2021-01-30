@@ -88,6 +88,7 @@
     background-color: #CAF0F8;
     padding: 20px;
     max-width: 40%;
+    word-break: break-all;
 }
 
 .Chat .message-body > .info {

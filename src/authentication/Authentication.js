@@ -45,7 +45,7 @@ class Auth {
                 error();
             }
 
-        } catch (error) {
+        } catch (e) {
             error();
         }
 

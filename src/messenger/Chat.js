@@ -5,24 +5,27 @@ import './Chat.css';
 
 class Chat extends React.Component {
 
-    constructor(props) {
-        super(props);
+    constructor() {
+        super();
 
         this.state = {
             activeChatOthersUsername: "",
             activeChatMyQueue: "",
             activeChatOthersQueue: "",
             conversation: [],
-            message: ""
+            message: "",
+            chatClient: null
         };
 
         this.getConversation = this.getConversation.bind(this);
         this.subscribeToConversation = this.subscribeToConversation.bind(this);
         this.subscribeMyQueueCallback = this.subscribeMyQueueCallback.bind(this);
-        //this.subscribeOthersQueueCallback = this.subscribeOthersQueueCallback.bind(this);
+        this.disconnectFromQueue = this.disconnectFromQueue.bind(this);
         this.messageReceived = this.messageReceived.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.onMessageChange = this.onMessageChange.bind(this);
+        this.chatFilter = this.chatFilter.bind(this);
+        this.dateSince = this.dateSince.bind(this);
     }
 
     componentDidMount() {
@@ -53,6 +56,12 @@ class Chat extends React.Component {
 
     }
 
+    componentWillUnmount() {
+
+        this.disconnectFromQueue();
+
+    }
+
     async getConversation() {
 
         var url = "http://localhost:8082/messenger/conversation"
@@ -75,19 +84,17 @@ class Chat extends React.Component {
 
                     var conversation = [];
 
-                    // Show my messages which I've seen, and the others which I've send.
-                    // The ones which I'havent received yet will come from the subsribe
                     if (res.body !== null) {
                         res.body.forEach((message) => {
-                            
                             conversation.push(message);
-
                         });
                     }
                     
                     this.setState({
                         conversation: conversation
                     }, () => {
+
+                        this.chatFilter();
 
                         this.subscribeToConversation();
 
@@ -125,13 +132,20 @@ class Chat extends React.Component {
             },(error) => { console.log(error); }
         );
 
+        client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
+        client.heartbeat.incoming = 0;
+
+        this.setState({
+            client: client
+        });
+
     }
 
     subscribeMyQueueCallback(object) {
 
         var message = JSON.parse(object.body);
 
-        if(message.directChatroomId === this.state.activeChatMyQueue) {
+        if(message.queueId === this.state.activeChatMyQueue) {
 
             this.messageReceived(message);
 
@@ -146,6 +160,18 @@ class Chat extends React.Component {
         this.setState({
             conversation: conversation
         });
+
+        this.chatFilter();
+
+    }
+
+    disconnectFromQueue() {
+
+        if(this.state.client !== null && this.state.client !== undefined) {
+            this.state.client.disconnect(()=>{
+                console.log("disconected");
+            });    
+        }
 
     }
 
@@ -196,24 +222,33 @@ class Chat extends React.Component {
 
             if(response.status === 200) {
 
-                // response.json().then((object)=>{
-
-                //     var conversation = this.state.conversation;
-
-                //     conversation.push(object.body);
-
-                //     this.setState({
-                //         conversation: conversation
-                //     });
-
-                // });
-
                 this.setState({
                     message: ""
                 });
+
+                this.chatFilter();
+
             }
 
         } catch (error) {console.log(error);}
+
+    }
+
+    chatFilter() {
+
+        var chatContainer = document.getElementById("chatContainer");
+
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        var conversation = this.state.conversation;
+
+        conversation.sort((a, b) => {
+            return a.timestamp - b.timestamp;
+        });
+
+        this.setState({
+            conversation: conversation
+        });
 
     }
 
@@ -222,6 +257,28 @@ class Chat extends React.Component {
             message: e.target.value
         });
     }
+
+    dateSince(pastDate) {
+        let secondsSince = Math.floor(Number(new Date() - new Date(pastDate)) / 1000);
+        let minutesSince = Math.floor(Number(secondsSince) / 60);
+        let hoursSince = Math.floor(Number(minutesSince) / 60);
+        let daysSince = Math.floor(Number(hoursSince) / 24);
+        
+        let dateSince = "Seconds ago";
+        if(minutesSince === 1) {
+            dateSince = minutesSince + " Minute ago";
+        } else {
+            dateSince = minutesSince + " Minutes ago";
+        }
+        if(hoursSince > 0) {
+          dateSince = hoursSince + " Hours ago";
+        }
+        if(daysSince > 0) {
+          dateSince = daysSince + " Days ago";
+        }
+
+        return dateSince;
+      }
 
     render() {
 
@@ -240,7 +297,7 @@ class Chat extends React.Component {
             this.state.conversation.forEach((message, index) => {
 
                 var receiveOrSendCss = "sended";
-                if(message.directChatroomId !== this.props.activeChatOthersQueue) {
+                if(message.queueId === this.props.activeChatMyQueue) {
                     receiveOrSendCss = "received";
                 }
 
@@ -250,7 +307,7 @@ class Chat extends React.Component {
                             {message.message}
                         </div>
                         <div className="info">
-                            Received 20 Hours ago
+                            {this.dateSince(message.timestamp)}
                         </div>
                     </div>
                 );
@@ -271,7 +328,7 @@ class Chat extends React.Component {
 
                 <div className="container">
 
-                    <div className="chat">
+                    <div className="chat" id="chatContainer">
                         
                         {conversation}
 

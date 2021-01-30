@@ -77,9 +77,9 @@ class Chats extends React.Component {
                 chats.push(
                     <div className="chat" key={"chats_index"+index}>
                         <div className="title" 
-                            id={"conversations_"+conv.myChatroom.queue+"_"+conv.othersChatroom.queue+"_"+conv.othersChatroom.senderUsername}
+                            id={"conversations_"+conv.myQueue.queue+"_"+conv.othersQueue.queue+"_"+conv.othersQueue.senderUsername}
                             onClick={this.activateChat}>
-                                {conv.othersChatroom.senderUsername}
+                                {conv.othersQueue.senderUsername}
                         </div>
                     </div>
                 );

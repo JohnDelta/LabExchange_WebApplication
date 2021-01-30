@@ -48,7 +48,7 @@ class Messenger extends React.Component {
                         }
                     } 
                 >
-                    Logout</button>
+                    Logout {localStorage.getItem("username")}</button>
 
                 <Chats 
                     toggleChats={this.toggleChats} 
