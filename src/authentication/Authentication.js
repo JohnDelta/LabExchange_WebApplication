@@ -55,6 +55,7 @@ class Auth {
     
         this.authenticated = false;
         localStorage.removeItem("jwt");
+        localStorage.removeItem("username");
     
         callback();
     }
