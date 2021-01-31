@@ -53,7 +53,8 @@ class Messenger extends React.Component {
                 <Chats 
                     toggleChats={this.toggleChats} 
                     showChats={this.state.showChats} 
-                    activateChat={this.activateChat} />
+                    activateChat={this.activateChat}
+                    activeChatOthersUsername={this.state.activeChatOthersUsername} />
 
                 <Chat 
                     toggleChats={this.toggleChats} 

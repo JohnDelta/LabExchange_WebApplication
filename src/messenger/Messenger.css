@@ -26,5 +26,9 @@
 
 .Messenger button i {
     font-size: 18px;
-    pointer-events: none;
+}
+
+.Messenger i {
+    margin: 0px 5px 0px 5px;
+    color: #48CAE4;
 }
