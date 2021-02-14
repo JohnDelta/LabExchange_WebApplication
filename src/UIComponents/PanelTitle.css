@@ -1,0 +1,18 @@
+.PanelTitle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.PanelTitle .breadcrumb {
+    display: flex;
+    align-items: center;
+}
+
+.PanelTitle .breadcrumb-this {
+    pointer-events: none;
+}
+
+.PanelTitle .go-back-button {
+
+}

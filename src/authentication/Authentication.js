@@ -51,13 +51,13 @@ class Auth {
 
     }
 
-    logout(callback) {
+    logout() {
     
         this.authenticated = false;
         localStorage.removeItem("jwt");
         localStorage.removeItem("username");
     
-        callback();
+        this.props.history.push("/");
     }
 
     isAuthenticated() {

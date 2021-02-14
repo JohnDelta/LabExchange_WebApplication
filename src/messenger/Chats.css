@@ -1,9 +1,10 @@
 .Chats {
     grid-column: 1/2;
-    background-color: #90E0EF;
     display: grid;
-    grid-template-rows: 50px minmax(50px, 100%);
+    grid-template-rows: 50px minmax(auto, 100%);
     grid-template-columns: 1fr;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
 
 @media only screen and (max-width: 700px) {
@@ -11,22 +12,26 @@
         display: none;
     }*/
     .hidePanelToLeft {
-        position: absolute;
+        background: rgb(228,216,255);
+        background: linear-gradient(90deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%);
+        position: fixed;
+        top: 110px;
+        width: 100%;
+        height: max-content;
+        margin: 0px;
         left: -100%;
-        height: 70%;
         transition-duration: 0.4s;
     }
     .showPanelFromLeft {
         left: 0px;
         transition-duration: 0.4s;
     }
-    .Chats {
-        min-width: 300px;
+    .Chats > .container {
+        margin: 1px 20px;
     }
 }
 
 .Chats > .title {
-    background-color: #48CAE4;
     display: grid;
     grid-template-columns: minmax(50px, 100%) 50px;
     grid-template-rows: auto;
@@ -34,10 +39,16 @@
 
 .Chats > .title > p {
     text-align: center;
+    font-size: 16px;
 }
 
 .Chats > .title > button {
+    border: none;
+    height: 100%;
+}
 
+.Chats > .title > button i {
+    color: #fff;
 }
 
 @media only screen and (min-width: 700px) {
@@ -51,7 +62,6 @@
 
 .Chats > .container {
     display: grid;
-    margin: 10px;
     row-gap: 10px;
     align-content: start;
     overflow-y: scroll;

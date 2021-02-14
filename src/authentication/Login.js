@@ -55,32 +55,35 @@ class Login extends React.Component {
 
     render() {
         return (
-            <div className="Login">
-                <div className="title">
-                    Login
-                </div>
-                <div className="error">
-                    {this.state.error}
-                </div>
-                <div className="input">
-                    <div className="icon">
-                    <i className="fa fa-user"></i>
+            <div className="LoginWrapper">
+                <div className="Login">
+                    <div className="title">
+                        Lab Exchange
                     </div>
-                    <input type="text" id="login_username" value={this.username} placeholder="user" onChange={this.onInputChange} />
-                </div>
-                <div className="input">
-                    <div className="icon">
-                    <i className="fa fa-lock"></i>
+                    <div className="error">
+                        {this.state.error}
                     </div>
-                    <input type="password" id="login_password" value={this.password} placeholder="user123" onChange={this.onInputChange} />
-                </div>
-                
-                <a href="signup" style={{"marginBottom":"5px"}}>Go to Sign Up</a>
+                    <div className="input">
+                        <div className="icon">
+                        <i className="fa fa-user"></i>
+                        </div>
+                        <input type="text" id="login_username" value={this.username} placeholder="user" onChange={this.onInputChange} />
+                    </div>
+                    <div className="input">
+                        <div className="icon">
+                        <i className="fa fa-lock"></i>
+                        </div>
+                        <input type="password" id="login_password" value={this.password} placeholder="user123" onChange={this.onInputChange} />
+                    </div>
+                    
+                    {/* <a href="signup" style={{"marginBottom":"5px"}}>Go to Sign Up</a> */}
 
-                <button className="login-button" onClick={this.handleSubmit}>
-                    Submit
-                </button>
+                    <button className="login-button" onClick={this.handleSubmit}>
+                        Login
+                    </button>
+                </div>
             </div>
+            
         );
     }
 }

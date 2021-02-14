@@ -1,10 +1,11 @@
 import React from 'react';
 import './App.css';
 import Messenger from './messenger/Messenger';
-import Home from './Home';
+import Posts from './PostComponents/Posts.js';
 import ProtectedRoute from './authentication/ProtectedRoute';
 import SignUp from './authentication/SignUp';
 import Login from './authentication/Login';
+import NotFound from './UIComponents/NotFound.js';
 
 import {
   BrowserRouter as Router,
@@ -19,6 +20,7 @@ class App extends React.Component {
   }
 
   render() {
+
     return (
       <div className="App">
         
@@ -28,7 +30,7 @@ class App extends React.Component {
             <ProtectedRoute
               exact
               path="/"
-              component={Home}
+              component={Posts}
             />
 
             <Route 
@@ -51,7 +53,7 @@ class App extends React.Component {
 
             <Route 
               path="*"
-              component={()=>"404 NOT FOUND"}
+              component={NotFound}
             />
           
           </Switch>

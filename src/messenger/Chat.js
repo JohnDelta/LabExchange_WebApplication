@@ -341,7 +341,9 @@ class Chat extends React.Component {
                             value={this.state.message} 
                             onChange={this.onMessageChange}  />
 
-                        <button onClick={this.sendMessage}>Send</button>
+                        <button onClick={this.sendMessage}>
+                            <i className="fa fa-paper-plane" />
+                        </button>
 
                     </div>
 

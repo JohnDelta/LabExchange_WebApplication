@@ -1,12 +1,35 @@
+.LoginWrapper {
+    background-color: darkgreen;
+    padding: 10px;
+    margin-top: 10vh;
+    background: rgb(228,216,255);
+    background: linear-gradient(90deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%);
+    height: 60vh;
+    width: 30vw;
+    min-width: 400px;
+    display: flex;
+}
+
 .Login {
-    margin-top: 50px;
-    background-color: #CAF0F8;
-    
+    width: 100%;
+    overflow: hidden;
+    z-index: 1;
+    background: rgb(228,216,255);
+    background: linear-gradient(180deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%);
     padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+@media only screen and (max-width: 800px) {
+    .LoginWrapper {
+        width: 100vw;
+        height: 100vh;
+        padding: 0px;
+        margin: 0px;
+    }
 }
 
 .Login > div {
@@ -24,44 +47,36 @@
 .Login .error {
     padding: 15px;
     font-size: 18px;
-    color: #f86624;
     display: flex;
 }
 
 .Login .input .icon {
     height: 35px;
     width: 35px;
-    background-color: #90E0EF;
+    background-color: #7b62af;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+.Login .input .icon i {
+    color: #FFF;
+}
+
 .Login .input > input[type=text] {
-    height: 35px;
-    font-size: 15px;
-    border: none;
     margin-bottom: 10px;
-    color: #11151C;
-    outline: none;
 }
 
 .Login .input > input[type="password"] {
-    height: 35px;
-    font-size: 15px;
-    border: none;
     margin-bottom: 10px;
-    color: #11151C;
-    outline: none;
 }
 
 .Login .login-button {
     border: none;
     font-size: 20px;
-    padding: 6px;
-    background-color: #023E8A;
-    outline: none;
-    color: #FFFFFF;
+    padding: 10px;
+    margin-top: 40px;
+    height: 50px;
 }
 
 .Login .login-button:active {

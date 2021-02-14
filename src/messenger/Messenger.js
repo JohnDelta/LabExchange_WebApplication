@@ -2,7 +2,8 @@ import React from 'react';
 import './Messenger.css';
 import Chat from './Chat';
 import Chats from './Chats';
-import Authentication from '../authentication/Authentication';
+import Navbar from '../UIComponents/Navbar.js';
+import PanelTitle from '../UIComponents/PanelTitle';
 
 class Messenger extends React.Component {
 
@@ -36,32 +37,31 @@ class Messenger extends React.Component {
 
     render() {
         return(
-            <div className="Messenger">
+            <div className="MessengerWrapper">
 
-                <button
-                    className="logout"
-                    onClick={
-                        () => {
-                            Authentication.logout(()=>{
-                                this.props.history.push("/");
-                            })
-                        }
-                    } 
-                >
-                    Logout {localStorage.getItem("username")}</button>
+                <Navbar />
 
-                <Chats 
-                    toggleChats={this.toggleChats} 
-                    showChats={this.state.showChats} 
-                    activateChat={this.activateChat}
-                    activeChatOthersUsername={this.state.activeChatOthersUsername} />
+                <div className="Messenger">
 
-                <Chat 
-                    toggleChats={this.toggleChats} 
-                    activeChatOthersUsername={this.state.activeChatOthersUsername}
-                    activeChatMyQueue={this.state.activeChatMyQueue}
-                    activeChatOthersQueue={this.state.activeChatOthersQueue} />
+                    <PanelTitle 
+                        links={["messenger"]} 
+                        linksName={["Messenger"]}
+                        backLink={""} 
+                    />
 
+                    <Chats 
+                        toggleChats={this.toggleChats} 
+                        showChats={this.state.showChats} 
+                        activateChat={this.activateChat}
+                        activeChatOthersUsername={this.state.activeChatOthersUsername} />
+
+                    <Chat 
+                        toggleChats={this.toggleChats} 
+                        activeChatOthersUsername={this.state.activeChatOthersUsername}
+                        activeChatMyQueue={this.state.activeChatMyQueue}
+                        activeChatOthersQueue={this.state.activeChatOthersQueue} />
+
+                </div>
             </div>
         );
     }
