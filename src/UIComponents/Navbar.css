@@ -35,19 +35,21 @@
 }
 
 .navbar-body-wrapper {
-    background: rgb(228,216,255);
-    background: linear-gradient(90deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%);
+    background-color: #FFF;
+    /* background: rgb(228,216,255);
+    background: linear-gradient(90deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%); */
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
     width: 200px;
     padding: 10px;
+    border-right: 1px solid #929292;
 }
 
 .navbar-body {
-    background: rgb(228,216,255);
-    background: linear-gradient(180deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%);
+    /* background: rgb(228,216,255);
+    background: linear-gradient(180deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%); */
     display: grid;
     width: 100%;
     height: 100%;

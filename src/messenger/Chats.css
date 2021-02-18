@@ -2,7 +2,6 @@
     grid-column: 1/2;
     display: grid;
     grid-template-rows: 50px minmax(auto, 100%);
-    grid-template-columns: 1fr;
     margin-left: 10px;
     margin-bottom: 10px;
 }
@@ -12,29 +11,32 @@
         display: none;
     }*/
     .hidePanelToLeft {
-        background: rgb(228,216,255);
-        background: linear-gradient(90deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%);
+        /* background: rgb(228,216,255);
+        background: linear-gradient(90deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%); */
         position: fixed;
         top: 110px;
         width: 100%;
-        height: max-content;
+        height: 88vh;
         margin: 0px;
-        left: -100%;
+        left: -110%;
         transition-duration: 0.4s;
+        background-color: #FFF;
+        
     }
     .showPanelFromLeft {
         left: 0px;
         transition-duration: 0.4s;
     }
     .Chats > .container {
-        margin: 1px 20px;
+        margin: 0px 60px;
     }
 }
 
 .Chats > .title {
     display: grid;
-    grid-template-columns: minmax(50px, 100%) 50px;
-    grid-template-rows: auto;
+    grid-template-columns: minmax(50px, 100%) 60px;
+    grid-template-rows: 100%;
+    border: 1px solid #929292;
 }
 
 .Chats > .title > p {
@@ -45,6 +47,7 @@
 .Chats > .title > button {
     border: none;
     height: 100%;
+    width: 60px;
 }
 
 .Chats > .title > button i {
@@ -67,6 +70,7 @@
     overflow-y: scroll;
     overflow-x: hidden;
     background-color: #FFFFFF;
+    border: 1px solid #929292;
 }
 
 .Chats .container > .chat {

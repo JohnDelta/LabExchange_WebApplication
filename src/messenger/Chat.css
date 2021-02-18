@@ -18,6 +18,7 @@
     display: grid;
     grid-template-columns: 50px minmax(50px, 100%);
     grid-template-rows: auto;
+    border: 1px solid #929292;
 }
 
 .Chat > .title > p {
@@ -27,6 +28,8 @@
 
 .Chat > .title > button {
     border: none;
+    height: 100%;
+    width: 60px;
 }
 
 .Chat > .title > button i {
@@ -45,11 +48,11 @@
 .Chat > .container {
     display: grid;
     grid-template-rows: 90% 10%;
-
 }
 
 .Chat > .container > .chat {
     background-color: #FFFFFF;
+    border: 1px solid #929292;
 }
 
 .Chat .keyboard {
@@ -61,12 +64,11 @@
 
 .Chat .keyboard > textarea {
     width: 100%;
-    border: 1px solid #7b62af;
 }
 
 .Chat .keyboard > button {
     border: none;
-    height: 41px;
+    height: 42px;
     width: 100%;
     min-width: 60px;
 }
@@ -76,7 +78,6 @@
 }
 
 .Chat .keyboard > button:active {
-    background-color: #03045E;
 }
 
 .Chat .chat {
