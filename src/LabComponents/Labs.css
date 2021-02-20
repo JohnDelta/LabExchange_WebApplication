@@ -7,7 +7,7 @@
     height: 80vh;
     width: 70vw;
     max-width: 1000px;
-    margin: 10vh 0px 0px 200px;
+    margin: 10vh 0px 0px 0px;
     padding: 10px;
     display: flex;
 }
@@ -51,17 +51,16 @@
     }   
 }
 
+.cancelEvents div {
+    pointer-events: none;
+}
+
 .tile {
-    cursor: pointer;
     padding: 15px;
     border: 1px solid #929292;
     display: grid;
     grid-template-rows: repeat(2, auto);
     gap: 10px;
-}
-
-.tile > div {
-    pointer-events: none;
 }
 
 .tiles .tile-header {
@@ -83,4 +82,20 @@
 }
 
 .tiles .tile-info-body {
+}
+
+.tiles .tile-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 10px;
+    justify-content: end;
+}
+
+.tiles .tile-buttons button {
+    border: none;
+}
+
+.inactiveButton {
+    pointer-events: none;
+    opacity: 0.7;
 }

@@ -2,8 +2,7 @@ import React from 'react';
 import './Messenger.css';
 import Chat from './Chat';
 import Chats from './Chats';
-import Navbar from '../UIComponents/Navbar.js';
-import PanelTitle from '../UIComponents/PanelTitle';
+import Header from '../UIComponents/Header.js';
 
 class Messenger extends React.Component {
 
@@ -38,16 +37,9 @@ class Messenger extends React.Component {
     render() {
         return(
             <div className="MessengerWrapper">
-
-                <Navbar />
-
                 <div className="Messenger">
 
-                    <PanelTitle 
-                        links={["messenger"]} 
-                        linksName={["Messenger"]}
-                        backLink={""} 
-                    />
+                    <Header activeTab={"messenger"} history={this.props.history} />
 
                     <Chats 
                         toggleChats={this.toggleChats} 

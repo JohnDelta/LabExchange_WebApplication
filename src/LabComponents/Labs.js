@@ -1,7 +1,6 @@
 import React from 'react';
 import './Labs.css';
-import PanelTitle from '../UIComponents/PanelTitle';
-import Navbar from '../UIComponents/Navbar.js';
+import Header from '../UIComponents/Header.js';
 
 class Labs extends React.Component {
 
@@ -52,7 +51,13 @@ class Labs extends React.Component {
 
         var labs = this.state.labs.map((lab) => {
             return (
-                <div className="tile" onClick={this.openLab} id={lab.labId} key={"labs_lab_"+lab.labId}>
+                <div 
+                    className="tile cancelEvents" 
+                    onClick={this.openLab} 
+                    id={lab.labId} 
+                    key={"labs_lab_"+lab.labId}
+                    style={{"cursor":"pointer"}}
+                >
                     <div className="tile-header">{lab.title}</div>
                     <div className="tile-body">
                         <div className="tile-info">
@@ -72,14 +77,7 @@ class Labs extends React.Component {
             <div className="LabsWrapper">
                 <div className="Labs">
 
-                    <Navbar />
-
-                    <PanelTitle 
-                        links={["Labs"]} 
-                        linksName={["Labs"]}
-                        backLink={""}
-                        keyValue={"labs"}
-                    />
+                    <Header activeTab={"lab"} history={this.props.history} />
                     
                     <div className="tiles">
                         {labs}
