@@ -27,17 +27,20 @@ class Navbar extends React.Component {
     
                     <div className="navbar-body-wrapper" id="navbar-body">
                         <div className="navbar-body">
-    
-                            <div className="navbar-link close-button" onClick={this.toggleNavbar}>
-                                <i className="fa fa-times" />
+
+                            <div className="navbar-title">
+                                <span>LabExchange</span>
+                                <div className="close-button" onClick={this.toggleNavbar}>
+                                    <i className="fa fa-times" />
+                                </div>
                             </div>
 
                             <a className="navbar-link" href="/">
                                 <i className="fa fa-file"></i>
-                                <span>Posts</span>
+                                <span>Labs</span>
                             </a>
 
-                            <a className="navbar-link" href="messenger">
+                            <a className="navbar-link" href="/messenger">
                                 <i className="fa fa-comment"></i>
                                 <span>Messenger</span>
                             </a>
