@@ -1,18 +1,18 @@
 import React from 'react';
-import './Lab.css';
+import './Class.css';
 import Header from '../UIComponents/Header.js';
 
 import {
     Link
  } from "react-router-dom";
 
-class Lab extends React.Component {
+class Class extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            "lab": {
-                "labId": 0,
+            "class": {
+                "classId": 0,
                 "title": "Object Oriented Programming (CTE-0010)",
                 "assignedLab": "TR1 (Thurday 14:00-15:00)",
                 "isOpen": true
@@ -22,49 +22,53 @@ class Lab extends React.Component {
                     "postId": 0,
                     "title": "IOANNIS DELIGIANNIS (CS151102)",
                     "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": ""
+                    "requestedLab": "",
+                    "hasApplied": false
                 },
                 {
                     "postId": 1,
                     "title": "IOANNIS DELIGIANNIS (CS151102)",
                     "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "TR2 (Thurday 15:00-16:00)"
+                    "requestedLab": "TR2 (Thurday 15:00-16:00)",
+                    "hasApplied": false
                 },
                 {
                     "postId": 2,
                     "title": "IOANNIS DELIGIANNIS (CS151102)",
                     "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": ""
+                    "requestedLab": "",
+                    "hasApplied": false
                 },
                 {
                     "postId": 3,
                     "title": "IOANNIS DELIGIANNIS (CS151102)",
                     "assignedLab": "TR3 (Thurday 14:00-15:00)",
-                    "requestedLab": "TR4 (Thurday 15:00-16:00)"
+                    "requestedLab": "TR4 (Thurday 15:00-16:00)",
+                    "hasApplied": false
                 },
             ]
         };
 
-        this.loadLab = this.loadLab.bind(this);
+        this.loadClass = this.loadClass.bind(this);
     }
 
     componentDidMount() {
         
-        this.loadLab();
+        this.loadClass();
 
     }
 
-    loadLab() {
+    loadClass() {
 
         let id = this.props.match.params.id;
 
-        // fetch lab data here later
+        // fetch class data here later
 
-        let lab = this.state.lab;
-        lab.labId = id;
+        let classToLoad = this.state.class;
+        classToLoad.classId = id;
 
         this.setState({
-            "lab": lab
+            "class": classToLoad
         });
 
     }
@@ -73,11 +77,11 @@ class Lab extends React.Component {
 
         var posts = this.state.posts.map((post) => {
 
-            let applyButtonCss = (post.requestedLab !== this.state.lab.assignedLab &&
-                post.requestedLab !== "" && post.assignedLab === this.state.lab.assignedLab) ? "inactiveButton" : "";
+            let applyButtonCss = (post.requestedLab !== this.state.class.assignedLab &&
+                post.requestedLab !== "" && post.assignedLab === this.state.class.assignedLab) ? "inactiveButton" : "";
 
             return (
-                <div className="tile" id={post.postId} key={"lab_tile_key"+post.postId}>
+                <div className="tile" id={post.postId} key={"class_tile_key"+post.postId}>
                     <div className="tile-header">{post.title}</div>
                     <div className="tile-body">
                         <div className="tile-info">
@@ -98,32 +102,32 @@ class Lab extends React.Component {
         })
 
         return (
-            <div className="LabWrapper">
-                <div className="Lab">
+            <div className="ClassWrapper">
+                <div className="Class">
 
-                    <Header activeTab={"lab"} history={this.props.history} />
+                    <Header activeTab={"class"} history={this.props.history} />
 
-                    <div className="lab-container">
-                        <div className="lab-header">
-                            <div className="lab-title">{this.state.lab.title}</div>
-                            <Link className="lab-back" to="/labs">
+                    <div className="class-container">
+                        <div className="class-header">
+                            <div className="class-title">{this.state.class.title}</div>
+                            <Link className="class-back" to="/classes">
                                 <i className="fa fa-arrow-left" />
                             </Link>
                         </div>
-                        <div className="lab-body">
-                            <div className="lab-info">
-                                <div className="lab-info-header">Assigned Lab : {this.state.lab.labId}</div>
-                                <div className="lab-info-body">{this.state.lab.assignedLab}</div>
+                        <div className="class-body">
+                            <div className="class-info">
+                                <div className="class-info-header">Assigned Lab : {this.state.class.classId}</div>
+                                <div className="class-info-body">{this.state.class.assignedLab}</div>
                             </div>
-                            <div className="lab-info">
-                                <div className="lab-info-header">Open for registrations</div>
-                                <div className="lab-info-body">{this.state.lab.isOpen}</div>
+                            <div className="class-info">
+                                <div className="class-info-header">Open for registrations</div>
+                                <div className="class-info-body">{this.state.class.isOpen}</div>
                             </div>
-                            <div className="lab-buttons">
-                                <button>
+                            <div className="class-buttons">
+                                <Link to={"/post/new/class-"+this.state.class.classId}>
                                     <i className="fa fa-plus" />
                                     <div>New Post</div>
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -139,4 +143,4 @@ class Lab extends React.Component {
 
 }
 
-export default Lab;
+export default Class;

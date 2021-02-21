@@ -1,16 +1,16 @@
 .NotFound {
     z-index: 1;
+    border-radius: 10px;
     background: rgb(228,216,255);
     background: linear-gradient(180deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%);
     height: 80vh;
     width: 70vw;
-    margin: 10vh 0px 0px 250px;
+    margin: 10vh 0px 0px 0px;
     display: flex;
-    justify-content: center;
+    justify-content: start;
     padding: 20px;
-    color: #7b62af;
-    font-size: 26px;
-    font-weight: 600;
+    align-items: center;
+    flex-direction: column;
 }
 
 @media only screen and (max-width: 800px) {
@@ -19,4 +19,10 @@
         height: 100vh;
         width: 100vw;
     }   
+}
+
+.NotFound div {
+    color: #7b62af;
+    font-size: 26px;
+    font-weight: 600;
 }

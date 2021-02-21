@@ -1,33 +1,37 @@
 import React from 'react';
-import './Labs.css';
+import './Classes.css';
 import Header from '../UIComponents/Header.js';
 
-class Labs extends React.Component {
+import {
+    Link
+  } from "react-router-dom";
+
+class Classes extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            "labs": [
+            "classes": [
                 {
-                    "labId": 0,
+                    "classId": 0,
                     "title": "Object Oriented Programming (CTE-0010)",
                     "assignedLab": "TR1 (Thurday 14:00-15:00)",
                     "isOpen": true
                 },
                 {
-                    "labId": 1,
+                    "classId": 1,
                     "title": "Java (CTE-0010)",
                     "assignedLab": "TR1 (Thurday 14:00-15:00)",
                     "isOpen": false
                 },
                 {
-                    "labId": 2,
+                    "classId": 2,
                     "title": "Data Structures (CTE-0010)",
                     "assignedLab": "TR1 (Monday 14:00-15:00)",
                     "isOpen": false
                 },
                 {
-                    "labId": 3,
+                    "classId": 3,
                     "title": "Network Programming (CTE-0010)",
                     "assignedLab": "TR1 (Friday 14:00-15:00)",
                     "isOpen": true
@@ -35,27 +39,27 @@ class Labs extends React.Component {
             ]
         };
 
-        this.openLab = this.openLab.bind(this);
+        this.openClass = this.openClass.bind(this);
     }
 
-    openLab(e) {
+    openClass(e) {
 
         e.preventDefault(false);
         
         var id = e.target.id;
-        this.props.history.push("lab/"+id);
+        this.props.history.push("class/"+id);
 
     }
 
     render() {
 
-        var labs = this.state.labs.map((lab) => {
+        var classes = this.state.classes.map((lab) => {
             return (
                 <div 
                     className="tile cancelEvents" 
-                    onClick={this.openLab} 
-                    id={lab.labId} 
-                    key={"labs_lab_"+lab.labId}
+                    onClick={this.openClass} 
+                    id={lab.classId} 
+                    key={"classes_lab_"+lab.classId}
                     style={{"cursor":"pointer"}}
                 >
                     <div className="tile-header">{lab.title}</div>
@@ -74,13 +78,20 @@ class Labs extends React.Component {
         })
 
         return (
-            <div className="LabsWrapper">
-                <div className="Labs">
+            <div className="ClassesWrapper">
+                <div className="Classes">
 
-                    <Header activeTab={"lab"} history={this.props.history} />
+                    <Header activeTab={"class"} history={this.props.history} />
                     
+                    <div className="classes-new-post">
+                        <Link to="/post/new/classes">
+                            <i className="fa fa-plus" />
+                            <div>New Post</div>
+                        </Link>
+                    </div>
+
                     <div className="tiles">
-                        {labs}
+                        {classes}
                     </div>
 
                 </div>
@@ -90,4 +101,4 @@ class Labs extends React.Component {
 
 }
 
-export default Labs;
+export default Classes;

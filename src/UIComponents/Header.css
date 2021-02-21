@@ -46,9 +46,9 @@
     font-size: 16px;
     background-color: #7b62af;
     color: #FFF;
-    border: 1px solid #7b62af;
-    border-bottom: none;
+    border: none;
     outline: none;
+    height: 50px;
 }
 
 .Header-body-wrapper > .lower .tab:first-child {

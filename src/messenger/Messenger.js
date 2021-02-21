@@ -41,17 +41,19 @@ class Messenger extends React.Component {
 
                     <Header activeTab={"messenger"} history={this.props.history} />
 
-                    <Chats 
-                        toggleChats={this.toggleChats} 
-                        showChats={this.state.showChats} 
-                        activateChat={this.activateChat}
-                        activeChatOthersUsername={this.state.activeChatOthersUsername} />
+                    <div className="messenger-content">
+                        <Chats 
+                            toggleChats={this.toggleChats} 
+                            showChats={this.state.showChats} 
+                            activateChat={this.activateChat}
+                            activeChatOthersUsername={this.state.activeChatOthersUsername} />
 
-                    <Chat 
-                        toggleChats={this.toggleChats} 
-                        activeChatOthersUsername={this.state.activeChatOthersUsername}
-                        activeChatMyQueue={this.state.activeChatMyQueue}
-                        activeChatOthersQueue={this.state.activeChatOthersQueue} />
+                        <Chat 
+                            toggleChats={this.toggleChats} 
+                            activeChatOthersUsername={this.state.activeChatOthersUsername}
+                            activeChatMyQueue={this.state.activeChatMyQueue}
+                            activeChatOthersQueue={this.state.activeChatOthersQueue} />
+                    </div>
 
                 </div>
             </div>

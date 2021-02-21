@@ -2,10 +2,6 @@ import React from 'react';
 import './Header.css';
 import Authentication from '../authentication/Authentication';
 
-import {
-    withRouter
- } from "react-router-dom";
-
 class Header extends React.Component {
 
     constructor(props) {
@@ -44,9 +40,9 @@ class Header extends React.Component {
                     <div className="lower">
 
                         <button
-                            className={"tab " + ((this.props.activeTab === "lab") ? "active-tab" : "")} 
+                            className={"tab " + ((this.props.activeTab === "class") ? "active-tab" : "")} 
                             onClick={this.onTabClick} 
-                            id="/labs_0">Posts per Lab</button>
+                            id="/classes_0">Posts per Class</button>
 
                         <button
                             className={"tab " + ((this.props.activeTab === "my-posts") ? "active-tab" : "")} 

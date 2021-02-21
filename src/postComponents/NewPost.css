@@ -1,0 +1,87 @@
+.NewPostWrapper {
+    z-index: 1;
+    border-radius: 10px;
+    background: rgb(228,216,255);
+    background: linear-gradient(180deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%);
+    height: 80vh;
+    width: 70vw;
+    max-width: 1000px;
+    margin: 10vh 0px 0px 0px;
+    padding: 10px;
+    display: flex;
+}
+
+.NewPost {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    width: 100%;
+}
+
+@media only screen and (max-width: 900px) {
+    .NewPostWrapper {
+        margin: 0px;
+        height: 100vh;
+        width: 100vw;
+        padding: 0px;
+    }
+    .NewPost {
+        padding-top: 40px;
+    }   
+}
+
+.NewPost-container {
+    height: 100%;
+    background-color: #FFF;
+    padding: 15px;
+    display: grid;
+    grid-template-rows: auto minmax(auto, 100%);
+    gap: 10px;
+    align-items: start;
+}
+
+.NewPost-container .NewPost-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.NewPost-container .NewPost-header .NewPost-title {
+    font-size: 18px;
+}
+
+.NewPost-container .NewPost-header .NewPost-back {
+    cursor: pointer;
+}
+
+.NewPost .NewPost-body {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 60px;
+}
+
+.NewPost .NewPost-body .row {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.NewPost .NewPost-body .row p {
+    
+}
+
+.NewPost .NewPost-body .row i {
+    
+}
+
+.NewPost .NewPost-body .row select {
+    
+}
+
+.NewPost .NewPost-body .row button {
+    border: none;
+}

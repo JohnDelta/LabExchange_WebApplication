@@ -1,0 +1,18 @@
+.Breadcrumb {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.Breadcrumb .breadcrumb {
+    display: flex;
+    align-items: center;
+}
+
+.Breadcrumb .breadcrumb-this {
+    pointer-events: none;
+}
+
+.Breadcrumb .go-back-button {
+
+}

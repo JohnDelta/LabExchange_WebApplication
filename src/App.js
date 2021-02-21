@@ -1,8 +1,9 @@
 import React from 'react';
 import './App.css';
 import Messenger from './messenger/Messenger';
-import Labs from './LabComponents/Labs.js';
-import Lab from './LabComponents/Lab.js';
+import Classes from './classComponents/Classes.js';
+import Class from './classComponents/Class.js';
+import NewPost from './postComponents/NewPost.js';
 import ProtectedRoute from './authentication/ProtectedRoute';
 import SignUp from './authentication/SignUp';
 import Login from './authentication/Login';
@@ -30,14 +31,20 @@ class App extends React.Component {
 
             <ProtectedRoute
               exact
-              path={"/(labs)?"}
-              component={Labs}
+              path={"/(classes)?"}
+              component={Classes}
             />
 
             <ProtectedRoute
               exact
-              path="/lab/:id"
-              component={Lab}
+              path="/class/:id"
+              component={Class}
+            />
+
+            <ProtectedRoute
+              exact
+              path="/post/new/:link"
+              component={NewPost}
             />
 
             <Route 
