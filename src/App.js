@@ -4,6 +4,7 @@ import Messenger from './messenger/Messenger';
 import Classes from './classComponents/Classes.js';
 import Class from './classComponents/Class.js';
 import NewPost from './postComponents/NewPost.js';
+import MyPosts from './postComponents/MyPosts.js';
 import ProtectedRoute from './authentication/ProtectedRoute';
 import SignUp from './authentication/SignUp';
 import Login from './authentication/Login';
@@ -45,6 +46,12 @@ class App extends React.Component {
               exact
               path="/post/new/:link"
               component={NewPost}
+            />
+
+            <ProtectedRoute
+              exact
+              path="/post/my-posts"
+              component={MyPosts}
             />
 
             <Route 

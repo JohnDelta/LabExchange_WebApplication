@@ -53,24 +53,24 @@ class Classes extends React.Component {
 
     render() {
 
-        var classes = this.state.classes.map((lab) => {
+        var classes = this.state.classes.map((classMap) => {
             return (
                 <div 
                     className="tile cancelEvents" 
                     onClick={this.openClass} 
-                    id={lab.classId} 
-                    key={"classes_lab_"+lab.classId}
+                    id={classMap.classId} 
+                    key={"classes_lab_"+classMap.classId}
                     style={{"cursor":"pointer"}}
                 >
-                    <div className="tile-header">{lab.title}</div>
+                    <div className="tile-header">{classMap.title}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Assigned Lab</div>
-                            <div className="tile-info-body">{lab.assignedLab}</div>
+                            <div className="tile-info-body">{classMap.assignedLab}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">Open for registrations</div>
-                            <div className="tile-info-body">{lab.isOpen}</div>
+                            <div className="tile-info-body">{(classMap.isOpen) ? ("Open") : ("Closed") }</div>
                         </div>
                     </div>
                 </div>

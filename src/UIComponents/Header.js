@@ -47,7 +47,7 @@ class Header extends React.Component {
                         <button
                             className={"tab " + ((this.props.activeTab === "my-posts") ? "active-tab" : "")} 
                             onClick={this.onTabClick} 
-                            id="/my-posts_1">My Post</button>
+                            id="/post/my-posts_1">My Posts</button>
 
                         <button
                             className={"tab " + ((this.props.activeTab === "applications") ? "active-tab" : "")} 

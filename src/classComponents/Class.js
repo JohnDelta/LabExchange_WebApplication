@@ -90,7 +90,7 @@ class Class extends React.Component {
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{post.requestedLab}</div>
+                            <div className="tile-info-body">{(post.requestedLab === "") ? ("Any choice") : post.requestedLab }</div>
                         </div>
                         <div className="tile-buttons">
                             <button>Message</button>

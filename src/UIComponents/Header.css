@@ -1,7 +1,8 @@
 /*
     light purple : #e4d8ff
-    light green : #d8f0ff
+    light blue : #cddbfa
     bold purple : #7b62af
+    bold blue: #627aaf
 */
 
 .Header {
@@ -48,11 +49,15 @@
     color: #FFF;
     border: none;
     outline: none;
-    height: 50px;
+    height: 50px; 
 }
 
 .Header-body-wrapper > .lower .tab:first-child {
     border-top-left-radius: 10px;
+}
+
+.Header-body-wrapper > .lower .tab:last-child {
+    border-top-right-radius: 10px;
 }
 
 .Header-body-wrapper .active-tab {
