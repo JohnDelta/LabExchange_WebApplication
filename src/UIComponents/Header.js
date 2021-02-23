@@ -42,7 +42,7 @@ class Header extends React.Component {
                         <button
                             className={"tab " + ((this.props.activeTab === "class") ? "active-tab" : "")} 
                             onClick={this.onTabClick} 
-                            id="/classes_0">Posts per Class</button>
+                            id="/classes_0">Classes</button>
 
                         <button
                             className={"tab " + ((this.props.activeTab === "my-posts") ? "active-tab" : "")} 
@@ -52,7 +52,7 @@ class Header extends React.Component {
                         <button
                             className={"tab " + ((this.props.activeTab === "applications") ? "active-tab" : "")} 
                             onClick={this.onTabClick} 
-                            id="/applications_2">Applications</button>
+                            id="/post/applications_2">Applications</button>
 
                         <button
                             className={"tab " + ((this.props.activeTab === "messenger") ? "active-tab" : "")} 

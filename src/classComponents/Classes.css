@@ -157,15 +157,6 @@
     opacity: 0.7;
 }
 
-.classes-new-post {
-    border-top-right-radius: 10px;
-    background-color: #FFF;
-    padding: 15px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-
 .classes-new-post a {
     background-color: #7b62af;
     display: grid;

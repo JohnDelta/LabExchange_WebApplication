@@ -144,6 +144,10 @@ class MyPosts extends React.Component {
                 <div className="MyPosts">
 
                     <Header activeTab={"my-posts"} history={this.props.history} />
+
+                    <div className="container-info">
+                        <div className="help-message">Helpfull message here</div>
+                    </div>
                     
                     <div className="tiles">
                         {posts}

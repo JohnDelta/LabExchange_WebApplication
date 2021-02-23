@@ -5,6 +5,7 @@ import Classes from './classComponents/Classes.js';
 import Class from './classComponents/Class.js';
 import NewPost from './postComponents/NewPost.js';
 import MyPosts from './postComponents/MyPosts.js';
+import Applications from './postComponents/Applications.js';
 import ProtectedRoute from './authentication/ProtectedRoute';
 import SignUp from './authentication/SignUp';
 import Login from './authentication/Login';
@@ -52,6 +53,12 @@ class App extends React.Component {
               exact
               path="/post/my-posts"
               component={MyPosts}
+            />
+
+            <ProtectedRoute
+              exact
+              path="/post/applications"
+              component={Applications}
             />
 
             <Route 

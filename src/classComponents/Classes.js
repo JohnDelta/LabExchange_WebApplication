@@ -83,7 +83,8 @@ class Classes extends React.Component {
 
                     <Header activeTab={"class"} history={this.props.history} />
                     
-                    <div className="classes-new-post">
+                    <div className="container-info classes-new-post">
+                        <div className="help-message">Helpfull message here</div>
                         <Link to="/post/new/classes">
                             <i className="fa fa-plus" />
                             <div>New Post</div>
