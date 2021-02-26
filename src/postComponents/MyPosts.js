@@ -102,6 +102,12 @@ class MyPosts extends React.Component {
                 },
             ]
         };
+        this.toggleCollapsible = this.toggleCollapsible.bind(this);
+    }
+
+    toggleCollapsible(e) {
+        e.target.classList.toggle("open-tile-list-button");
+        e.target.nextElementSibling.classList.toggle("close-tile-list-body");
     }
 
     render() {
@@ -132,7 +138,13 @@ class MyPosts extends React.Component {
                             <div className="tile-info-body">{(post.requestedLab === "") ? ("Any choice") : post.requestedLab }</div>
                         </div>
                         <div className="tile-list">
-                            {applications}
+                            <div className="tile-list-button" onClick={this.toggleCollapsible}>
+                                <div>Applications</div>
+                                <i className="fa fa-angle-right"></i>
+                            </div>
+                            <div className="tile-list-body close-tile-list-body">
+                                {applications}
+                            </div>
                         </div>
                     </div>
                 </div>

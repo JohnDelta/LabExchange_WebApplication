@@ -3,6 +3,8 @@
     light blue : #cddbfa
     bold purple : #7b62af
     bold blue: #627aaf
+    background: rgb(228,216,255);
+    background: linear-gradient(180deg, rgba(228,216,255,1) 35%, rgba(205,219,255,1) 100%);
 */
 
 .Header {
@@ -45,7 +47,7 @@
 .Header-body-wrapper > .lower .tab {
     padding: 5px 7px;
     font-size: 16px;
-    background-color: #7b62af;
+    background-color: #627aaf;
     color: #FFF;
     border: none;
     outline: none;
@@ -62,5 +64,5 @@
 
 .Header-body-wrapper .active-tab {
     background-color: #FFF !important;
-    color: #7b62af !important;
+    color: #627aaf !important;
 }
