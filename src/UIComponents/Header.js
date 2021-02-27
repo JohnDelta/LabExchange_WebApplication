@@ -5,10 +5,38 @@ import Authentication from '../authentication/Authentication';
 class Header extends React.Component {
 
     constructor(props) {
+        
         super(props);
+
+        this.state = {
+            notifications: [
+                {
+                    "notificationId": 0,
+                    "referencedLink": "/classes",
+                    "title": "A new class has oppened",
+                    "timestamp": 23234234234
+                },
+                {
+                    "notificationId": 1,
+                    "referencedLink": "/messenger",
+                    "title": "You have a new message",
+                    "timestamp": 23234234234
+                },
+                {
+                    "notificationId": 2,
+                    "referencedLink": "/class/0",
+                    "title": "You've been assigned to another class",
+                    "timestamp": 23234234234
+                }
+            ]
+        };
+
         this.onTabClick = this.onTabClick.bind(this);
         this.toggleNotificationsPanel = this.toggleNotificationsPanel.bind(this);
+        this.openNotification = this.openNotification.bind(this);
         this.attachNotificationPanelToButton = this.attachNotificationPanelToButton.bind(this);
+        this.dateSince = this.dateSince.bind(this);
+    
     }
 
     componentDidMount() {
@@ -66,7 +94,52 @@ class Header extends React.Component {
 
     }
 
+    openNotification(e) {
+
+        var link = e.target.id.split("_")[2];
+
+        this.props.history.push(link);
+
+    }
+
+    dateSince(pastDate) {
+
+        let secondsSince = Math.floor(Number(new Date() - new Date(pastDate)) / 1000);
+        let minutesSince = Math.floor(Number(secondsSince) / 60);
+        let hoursSince = Math.floor(Number(minutesSince) / 60);
+        let daysSince = Math.floor(Number(hoursSince) / 24);
+        
+        let dateSince = "Seconds ago";
+        if(minutesSince === 1) {
+            dateSince = minutesSince + " Minute ago";
+        } else {
+            dateSince = minutesSince + " Minutes ago";
+        }
+        if(hoursSince > 0) {
+          dateSince = hoursSince + " Hours ago";
+        }
+        if(daysSince > 0) {
+          dateSince = daysSince + " Days ago";
+        }
+
+        return dateSince;
+        
+    }
+
     render() {
+
+        let notifications = this.state.notifications.map((notification) => {
+            return (
+                <div className="notification"
+                    onClick={this.openNotification}
+                    key={"notification" + notification.notificationId}
+                    id={"notification_" + notification.notificationId + "_" + notification.referencedLink}>
+                    <div className="notification-message">{notification.title}</div>
+                    <div className="notification-time">{this.dateSince(notification.timestamp)}</div>
+                </div>
+            )
+        });
+
         return (
             <div className="Header">
                 <div className="Header-body-wrapper">
@@ -112,7 +185,7 @@ class Header extends React.Component {
                         </button>
 
                         <div className="notifications-panel" id="notificationsPanel">
-                            here!!
+                            {notifications}
                         </div>
 
                     </div>

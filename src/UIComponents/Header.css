@@ -93,9 +93,44 @@
     border-radius: 10px;
     transition-duration: 0.4s;
     opacity: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-content: start;
+    pointer-events: none;
 }
 
 .notifications-panel-active {
     height: 400px !important;
     opacity: 1 !important;
+    pointer-events: initial !important;
+    z-index: 100;
+}
+
+.notification {
+    margin: 5px;
+    background-color: rgb(241, 241, 241);
+    border-radius: 5px;
+    min-height: 50px;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    cursor: pointer;
+}
+
+.notification-message {
+    pointer-events: none;
+    margin: 5px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.notification-time {
+    background-color: #627aaf;
+    color: #fff;
+    padding: 0px 4px;
+    border-top-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    pointer-events: none;
+    justify-self: end;
+    font-size: 11px;
 }

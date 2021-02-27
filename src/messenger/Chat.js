@@ -286,7 +286,7 @@ class Chat extends React.Component {
 
         return dateSince;
         
-      }
+    }
 
     render() {
 
