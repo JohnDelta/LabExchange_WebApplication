@@ -6,7 +6,7 @@
     width: 70vw;
     margin: 10vh 0px 0px 0px;
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     padding: 20px;
     align-items: center;
     flex-direction: column;

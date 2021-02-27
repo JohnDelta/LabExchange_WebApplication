@@ -9,9 +9,11 @@ class Chat extends React.Component {
         super();
 
         this.state = {
-            activeChatOthersUsername: "",
-            activeChatMyQueue: "",
-            activeChatOthersQueue: "",
+            "activeChatGet": {
+                "activeChatOthersUsername": "",
+                "activeChatMyQueue": "",
+                "activeChatOthersQueue": ""
+            },
             conversation: [],
             message: "",
             chatClient: null
@@ -30,11 +32,13 @@ class Chat extends React.Component {
 
     componentDidMount() {
 
-        if(this.state.activeChatOthersUsername !== this.props.activeChatOthersUsername) {
+        if(this.state.activeChatGet.activeChatOthersUsername !== this.props.activeChatGet.activeChatOthersUsername) {
             this.setState({
-                activeChatOthersUsername: this.props.activeChatOthersUsername,
-                activeChatMyQueue: this.props.activeChatMyQueue,
-                activeChatOthersQueue: this.props.activeChatOthersQueue
+                activeChatGet: {
+                    activeChatOthersUsername: this.props.activeChatGet.activeChatOthersUsername,
+                    activeChatMyQueue: this.props.activeChatGet.activeChatMyQueue,
+                    activeChatOthersQueue: this.props.activeChatGet.activeChatOthersQueue
+                }
             }, 
                 ()=>{this.getConversation()}
             );
@@ -44,11 +48,13 @@ class Chat extends React.Component {
 
     componentDidUpdate() {
 
-        if(this.state.activeChatOthersUsername !== this.props.activeChatOthersUsername) {
+        if(this.state.activeChatGet.activeChatOthersUsername !== this.props.activeChatGet.activeChatOthersUsername) {
             this.setState({
-                activeChatOthersUsername: this.props.activeChatOthersUsername,
-                activeChatMyQueue: this.props.activeChatMyQueue,
-                activeChatOthersQueue: this.props.activeChatOthersQueue
+                activeChat: {
+                    activeChatOthersUsername: this.props.activeChatGet.activeChatOthersUsername,
+                    activeChatMyQueue: this.props.activeChatGet.activeChatMyQueue,
+                    activeChatOthersQueue: this.props.activeChatGet.activeChatOthersQueue
+                }
             }, 
                 ()=>{this.getConversation()}
             );
@@ -75,7 +81,7 @@ class Chat extends React.Component {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
-                body: JSON.stringify({body:this.props.activeChatOthersUsername}),
+                body: JSON.stringify({body:this.props.activeChatGet.activeChatOthersUsername}),
             });
 
             if(response.status === 200) {
@@ -124,7 +130,7 @@ class Chat extends React.Component {
             () => {
 
                 var subscription = client.subscribe(
-                    "/queue/" + this.state.activeChatMyQueue, 
+                    "/queue/" + this.state.activeChatGet.activeChatMyQueue, 
                     this.subscribeMyQueueCallback,
                     {'X-Authorization': localStorage.getItem("jwt")}
                 );
@@ -145,7 +151,7 @@ class Chat extends React.Component {
 
         var message = JSON.parse(object.body);
 
-        if(message.queueId === this.state.activeChatMyQueue) {
+        if(message.queueId === this.state.activeChatGet.activeChatMyQueue) {
 
             this.messageReceived(message);
 
@@ -204,7 +210,7 @@ class Chat extends React.Component {
         var url = "http://localhost:8082/messenger/message"
 
         var body = {
-            "receiverUsername": this.props.activeChatOthersUsername,
+            "receiverUsername": this.props.activeChatGet.activeChatOthersUsername,
             "message": this.state.message
         };
 
@@ -259,6 +265,7 @@ class Chat extends React.Component {
     }
 
     dateSince(pastDate) {
+
         let secondsSince = Math.floor(Number(new Date() - new Date(pastDate)) / 1000);
         let minutesSince = Math.floor(Number(secondsSince) / 60);
         let hoursSince = Math.floor(Number(minutesSince) / 60);
@@ -278,15 +285,16 @@ class Chat extends React.Component {
         }
 
         return dateSince;
+        
       }
 
     render() {
 
         var conversation = "Select a user to chat with";
 
-        if(this.props.activeChatOthersUsername !== "") {
+        if(this.props.activeChatGet.activeChatOthersUsername !== "") {
             
-            conversation = "Write a message to " + this.props.activeChatOthersUsername + "!";
+            conversation = "Write a message to " + this.props.activeChatGet.activeChatOthersUsername + "!";
             
         }
 
@@ -297,7 +305,7 @@ class Chat extends React.Component {
             this.state.conversation.forEach((message, index) => {
 
                 var receiveOrSendCss = "sended";
-                if(message.queueId === this.props.activeChatMyQueue) {
+                if(message.queueId === this.props.activeChatGet.activeChatMyQueue) {
                     receiveOrSendCss = "received";
                 }
 
@@ -323,7 +331,7 @@ class Chat extends React.Component {
                     <button onClick={this.props.toggleChats} >
                         <i className="fa fa-users" />
                     </button>
-                    <p>{this.props.activeChatOthersUsername}</p>
+                    <p>{this.props.activeChatGet.activeChatOthersUsername}</p>
                 </div>
 
                 <div className="container">

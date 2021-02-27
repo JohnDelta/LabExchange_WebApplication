@@ -20,6 +20,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 .Header-body-wrapper > .upper span {
@@ -27,21 +28,22 @@
     font-size: 20px;
 }
 
-.Header-body-wrapper > .upper a {
+.Header-body-wrapper > .upper .back-button {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
+    border: none;
+    background-color: transparent;
 }
 
-.Header-body-wrapper > .upper a i {
+.Header-body-wrapper > .upper .back-button i {
     margin: 0px;
+    font-size: 18px;
 }
 
 .Header-body-wrapper > .lower {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(4, auto) minmax(auto, 100%);
 }
 
 .Header-body-wrapper > .lower .tab {
@@ -65,4 +67,35 @@
 .Header-body-wrapper .active-tab {
     background-color: #FFF !important;
     color: #627aaf !important;
+}
+
+.Header-body-wrapper > .lower .notifications-button {
+    margin-right: 10px;
+    justify-self: end;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.Header-body-wrapper > .lower .notifications-button i {
+    font-size: 18px;
+}
+
+.Header-body-wrapper > .lower .notifications-panel {
+    position: absolute;
+    width: 250px;
+    height: 0px;
+    border: 2px solid #627aaf;
+    background-color: #FFF;
+    border-radius: 10px;
+    transition-duration: 0.4s;
+    opacity: 0;
+}
+
+.notifications-panel-active {
+    height: 400px !important;
+    opacity: 1 !important;
 }

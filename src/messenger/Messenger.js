@@ -11,13 +11,15 @@ class Messenger extends React.Component {
     
         this.state = {
             "showChats": false,
-            "activeChatOthersUsername": "",
-            "activeChatMyQueue": "",
-            "activeChatOthersQueue": ""
+            "activeChatGet": {
+                "activeChatOthersUsername": "",
+                "activeChatMyQueue": "",
+                "activeChatOthersQueue": ""
+            }
         };
     
         this.toggleChats = this.toggleChats.bind(this);
-        this.activateChat = this.activateChat.bind(this);
+        this.activeChatSet = this.activeChatSet.bind(this);
     }
 
     toggleChats() {
@@ -26,11 +28,13 @@ class Messenger extends React.Component {
         });
     }
 
-    activateChat(myQueue, othersQueue, othersUsername) {
+    activeChatSet(myQueue, othersQueue, othersUsername) {
         this.setState({
-            activeChatOthersUsername: othersUsername,
-            activeChatMyQueue: myQueue,
-            activeChatOthersQueue: othersQueue
+            activeChatGet: {
+                activeChatOthersUsername: othersUsername,
+                activeChatMyQueue: myQueue,
+                activeChatOthersQueue: othersQueue
+            }
         });
     }
 
@@ -45,14 +49,11 @@ class Messenger extends React.Component {
                         <Chats 
                             toggleChats={this.toggleChats} 
                             showChats={this.state.showChats} 
-                            activateChat={this.activateChat}
-                            activeChatOthersUsername={this.state.activeChatOthersUsername} />
+                            activeChatSet={this.activeChatSet} />
 
                         <Chat 
                             toggleChats={this.toggleChats} 
-                            activeChatOthersUsername={this.state.activeChatOthersUsername}
-                            activeChatMyQueue={this.state.activeChatMyQueue}
-                            activeChatOthersQueue={this.state.activeChatOthersQueue} />
+                            activeChatGet={this.state.activeChatGet} />
                     </div>
 
                 </div>

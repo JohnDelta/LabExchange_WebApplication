@@ -19,7 +19,7 @@ class Chats extends React.Component {
         this.subscribeToConversationsInfoQueue = this.subscribeToConversationsInfoQueue.bind(this);
         this.subscribeToConversationsInfoQueueCallback = this.subscribeToConversationsInfoQueueCallback.bind(this);
         this.disconnectFromQueue = this.disconnectFromQueue.bind(this);
-        this.activateChat = this.activateChat.bind(this);
+        this.activeChat = this.activeChat.bind(this);
     }
 
     componentDidMount() {
@@ -163,7 +163,7 @@ class Chats extends React.Component {
 
     }
 
-    activateChat(e) {
+    activeChat(e) {
         
         var args = e.target.id.split("_");
         var index = args[1];
@@ -182,7 +182,7 @@ class Chats extends React.Component {
             conversations: conversations
         });
 
-        this.props.activateChat(myQueue, othersQueue, othersUsername);
+        this.props.activeChatSet(myQueue, othersQueue, othersUsername);
 
     }
 
@@ -209,7 +209,7 @@ class Chats extends React.Component {
                     <div className="chat" key={"chats_index"+index}>
                         <div className="title" 
                             id={"conversations_"+index}
-                            onClick={this.activateChat}>
+                            onClick={this.activeChat}>
                                 {conv.othersQueue.senderUsername}
                                 {newMessagesIcon}
                         </div>

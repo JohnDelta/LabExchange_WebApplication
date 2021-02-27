@@ -6,11 +6,7 @@ import {
 } from "react-router-dom";
 
 class NotFound extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
+    
     render() {
         return (
             <div className="NotFound">

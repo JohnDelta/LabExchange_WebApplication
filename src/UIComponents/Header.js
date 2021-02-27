@@ -7,6 +7,28 @@ class Header extends React.Component {
     constructor(props) {
         super(props);
         this.onTabClick = this.onTabClick.bind(this);
+        this.toggleNotificationsPanel = this.toggleNotificationsPanel.bind(this);
+        this.attachNotificationPanelToButton = this.attachNotificationPanelToButton.bind(this);
+    }
+
+    componentDidMount() {
+
+        this.attachNotificationPanelToButton();
+
+        // ref: https://stackoverflow.com/questions/641857/javascript-window-resize-event
+        var addEvent = function(object, type, callback) {
+            if (object == null || typeof(object) == 'undefined') return;
+            if (object.addEventListener) {
+                object.addEventListener(type, callback, false);
+            } else if (object.attachEvent) {
+                object.attachEvent("on" + type, callback);
+            } else {
+                object["on"+type] = callback;
+            }
+        };
+
+        addEvent(window, "resize", this.attachNotificationPanelToButton);
+
     }
 
     onTabClick(e) {
@@ -21,6 +43,29 @@ class Header extends React.Component {
         
     }
 
+    toggleNotificationsPanel(e) {
+
+        let notificationsButtonElement = e.target;
+        let notificationsPanelElement = document.getElementById("notificationsPanel");
+
+        notificationsButtonElement.firstElementChild.classList.toggle("fa-times");
+        notificationsButtonElement.firstElementChild.classList.toggle("fa-bell");
+
+        notificationsPanelElement.classList.toggle("notifications-panel-active");
+
+    }
+
+    attachNotificationPanelToButton() {
+
+        let notificationsButtonElement = document.getElementById("notificationsButton");
+        let notificationsPanelElement = document.getElementById("notificationsPanel");
+
+        var rect = notificationsButtonElement.getBoundingClientRect();
+        notificationsPanelElement.style.top = (rect.top + 50) + 'px';
+        notificationsPanelElement.style.left = (rect.left - 215) + 'px';
+
+    }
+
     render() {
         return (
             <div className="Header">
@@ -31,10 +76,10 @@ class Header extends React.Component {
                             <span>LabExchange</span>
                         </div>
 
-                        <a className="link" onClick={() => {Authentication.logout();}} >
+                        <button className="back-button" onClick={() => {Authentication.logout();}} >
                             <i className="fa fa-sign-out"></i>
                             <span>Exit</span>
-                        </a>
+                        </button>
                     </div>
 
                     <div className="lower">
@@ -58,6 +103,17 @@ class Header extends React.Component {
                             className={"tab " + ((this.props.activeTab === "messenger") ? "active-tab" : "")} 
                             onClick={this.onTabClick} 
                             id="/messenger_3">Chat</button>
+
+                        <button
+                            className="notifications-button" 
+                            id="notificationsButton"
+                            onClick={this.toggleNotificationsPanel}>
+                                <i className="fa fa-bell" />
+                        </button>
+
+                        <div className="notifications-panel" id="notificationsPanel">
+                            here!!
+                        </div>
 
                     </div>
 

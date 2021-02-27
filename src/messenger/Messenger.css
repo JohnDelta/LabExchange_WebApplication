@@ -41,10 +41,6 @@
     font-size: 18px;
 }
 
-.Messenger i {
-    margin: 0px 5px 0px 5px;
-}
-
 .Messenger .messenger-content {
     background-color: #FFF;
     display: grid;
