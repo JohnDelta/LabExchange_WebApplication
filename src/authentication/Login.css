@@ -2,8 +2,7 @@
     padding: 10px;
     margin-top: 10vh;
     border-radius: 10px;
-    background: rgb(228,216,255);
-    background: linear-gradient(180deg, rgba(228,216,255,1) 35%, rgba(216,240,255,1) 100%);
+    background-color: #e3e3e3;
     height: 60vh;
     width: 30vw;
     min-width: 400px;
@@ -51,7 +50,7 @@
 .Login .input .icon {
     height: 35px;
     width: 35px;
-    background-color: #7b62af;
+    background-color: #627aaf;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -75,8 +74,9 @@
     padding: 10px;
     margin-top: 40px;
     height: 50px;
+    border-radius: 10px;
+    outline: none;
 }
 
 .Login .login-button:active {
-    background-color: #03045E;
 }

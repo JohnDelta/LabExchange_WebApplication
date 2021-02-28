@@ -88,9 +88,13 @@ class Header extends React.Component {
         let notificationsButtonElement = document.getElementById("notificationsButton");
         let notificationsPanelElement = document.getElementById("notificationsPanel");
 
-        var rect = notificationsButtonElement.getBoundingClientRect();
-        notificationsPanelElement.style.top = (rect.top + 50) + 'px';
-        notificationsPanelElement.style.left = (rect.left - 215) + 'px';
+        if (notificationsButtonElement !== null && notificationsPanelElement !== null) {
+
+            var rect = notificationsButtonElement.getBoundingClientRect();
+            notificationsPanelElement.style.top = (rect.top + 50) + 'px';
+            notificationsPanelElement.style.left = (rect.left - 215) + 'px';
+        
+        }
 
     }
 
@@ -149,7 +153,7 @@ class Header extends React.Component {
                             <span>LabExchange</span>
                         </div>
 
-                        <button className="back-button" onClick={() => {Authentication.logout();}} >
+                        <button className="back-button" onClick={() => {Authentication.logout(this.props.history);}} >
                             <i className="fa fa-sign-out"></i>
                             <span>Exit</span>
                         </button>

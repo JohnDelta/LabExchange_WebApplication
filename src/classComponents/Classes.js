@@ -11,35 +11,15 @@ class Classes extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "classes": [
-                {
-                    "classId": 0,
-                    "title": "Object Oriented Programming (CTE-0010)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "isOpen": true
-                },
-                {
-                    "classId": 1,
-                    "title": "Java (CTE-0010)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "isOpen": false
-                },
-                {
-                    "classId": 2,
-                    "title": "Data Structures (CTE-0010)",
-                    "assignedLab": "TR1 (Monday 14:00-15:00)",
-                    "isOpen": false
-                },
-                {
-                    "classId": 3,
-                    "title": "Network Programming (CTE-0010)",
-                    "assignedLab": "TR1 (Friday 14:00-15:00)",
-                    "isOpen": true
-                }
-            ]
+            "classes": []
         };
 
         this.openClass = this.openClass.bind(this);
+        this.loadUserClasses = this.loadUserClasses.bind(this);
+    }
+
+    componentDidMount() {
+        this.loadUserClasses();
     }
 
     openClass(e) {
@@ -51,6 +31,40 @@ class Classes extends React.Component {
 
     }
 
+    async loadUserClasses() {
+
+        var url = "http://localhost:8083/classes/get"
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:""}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    if(res.status === 200) {
+                        this.setState({
+                            classes: res.body
+                        });
+                    }
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
     render() {
 
         var classes = this.state.classes.map((classMap) => {
@@ -58,19 +72,19 @@ class Classes extends React.Component {
                 <div 
                     className="tile cancelEvents" 
                     onClick={this.openClass} 
-                    id={classMap.classId} 
-                    key={"classes_lab_"+classMap.classId}
+                    id={classMap.labClass.labClassId} 
+                    key={"classes_lab_"+classMap.labClass.labClassId}
                     style={{"cursor":"pointer"}}
                 >
-                    <div className="tile-header">{classMap.title}</div>
+                    <div className="tile-header">{classMap.labClass.name}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Assigned Lab</div>
-                            <div className="tile-info-body">{classMap.assignedLab}</div>
+                            <div className="tile-info-body">{classMap.lab.name}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">Open for registrations</div>
-                            <div className="tile-info-body">{(classMap.isOpen) ? ("Open") : ("Closed") }</div>
+                            <div className="tile-info-body">{(classMap.labClass.openForRegistrations) ? ("Open") : ("Closed") }</div>
                         </div>
                     </div>
                 </div>

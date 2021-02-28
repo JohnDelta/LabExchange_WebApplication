@@ -31,13 +31,19 @@ class Auth {
 
                 response.json().then((res) => {
 
-                    this.authenticated = true;
+                    if (res.status === 200) {
+                     
+                        this.authenticated = true;
 
-                    localStorage.setItem("jwt", res.body.jwt);
+                        localStorage.setItem("jwt", res.body.jwt);
+    
+                        localStorage.setItem("username", credentials.username);   
+    
+                        success();
 
-                    localStorage.setItem("username", credentials.username);   
-
-                    success();
+                    } else {
+                        error();
+                    }
 
                 });
             
@@ -51,13 +57,13 @@ class Auth {
 
     }
 
-    logout() {
+    logout(history) {
     
         this.authenticated = false;
         localStorage.removeItem("jwt");
         localStorage.removeItem("username");
     
-        this.props.history.push("/");
+        history.push("/");
     }
 
     isAuthenticated() {
