@@ -33,7 +33,7 @@ class Classes extends React.Component {
 
     async loadUserClasses() {
 
-        var url = "http://localhost:8083/classes/get"
+        var url = "http://localhost:8083/classes/myClassesAndLabs/get"
 
         try {
 

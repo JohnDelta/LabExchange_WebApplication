@@ -11,11 +11,17 @@ class Class extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "class": {
-                "classId": 0,
-                "title": "Object Oriented Programming (CTE-0010)",
-                "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                "isOpen": true
+            "labClassAndLab": {
+                "labClass": {
+                    "labClassId": 0,
+                    "name": "",
+                    "openForRegistrations": false
+                },
+                "lab": {
+                    "labId": 0,
+                    "name": "",
+                    "labClass": {}
+                }
             },
             "posts": [
                 {
@@ -58,18 +64,45 @@ class Class extends React.Component {
 
     }
 
-    loadClass() {
+    async loadClass() {
 
         let id = this.props.match.params.id;
 
-        // fetch class data here later
+        var url = "http://localhost:8083/classes/myClassAndLab/get"
 
-        let classToLoad = this.state.class;
-        classToLoad.classId = id;
+        var labClassObject = {
+            "labClassId": id,
+            "name": "",
+            "openForRegistrations": false
+        };
 
-        this.setState({
-            "class": classToLoad
-        });
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:labClassObject}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    if(res.status === 200 && res.body !== null) {
+                        this.setState({
+                            labClassAndLab: res.body
+                        });
+                    }
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
 
     }
 
@@ -77,8 +110,8 @@ class Class extends React.Component {
 
         var posts = this.state.posts.map((post) => {
 
-            let applyButtonCss = (post.requestedLab !== this.state.class.assignedLab &&
-                post.requestedLab !== "" && post.assignedLab === this.state.class.assignedLab) ? "inactiveButton" : "";
+            let applyButtonCss = (post.requestedLab !== this.state.labClassAndLab.lab.name &&
+                post.requestedLab !== "" && post.assignedLab === this.state.labClassAndLab.lab.name) ? "inactiveButton" : "";
 
             return (
                 <div className="tile" id={post.postId} key={"class_tile_key"+post.postId}>
@@ -109,22 +142,22 @@ class Class extends React.Component {
 
                     <div className="class-container">
                         <div className="class-header">
-                            <div className="class-title">{this.state.class.title}</div>
+                            <div className="class-title">{this.state.labClassAndLab.labClass.name}</div>
                             <Link className="class-back" to="/classes">
                                 <i className="fa fa-arrow-left" />
                             </Link>
                         </div>
                         <div className="class-body">
                             <div className="class-info">
-                                <div className="class-info-header">Assigned Lab : {this.state.class.classId}</div>
-                                <div className="class-info-body">{this.state.class.assignedLab}</div>
+                                <div className="class-info-header">Assigned Lab : {this.state.labClassAndLab.labClass.labClassId}</div>
+                                <div className="class-info-body">{this.state.labClassAndLab.lab.name}</div>
                             </div>
                             <div className="class-info">
                                 <div className="class-info-header">Open for registrations</div>
-                                <div className="class-info-body">{this.state.class.isOpen}</div>
+                                <div className="class-info-body">{this.state.labClassAndLab.labClass.openForRegistrations}</div>
                             </div>
                             <div className="class-buttons">
-                                <Link to={"/post/new/class-"+this.state.class.classId}>
+                                <Link to={"/post/new/class-"+this.state.labClassAndLab.labClass.labClassId}>
                                     <i className="fa fa-plus" />
                                     <div>New Post</div>
                                 </Link>
