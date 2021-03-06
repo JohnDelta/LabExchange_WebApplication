@@ -7,100 +7,7 @@ class MyPosts extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "myPosts": [
-                {
-                    "postId": 0,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "",
-                    "applications": [
-                        {
-                            "applicationId": 0,
-                            "fullname": "IOANNIS MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        },
-                        {
-                            "applicationId": 1,
-                            "fullname": "MIKE MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        },
-                        {
-                            "applicationId": 2,
-                            "fullname": "IOANNIS MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        },
-                        {
-                            "applicationId": 3,
-                            "fullname": "MIKE MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        }
-                    ]
-                },
-                {
-                    "postId": 1,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "TR2 (Thurday 15:00-16:00)",
-                    "applications": [
-                        {
-                            "applicationId": 0,
-                            "fullname": "IOANNIS MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        },
-                        {
-                            "applicationId": 1,
-                            "fullname": "MIKE MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        }
-                    ]
-                },
-                {
-                    "postId": 2,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "",
-                    "applications": [
-                        {
-                            "applicationId": 0,
-                            "fullname": "IOANNIS MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        },
-                        {
-                            "applicationId": 1,
-                            "fullname": "MIKE MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        }
-                    ]
-                },
-                {
-                    "postId": 3,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "assignedLab": "TR3 (Thurday 14:00-15:00)",
-                    "requestedLab": "TR4 (Thurday 15:00-16:00)",
-                    "applications": [
-                        {
-                            "applicationId": 0,
-                            "fullname": "IOANNIS MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        },
-                        {
-                            "applicationId": 1,
-                            "fullname": "MIKE MIXAS (CS010101)",
-                            "username": "cs010101",
-                            "timestamp": 12412412
-                        }
-                    ]
-                },
-            ]
+            "myPosts": []
         };
         this.toggleCollapsible = this.toggleCollapsible.bind(this);
         this.loadMyPosts = this.loadMyPosts.bind(this);
@@ -157,7 +64,7 @@ class MyPosts extends React.Component {
             var applications = post.applications.map((application) => {
                 return (
                     <div className="tile-list-row" key={"class_tile_application_key"+application.applicationId+post.postId}>
-                        <div className="tile-list-row-title">{application.fullname}</div>
+                        <div className="tile-list-row-title">{application.user.username}</div>
                         <div className="tile-list-row-body">
                             <button>Message</button>
                             <button>Request Exchange</button>
@@ -172,7 +79,7 @@ class MyPosts extends React.Component {
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Exchanging</div>
-                            <div className="tile-info-body">{post.assignedLab}</div>
+                            <div className="tile-info-body">{post.providedLab}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
@@ -190,7 +97,9 @@ class MyPosts extends React.Component {
                     </div>
                 </div>
             );
-        })
+        });
+
+        posts = posts.length > 0 ? posts : "You haven't made any posts yet.";
 
         return (
             <div className="MyPostsWrapper">

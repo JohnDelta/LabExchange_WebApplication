@@ -11,7 +11,7 @@ class Classes extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "LabClasses": []
+            "labClassesAndLabs": []
         };
 
         this.openClass = this.openClass.bind(this);
@@ -53,7 +53,7 @@ class Classes extends React.Component {
 
                     if(res.status === 200) {
                         this.setState({
-                            LabClasses: res.body
+                            labClassesAndLabs: res.body
                         });
                     }
 
@@ -67,29 +67,31 @@ class Classes extends React.Component {
 
     render() {
 
-        var classes = this.state.LabClasses.map((classMap) => {
+        var classes = this.state.labClassesAndLabs.map((labClassAndLab) => {
             return (
                 <div 
                     className="tile cancelEvents" 
                     onClick={this.openClass} 
-                    id={classMap.labClass.labClassId} 
-                    key={"classes_lab_"+classMap.labClass.labClassId}
+                    id={labClassAndLab.labClass.labClassId} 
+                    key={"classes_lab_"+labClassAndLab.labClass.labClassId}
                     style={{"cursor":"pointer"}}
                 >
-                    <div className="tile-header">{classMap.labClass.name}</div>
+                    <div className="tile-header">{labClassAndLab.labClass.name}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Assigned Lab</div>
-                            <div className="tile-info-body">{classMap.lab.name}</div>
+                            <div className="tile-info-body">{labClassAndLab.lab.name}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">Open for registrations</div>
-                            <div className="tile-info-body">{(classMap.labClass.openForRegistrations) ? ("Open") : ("Closed") }</div>
+                            <div className="tile-info-body">{(labClassAndLab.labClass.openForRegistrations) ? ("Open") : ("Closed") }</div>
                         </div>
                     </div>
                 </div>
             );
-        })
+        });
+
+        classes = classes.length > 0 ? classes : "There aren't any classes in your account yet.";
 
         return (
             <div className="ClassesWrapper">

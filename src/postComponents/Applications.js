@@ -7,37 +7,49 @@ class Applications extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "applications": [
-                {
-                    "applicationId": 0,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "class": "Data Structures (CTE-0010)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "",
-                },
-                {
-                    "applicationId": 1,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "class": "Data Structures (CTE-0010)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "",
-                },
-                {
-                    "applicationId": 2,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "class": "Data Structures (CTE-0010)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "",
-                },
-                {
-                    "applicationId": 3,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "class": "Data Structures (CTE-0010)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "",
-                },
-            ]
+            "applications": []
         };
+        this.loadApplications = this.loadApplications.bind(this);
+    }
+
+    componentDidMount() {
+        
+        this.loadApplications();
+    
+    }
+
+    async loadApplications() {
+
+        var url = "http://localhost:8083/posts/applications/get/by/me"
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:""}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    if(res.status === 200) {
+                        this.setState({
+                            myPosts: res.body
+                        });
+                    }
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
     }
 
     render() {
@@ -49,15 +61,15 @@ class Applications extends React.Component {
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Class</div>
-                            <div className="tile-info-body">{application.class}</div>
+                            <div className="tile-info-body">{application.post.labClass.name}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">Exchanging</div>
-                            <div className="tile-info-body">{application.assignedLab}</div>
+                            <div className="tile-info-body">{application.post.providedLab.name}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(application.requestedLab === "") ? ("Any choice") : application.requestedLab }</div>
+                            <div className="tile-info-body">{(application.post.requestedLab.name === "") ? ("Any choice") : application.post.requestedLab.name }</div>
                         </div>
                         <div className="tile-buttons">
                             <button>Message</button>
@@ -66,7 +78,9 @@ class Applications extends React.Component {
                     </div>
                 </div>
             );
-        })
+        });
+
+        applications = applications.length > 0 ? applications : "You haven't made any applications yet.";
 
         return (
             <div className="ApplicationsWrapper">

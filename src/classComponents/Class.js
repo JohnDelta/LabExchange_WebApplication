@@ -69,7 +69,7 @@ class Class extends React.Component {
 
     async loadPosts() {
 
-        var url = "http://localhost:8084/posts/get/by/class"
+        var url = "http://localhost:8083/posts/get/by/class"
 
         try {
 
@@ -127,7 +127,9 @@ class Class extends React.Component {
                     </div>
                 </div>
             );
-        })
+        });
+
+        posts = posts.length > 0 ? posts : "There aren't any lab exchange posts for this class yet.";
 
         return (
             <div className="ClassWrapper">
@@ -144,7 +146,7 @@ class Class extends React.Component {
                         </div>
                         <div className="class-body">
                             <div className="class-info">
-                                <div className="class-info-header">Assigned Lab : {this.state.labClassAndLab.labClass.labClassId}</div>
+                                <div className="class-info-header">Assigned Lab:</div>
                                 <div className="class-info-body">{this.state.labClassAndLab.lab.name}</div>
                             </div>
                             <div className="class-info">

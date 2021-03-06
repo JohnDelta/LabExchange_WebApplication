@@ -1,7 +1,7 @@
 class BasicModels {
 
     static getLabClassAndLabModel() {
-        return new {
+        return {
             "labClass": {
                 "labClassId": 0,
                 "name": "",
@@ -15,7 +15,7 @@ class BasicModels {
     }
 
     static getLabClassModel() {
-        return new {
+        return {
             "labClassId": 0,
             "name": "",
             "openForRegistrations": false
