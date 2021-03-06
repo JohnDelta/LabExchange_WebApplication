@@ -1,6 +1,7 @@
 import React from 'react';
 import './Class.css';
 import Header from '../UIComponents/Header.js';
+import BasicModels from '../Models/BasicModels.js';
 
 import {
     Link
@@ -11,51 +12,12 @@ class Class extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "labClassAndLab": {
-                "labClass": {
-                    "labClassId": 0,
-                    "name": "",
-                    "openForRegistrations": false
-                },
-                "lab": {
-                    "labId": 0,
-                    "name": "",
-                    "labClass": {}
-                }
-            },
-            "posts": [
-                {
-                    "postId": 0,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "",
-                    "hasApplied": false
-                },
-                {
-                    "postId": 1,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "TR2 (Thurday 15:00-16:00)",
-                    "hasApplied": false
-                },
-                {
-                    "postId": 2,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "assignedLab": "TR1 (Thurday 14:00-15:00)",
-                    "requestedLab": "",
-                    "hasApplied": false
-                },
-                {
-                    "postId": 3,
-                    "title": "IOANNIS DELIGIANNIS (CS151102)",
-                    "assignedLab": "TR3 (Thurday 14:00-15:00)",
-                    "requestedLab": "TR4 (Thurday 15:00-16:00)",
-                    "hasApplied": false
-                },
-            ]
+            "labClassAndLab": BasicModels.getLabClassAndLabModel(),
+            "posts": []
         };
 
         this.loadClass = this.loadClass.bind(this);
+        this.loadPosts = this.loadPosts.bind(this);
     }
 
     componentDidMount() {
@@ -68,13 +30,10 @@ class Class extends React.Component {
 
         let id = this.props.match.params.id;
 
-        var url = "http://localhost:8083/classes/myClassAndLab/get"
+        var url = "http://localhost:8083/classes/get/class/by/me"
 
-        var labClassObject = {
-            "labClassId": id,
-            "name": "",
-            "openForRegistrations": false
-        };
+        var labClassObject = BasicModels.getLabClassModel();
+        labClassObject.labClassId = id;
 
         try {
 
@@ -95,6 +54,42 @@ class Class extends React.Component {
                     if(res.status === 200 && res.body !== null) {
                         this.setState({
                             labClassAndLab: res.body
+                        }, () => {
+                            this.loadPosts();
+                        });
+                    }
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
+    async loadPosts() {
+
+        var url = "http://localhost:8084/posts/get/by/class"
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:this.state.labClassAndLab.labClass}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    if(res.status === 200 && res.body !== null) {
+                        this.setState({
+                            posts: res.body
                         });
                     }
 

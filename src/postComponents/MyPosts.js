@@ -103,6 +103,47 @@ class MyPosts extends React.Component {
             ]
         };
         this.toggleCollapsible = this.toggleCollapsible.bind(this);
+        this.loadMyPosts = this.loadMyPosts.bind(this);
+    }
+
+    componentDidMount() {
+
+        this.loadMyPosts();
+
+    }
+
+     async loadMyPosts() {
+
+        var url = "http://localhost:8083/posts/get/by/me"
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:""}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    if(res.status === 200) {
+                        this.setState({
+                            myPosts: res.body
+                        });
+                    }
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
     }
 
     toggleCollapsible(e) {

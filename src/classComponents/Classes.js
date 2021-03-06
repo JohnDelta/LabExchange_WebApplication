@@ -11,7 +11,7 @@ class Classes extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "classes": []
+            "LabClasses": []
         };
 
         this.openClass = this.openClass.bind(this);
@@ -33,7 +33,7 @@ class Classes extends React.Component {
 
     async loadUserClasses() {
 
-        var url = "http://localhost:8083/classes/myClassesAndLabs/get"
+        var url = "http://localhost:8083/classes/get/by/me"
 
         try {
 
@@ -53,7 +53,7 @@ class Classes extends React.Component {
 
                     if(res.status === 200) {
                         this.setState({
-                            classes: res.body
+                            LabClasses: res.body
                         });
                     }
 
@@ -67,7 +67,7 @@ class Classes extends React.Component {
 
     render() {
 
-        var classes = this.state.classes.map((classMap) => {
+        var classes = this.state.LabClasses.map((classMap) => {
             return (
                 <div 
                     className="tile cancelEvents" 
