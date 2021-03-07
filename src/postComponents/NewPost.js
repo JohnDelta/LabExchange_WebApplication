@@ -14,10 +14,14 @@ class NewPost extends React.Component {
         this.state = {
             "labClassId": this.props.match.params.link.split("-")[1],
             "labClassesAndLabs": [],
-            "providedLab": ""
+            "providedLab": "",
+            "labs": [],
+            "message": ""
         };
         this.loadUserClasses = this.loadUserClasses.bind(this);
         this.loadUserLab = this.loadUserLab.bind(this);
+        this.loadLabClassLabs = this.loadLabClassLabs.bind(this);
+        this.createPost = this.createPost.bind(this);
     }
 
     componentDidMount() {
@@ -93,6 +97,7 @@ class NewPost extends React.Component {
                             if (this.state.labClassId !== "" && typeof this.state.labClassId !== "undefined") {
                                 el.value = this.state.labClassId;
                             }
+                            this.loadLabClassLabs();
                         });
                     }
 
@@ -101,6 +106,96 @@ class NewPost extends React.Component {
             } else {}
 
         } catch (error) {console.log(error);}
+
+    }
+
+    async loadLabClassLabs() {
+
+        var url = "http://localhost:8083/classes/get/labs/by/class";
+
+        var labClassObject = BasicModels.getLabClassModel();
+        var el = document.getElementById("labClassDropdown");
+        labClassObject.labClassId = el.value;
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:labClassObject}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    if(res.status === 200) {
+                        this.setState({
+                            labs: res.body
+                        });
+                    }
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
+    async createPost() {
+        
+        let readyToSend = true;
+
+        var labClassDropdown = document.getElementById("labClassDropdown");
+        var labDropdown = document.getElementById("requestedLabDropdown");
+
+        if (labClassDropdown.value === "-1" || labDropdown.value === "-1" || this.state.providedLab === "" || typeof this.state.providedLab === "undefined") {
+            readyToSend = false;
+        }
+
+        if(readyToSend) {
+    
+            let post = BasicModels.getPostModel();
+            post.providedLab.labId = this.state.providedLab.labId;
+            post.requestedLab.labId = labDropdown.value;
+            post.labClass.labClassId = labClassDropdown.value;
+    
+            var url = "http://localhost:8083/posts/new";
+    
+            try {
+    
+                const response = await fetch(url, {
+                    method: 'POST',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                    },
+                    body: JSON.stringify({body:post}),
+                });
+    
+                if(response.status === 200) {
+    
+                    response.json().then((res) => {
+    
+                        if(res.status === 200) {
+                            this.setState({
+                                message: "Post created!"
+                            });
+                        }
+    
+                    });
+                
+                } else {}
+    
+            } catch (error) {console.log(error);}
+
+        }
 
     }
 
@@ -114,13 +209,23 @@ class NewPost extends React.Component {
             );
         });
 
-        labClassOptions = labClassOptions.length > 0 ? labClassOptions : <option>No Classes</option>;
+        labClassOptions = labClassOptions.length > 0 ? labClassOptions : <option value="-1">No Classes</option>;
 
         let title = "New post";
 
         let labClassAndLab = this.state.labClassesAndLabs.filter(labClassAndLab => labClassAndLab.labClass.labClassId === this.state.labClassId);
     
         title += (labClassAndLab.length > 0 ? (": " + labClassAndLab[0].labClass.name) : "");
+
+        let labOptions = this.state.labs.map((lab, index) => {
+            if (lab.labId !== this.state.providedLab.labId) {
+                return (
+                    <option key={"labs_"+lab.labId+index} value={lab.labId}>{lab.name}</option>
+                );
+            } else return null;
+        });
+        
+        labOptions = labOptions.length > 0 ? labOptions : <option value="-1">No labs for this class</option>;
 
         return (
             <div className="NewPostWrapper">
@@ -138,6 +243,10 @@ class NewPost extends React.Component {
                         <div className="NewPost-body">
                             
                             <div className="row">
+                                <p className="text">{this.state.message}</p>
+                            </div>
+
+                            <div className="row">
                                 <p className="text">Post for Class</p>
                                 <i className="fa fa-angle-right" />
                                 <select className="dropdown" id="labClassDropdown" onChange={this.loadUserLab} >
@@ -154,13 +263,13 @@ class NewPost extends React.Component {
                             <div className="row">
                                 <p className="text">Looking for Lab</p>
                                 <i className="fa fa-angle-right" />
-                                <select className="dropdown">
-                                    <option>C++</option>
+                                <select className="dropdown" id="requestedLabDropdown" >
+                                    {labOptions}
                                 </select>
                             </div>
 
                             <div className="row">
-                                <button>Create</button>
+                                <button onClick={this.createPost}>Create</button>
                             </div>
 
                         </div>

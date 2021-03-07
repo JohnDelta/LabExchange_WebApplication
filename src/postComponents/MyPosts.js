@@ -1,6 +1,7 @@
 import React from 'react';
 import './MyPosts.css';
 import Header from '../UIComponents/Header.js';
+import BasicModels from '../Models/BasicModels.js';
 
 class MyPosts extends React.Component {
 
@@ -11,6 +12,7 @@ class MyPosts extends React.Component {
         };
         this.toggleCollapsible = this.toggleCollapsible.bind(this);
         this.loadMyPosts = this.loadMyPosts.bind(this);
+        this.removePost = this.removePost.bind(this);
     }
 
     componentDidMount() {
@@ -21,7 +23,7 @@ class MyPosts extends React.Component {
 
      async loadMyPosts() {
 
-        var url = "http://localhost:8083/posts/get/by/me"
+        var url = "http://localhost:8083/posts/get/by/me";
 
         try {
 
@@ -53,6 +55,43 @@ class MyPosts extends React.Component {
 
     }
 
+    async removePost(e) {
+
+        var url = "http://localhost:8083/posts/remove";
+
+        let postId = e.target.id;
+
+        let post = BasicModels.getPostModel();
+        post.postId = postId;
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:post}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    if(res.status === 200) {
+                        this.loadMyPosts();
+                    }
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
     toggleCollapsible(e) {
         e.target.classList.toggle("open-tile-list-button");
         e.target.nextElementSibling.classList.toggle("close-tile-list-body");
@@ -60,7 +99,7 @@ class MyPosts extends React.Component {
 
     render() {
 
-        var posts = this.state.myPosts.map((post) => {
+        var posts = this.state.myPosts.map((post, index) => {
             var applications = post.applications.map((application) => {
                 return (
                     <div className="tile-list-row" key={"class_tile_application_key"+application.applicationId+post.postId}>
@@ -73,20 +112,26 @@ class MyPosts extends React.Component {
                 );
             });
 
+            applications = applications.length > 0 ? applications : "You don't have applications for this post yet.";
+
             return (
-                <div className="tile oneRow" id={post.postId} key={"class_tile_key"+post.postId}>
-                    <div className="tile-header">{post.title}</div>
+                <div className="tile oneRow" id={"timeonerow_"+post.postId+index} key={"class_tile_key"+post.postId}>
+                    <div className="tile-header">
+                        <div>{post.labClass.name}</div>
+                        <button id={post.postId} onClick={this.removePost}><i className="fa fa-times" /></button>
+                    </div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Exchanging</div>
-                            <div className="tile-info-body">{post.providedLab}</div>
+                            <div className="tile-info-body">{post.providedLab.name}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(post.requestedLab === "") ? ("Any choice") : post.requestedLab }</div>
+                            <div className="tile-info-body">{(post.requestedLab === "" || typeof post.requestedLab === "undefined") ? ("Any choice") : post.requestedLab.name }</div>
                         </div>
                         <div className="tile-list">
                             <div className="tile-list-button" onClick={this.toggleCollapsible}>
+                                <div className="tile-list-numberOfApplications">{ typeof applications === "string" ? <div>0</div> : <div>applications.length</div> }</div>
                                 <div>Applications</div>
                                 <i className="fa fa-angle-right"></i>
                             </div>

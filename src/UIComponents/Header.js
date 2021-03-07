@@ -150,7 +150,7 @@ class Header extends React.Component {
 
                     <div className="upper">
                         <div className="title">
-                            <span>LabExchange</span>
+                            <span>LabExchange ({localStorage.getItem("username")})</span>
                         </div>
 
                         <button className="back-button" onClick={() => {Authentication.logout(this.props.history);}} >

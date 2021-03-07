@@ -57,7 +57,7 @@ class Applications extends React.Component {
         var applications = this.state.applications.map((application) => {
             return (
                 <div className="tile" id={application.applicationId} key={"class_tile_key"+application.applicationId}>
-                    <div className="tile-header">{application.title}</div>
+                    <div className="tile-header">{application.post.labClass.name}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Class</div>
@@ -69,7 +69,7 @@ class Applications extends React.Component {
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(application.post.requestedLab.name === "") ? ("Any choice") : application.post.requestedLab.name }</div>
+                            <div className="tile-info-body">{(application.post.requestedLab.name === "" || typeof application.post.requestedLab === "undefined") ? ("Any choice") : application.post.requestedLab.name }</div>
                         </div>
                         <div className="tile-buttons">
                             <button>Message</button>

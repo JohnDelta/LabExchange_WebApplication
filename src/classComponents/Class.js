@@ -18,6 +18,7 @@ class Class extends React.Component {
 
         this.loadClass = this.loadClass.bind(this);
         this.loadPosts = this.loadPosts.bind(this);
+        this.applyToPost = this.applyToPost.bind(this);
     }
 
     componentDidMount() {
@@ -101,28 +102,69 @@ class Class extends React.Component {
 
     }
 
+    async applyToPost(e) {
+
+        var url = "http://localhost:8083/posts/applications/new";
+
+        let postId = e.target.id;
+
+        let post = BasicModels.getPostModel();
+        post.postId = postId;
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:post}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    if(res.status === 200) {
+                        this.loadPosts();
+                    }
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
     render() {
 
-        var posts = this.state.posts.map((post) => {
+        var postsWithoutMine = this.state.posts.filter((post) => post.username !== localStorage.getItem("username"));
+
+        var postsWithoutTheApplied = postsWithoutMine.filter((post) => post.applications.filter(application => application.user.username !== localStorage.getItem("username")));
+
+        var posts = postsWithoutTheApplied.map((post) => {
 
             let applyButtonCss = (post.requestedLab !== this.state.labClassAndLab.lab.name &&
                 post.requestedLab !== "" && post.assignedLab === this.state.labClassAndLab.lab.name) ? "inactiveButton" : "";
 
             return (
-                <div className="tile" id={post.postId} key={"class_tile_key"+post.postId}>
-                    <div className="tile-header">{post.title}</div>
+                <div className="tile" id={"tile_"+post.postId} key={"class_tile_key"+post.postId}>
+                    <div className="tile-header">{post.username}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Exchanging</div>
-                            <div className="tile-info-body">{post.assignedLab}</div>
+                            <div className="tile-info-body">{post.providedLab.name}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(post.requestedLab === "") ? ("Any choice") : post.requestedLab }</div>
+                            <div className="tile-info-body">{(post.requestedLab === "" || typeof post.requestedLab === "undefined") ? ("Any choice") : post.requestedLab.name }</div>
                         </div>
                         <div className="tile-buttons">
                             <button>Message</button>
-                            <button className={applyButtonCss} >Apply</button>
+                            <button className={applyButtonCss} onClick={this.applyToPost} id={post.postId} >Apply</button>
                         </div>
                     </div>
                 </div>

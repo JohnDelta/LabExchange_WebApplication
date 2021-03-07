@@ -66,8 +66,27 @@
 }
 
 .tiles .tile-header {
-    font-size: 18px;
     padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 18px;
+    color: #627aaf;
+}
+
+.tiles .tile-header * {
+    font-size: 18px;
+    color: #627aaf;
+}
+
+.tiles .tile-header button {
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.tiles .tile-header button i {
+    font-size: 18px;
     color: #627aaf;
 }
 
@@ -135,7 +154,6 @@
 }
 
 .tiles .tile-list-row-title {
-
 }
 
 .tiles .tile-list-row-body {
@@ -158,7 +176,6 @@
     border-radius: 10px;
     cursor: pointer;
     background-color: #627aaf;
-    transition-duration: 0.4s;
 }
 
 .open-tile-list-button {
@@ -187,7 +204,23 @@
     max-height: 150px;
     gap: 5px;
     overflow-y: scroll;
-    transition-duration: 0.4s;
+}
+
+.tiles .tile-list-numberOfApplications {
+    min-height: 20px;
+    min-width: 20px;
+    background-color: #e3e3e3;
+    border-radius: 50%;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tiles .tile-list-numberOfApplications div {
+    text-align: center;
+    color: #627aaf !important;
+    font-weight: 500;
 }
 
 .close-tile-list-body {
