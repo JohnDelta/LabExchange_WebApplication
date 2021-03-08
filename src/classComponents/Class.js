@@ -13,7 +13,7 @@ class Class extends React.Component {
         super(props);
         this.state = {
             "labClassAndLab": BasicModels.getLabClassAndLabModel(),
-            "posts": []
+            "postsAndApplications": []
         };
 
         this.loadClass = this.loadClass.bind(this);
@@ -90,7 +90,7 @@ class Class extends React.Component {
 
                     if(res.status === 200 && res.body !== null) {
                         this.setState({
-                            posts: res.body
+                            postsAndApplications: res.body
                         });
                     }
 
@@ -141,30 +141,40 @@ class Class extends React.Component {
 
     render() {
 
-        var postsWithoutMine = this.state.posts.filter((post) => post.username !== localStorage.getItem("username"));
+        var postsWithoutMine = this.state.postsAndApplications.filter((postAndApplications) => postAndApplications.post.username !== localStorage.getItem("username"));
+        var postsWithoutMyApplied = [];
+        postsWithoutMine.forEach(postWithoutMine => {
+            if (postWithoutMine.applications.length > 0) {
+                postWithoutMine.applications.forEach(application => {
+                    if (application.user.username !== localStorage.getItem("username")) {
+                        postsWithoutMyApplied.push(postWithoutMine);
+                    }
+                });
+            } else {
+                postsWithoutMyApplied.push(postWithoutMine);
+            }
+        });
 
-        var postsWithoutTheApplied = postsWithoutMine.filter((post) => post.applications.filter(application => application.user.username !== localStorage.getItem("username")));
+        var posts = postsWithoutMyApplied.map((postAndApplication) => {
 
-        var posts = postsWithoutTheApplied.map((post) => {
-
-            let applyButtonCss = (post.requestedLab !== this.state.labClassAndLab.lab.name &&
-                post.requestedLab !== "" && post.assignedLab === this.state.labClassAndLab.lab.name) ? "inactiveButton" : "";
+            let applyButtonCss = (postAndApplication.post.requestedLab !== this.state.labClassAndLab.lab.name &&
+                postAndApplication.post.requestedLab !== "" && postAndApplication.post.assignedLab === this.state.labClassAndLab.lab.name) ? "inactiveButton" : "";
 
             return (
-                <div className="tile" id={"tile_"+post.postId} key={"class_tile_key"+post.postId}>
-                    <div className="tile-header">{post.username}</div>
+                <div className="tile" id={"tile_"+postAndApplication.post.postId} key={"class_tile_key"+postAndApplication.post.postId}>
+                    <div className="tile-header">{postAndApplication.post.username}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Exchanging</div>
-                            <div className="tile-info-body">{post.providedLab.name}</div>
+                            <div className="tile-info-body">{postAndApplication.post.providedLab.name}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(post.requestedLab === "" || typeof post.requestedLab === "undefined") ? ("Any choice") : post.requestedLab.name }</div>
+                            <div className="tile-info-body">{(postAndApplication.post.requestedLab === "" || typeof postAndApplication.post.requestedLab === "undefined") ? ("Any choice") : postAndApplication.post.requestedLab.name }</div>
                         </div>
                         <div className="tile-buttons">
                             <button>Message</button>
-                            <button className={applyButtonCss} onClick={this.applyToPost} id={post.postId} >Apply</button>
+                            <button className={applyButtonCss} onClick={this.applyToPost} id={postAndApplication.post.postId} >Apply</button>
                         </div>
                     </div>
                 </div>

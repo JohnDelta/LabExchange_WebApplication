@@ -1,6 +1,7 @@
 import React from 'react';
 import './Applications.css';
 import Header from '../UIComponents/Header.js';
+import BasicModels from '../Models/BasicModels.js';
 
 class Applications extends React.Component {
 
@@ -10,6 +11,7 @@ class Applications extends React.Component {
             "applications": []
         };
         this.loadApplications = this.loadApplications.bind(this);
+        this.removeApplication = this.removeApplication.bind(this);
     }
 
     componentDidMount() {
@@ -40,8 +42,45 @@ class Applications extends React.Component {
 
                     if(res.status === 200) {
                         this.setState({
-                            myPosts: res.body
+                            applications: res.body
                         });
+                    }
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
+    async removeApplication(e) {
+
+        var url = "http://localhost:8083/posts/applications/remove";
+
+        let applicationid = e.target.id;
+
+        let application = BasicModels.getApplicationModel();
+        application.applicationId = applicationid;
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:application}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    if(res.status === 200) {
+                        this.loadApplications();
                     }
 
                 });
@@ -54,9 +93,9 @@ class Applications extends React.Component {
 
     render() {
 
-        var applications = this.state.applications.map((application) => {
+        var applications = this.state.applications.map((application, index) => {
             return (
-                <div className="tile" id={application.applicationId} key={"class_tile_key"+application.applicationId}>
+                <div className="tile" id={"application" + application.applicationId + index} key={"class_tile_key" + application.applicationId + index}>
                     <div className="tile-header">{application.post.labClass.name}</div>
                     <div className="tile-body">
                         <div className="tile-info">
@@ -73,7 +112,7 @@ class Applications extends React.Component {
                         </div>
                         <div className="tile-buttons">
                             <button>Message</button>
-                            <button>Cancel Application</button>
+                            <button id={application.applicationId} onClick={this.removeApplication} >Cancel Application</button>
                         </div>
                     </div>
                 </div>

@@ -35,4 +35,18 @@ class BasicModels {
         };
     }
 
+    static getApplicationModel() {
+        return {
+            "applicationId": 0,
+            "timestamp": 0,
+            "user": {
+                "username": "",
+                "name": "",
+                "lastname": "",
+                "userId": ""
+            },
+            "post": this.getPostModel()
+        };
+    }
+
 } export default BasicModels;

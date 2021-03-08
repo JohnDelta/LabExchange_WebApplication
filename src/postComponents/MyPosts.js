@@ -8,7 +8,7 @@ class MyPosts extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "myPosts": []
+            "postsAndApplications": []
         };
         this.toggleCollapsible = this.toggleCollapsible.bind(this);
         this.loadMyPosts = this.loadMyPosts.bind(this);
@@ -43,7 +43,7 @@ class MyPosts extends React.Component {
 
                     if(res.status === 200) {
                         this.setState({
-                            myPosts: res.body
+                            postsAndApplications: res.body
                         });
                     }
 
@@ -99,10 +99,10 @@ class MyPosts extends React.Component {
 
     render() {
 
-        var posts = this.state.myPosts.map((post, index) => {
-            var applications = post.applications.map((application) => {
+        var posts = this.state.postsAndApplications.map((postAndApplication, index) => {
+            var applications = postAndApplication.applications.map((application) => {
                 return (
-                    <div className="tile-list-row" key={"class_tile_application_key"+application.applicationId+post.postId}>
+                    <div className="tile-list-row" key={"class_tile_application_key"+application.applicationId+postAndApplication.post.postId}>
                         <div className="tile-list-row-title">{application.user.username}</div>
                         <div className="tile-list-row-body">
                             <button>Message</button>
@@ -115,23 +115,23 @@ class MyPosts extends React.Component {
             applications = applications.length > 0 ? applications : "You don't have applications for this post yet.";
 
             return (
-                <div className="tile oneRow" id={"timeonerow_"+post.postId+index} key={"class_tile_key"+post.postId}>
+                <div className="tile oneRow" id={"timeonerow_"+postAndApplication.post.postId+index} key={"class_tile_key"+postAndApplication.post.postId}>
                     <div className="tile-header">
-                        <div>{post.labClass.name}</div>
-                        <button id={post.postId} onClick={this.removePost}><i className="fa fa-times" /></button>
+                        <div>{postAndApplication.post.labClass.name}</div>
+                        <button id={postAndApplication.post.postId} onClick={this.removePost}><i className="fa fa-times" /></button>
                     </div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Exchanging</div>
-                            <div className="tile-info-body">{post.providedLab.name}</div>
+                            <div className="tile-info-body">{postAndApplication.post.providedLab.name}</div>
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(post.requestedLab === "" || typeof post.requestedLab === "undefined") ? ("Any choice") : post.requestedLab.name }</div>
+                            <div className="tile-info-body">{(postAndApplication.post.requestedLab === "" || typeof postAndApplication.post.requestedLab === "undefined") ? ("Any choice") : postAndApplication.post.requestedLab.name }</div>
                         </div>
                         <div className="tile-list">
                             <div className="tile-list-button" onClick={this.toggleCollapsible}>
-                                <div className="tile-list-numberOfApplications">{ typeof applications === "string" ? <div>0</div> : <div>applications.length</div> }</div>
+                                <div className="tile-list-numberOfApplications">{ typeof postAndApplication.applications === "string" ? <div>0</div> : <div>{postAndApplication.applications.length}</div> }</div>
                                 <div>Applications</div>
                                 <i className="fa fa-angle-right"></i>
                             </div>
