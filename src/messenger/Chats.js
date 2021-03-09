@@ -11,7 +11,8 @@ class Chats extends React.Component {
         this.state = {
             conversations: [],
             conversationsInfoQueue: "",
-            client: null
+            client: null,
+            othersUsernameFromUrl: ""
         };
 
         this.getConversations = this.getConversations.bind(this);
@@ -20,18 +21,23 @@ class Chats extends React.Component {
         this.subscribeToConversationsInfoQueueCallback = this.subscribeToConversationsInfoQueueCallback.bind(this);
         this.disconnectFromQueue = this.disconnectFromQueue.bind(this);
         this.activeChat = this.activeChat.bind(this);
+        this.onChatClick = this.onChatClick.bind(this);
     }
 
     componentDidMount() {
-
         this.getConversations();
-
     }
 
     componentWillUnmount() {
-
         this.disconnectFromQueue();
-    
+    }
+
+    componentDidUpdate() {
+        if (this.state.othersUsernameFromUrl !== this.props.match.params.username) {
+            this.setState({
+                othersUsernameFromUrl: this.props.match.params.username
+            });
+        }
     }
 
     async getConversations() {
@@ -58,6 +64,7 @@ class Chats extends React.Component {
                         conversations: res.body
                     }, ()=> {
                         this.getConversationsInfoQueue();
+                        this.activeChat();
                     });
 
                 });
@@ -143,19 +150,15 @@ class Chats extends React.Component {
 
         var othersUsername = object.body;
 
-        // if the conversation with the other user isn't open notify user for the new message
-
         if(othersUsername !== this.props.activeOthersUsername) {
-
             this.getConversations();
-
         }
 
     }
 
     disconnectFromQueue() {
 
-        if(this.state.client !== null && this.state.client !== undefined) {
+        if(this.state.client !== null && typeof this.state.client !== "undefined") {
             this.state.client.disconnect(()=>{
                 console.log("disconected");
             });    
@@ -163,14 +166,20 @@ class Chats extends React.Component {
 
     }
 
-    activeChat(e) {
-        
-        var args = e.target.id.split("_");
-        var index = args[1];
+    activeChat() {
 
+        // sets the active conversation from url's username parameter
+
+        var conversationIndex = this.state.conversations.filter((conversation, index) => {
+            if (conversation.othersQueue.senderUsername === this.state.othersUsernameFromUrl) {
+                return index;
+            }
+        });
+        conversationIndex = (conversationIndex * 1) < 0 ? 0 : conversationIndex;
+        
         var conversations = this.state.conversations;
 
-        var chatroom = conversations[index];
+        var chatroom = conversations[conversationIndex];
 
         chatroom.received = true;
 
@@ -186,38 +195,38 @@ class Chats extends React.Component {
 
     }
 
+    onChatClick(e) {
+
+        var othersUsername = e.target.id.split("_")[1];
+        this.props.history.push("/messenger/"+othersUsername);
+
+        this.activeChat();
+
+    }
+
     render() {
 
-        var showChatsCss = "";
+        var showChatsCss = (this.props.showChats) ? "" : "showPanelFromLeft";
 
-        if(this.props.showChats) {
-            showChatsCss = "showPanelFromLeft";
-        }
+        var chats = this.state.conversations.map((conversation, index) => {
+
+            var newMessagesIcon = (!conversation.received) ? "" : <i className="fa fa-comment" />;
+            
+            return (
+                <div className="chat" key={"chats_index"+index}>
+                    <div className="title" 
+                        id={"conversations_"+conversation.othersQueue.senderUsername}
+                        onClick={this.onChatClick}>
+                            {conversation.othersQueue.senderUsername}
+                            {newMessagesIcon}
+                    </div>
+                </div>
+            );
+        });
+
+        chats = (chats.length > 0) ? chats : "No chats active";
 
         var chats = "No chats active";
-
-        if(this.state.conversations.length > 0) {
-            chats = [];
-            this.state.conversations.forEach((conv, index) => {
-
-                var newMessagesIcon = "";
-                if(conv.received === false) {
-                    newMessagesIcon = <i className="fa fa-comment" />;
-                }
-
-                chats.push(
-                    <div className="chat" key={"chats_index"+index}>
-                        <div className="title" 
-                            id={"conversations_"+index}
-                            onClick={this.activeChat}>
-                                {conv.othersQueue.senderUsername}
-                                {newMessagesIcon}
-                        </div>
-                    </div>
-                );
-
-            });
-        }
 
         return(
             <div className={"Chats hidePanelToLeft " + showChatsCss}>
@@ -230,9 +239,7 @@ class Chats extends React.Component {
                 </div>
 
                 <div className="container">
-
                     {chats}
-
                 </div>
 
             </div>

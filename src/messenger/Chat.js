@@ -63,9 +63,7 @@ class Chat extends React.Component {
     }
 
     componentWillUnmount() {
-
         this.disconnectFromQueue();
-
     }
 
     async getConversation() {
@@ -290,39 +288,21 @@ class Chat extends React.Component {
 
     render() {
 
-        var conversation = "Select a user to chat with";
-
-        if(this.props.activeChatGet.activeChatOthersUsername !== "") {
-            
-            conversation = "Write a message to " + this.props.activeChatGet.activeChatOthersUsername + "!";
-            
-        }
-
-        if(this.state.conversation.length > 0) {
-
-            conversation = [];
-
-            this.state.conversation.forEach((message, index) => {
-
-                var receiveOrSendCss = "sended";
-                if(message.queueId === this.props.activeChatGet.activeChatMyQueue) {
-                    receiveOrSendCss = "received";
-                }
-
-                conversation.push(
-                    <div className={"message-body "+receiveOrSendCss} key={"chat_conversation_"+index}>
-                        <div className={"message "+receiveOrSendCss}>
-                            {message.message}
-                        </div>
-                        <div className="info">
-                            {this.dateSince(message.timestamp)}
-                        </div>
+        var conversation = this.state.conversation.map((message, index) => {
+            var receiveOrSendCss = (message.queueId === this.props.activeChatGet.activeChatMyQueue) ? "sended" : "received";
+            return (
+                <div className={"message-body "+receiveOrSendCss} key={"chat_conversation_"+index}>
+                    <div className={"message "+receiveOrSendCss}>
+                        {message.message}
                     </div>
-                );
+                    <div className="info">
+                        {this.dateSince(message.timestamp)}
+                    </div>
+                </div>
+            );
+        });
 
-            });
-
-        }
+        conversation = conversation.length > 0 ? conversation : "Write a message to " + this.props.activeChatGet.activeChatOthersUsername + "!";
 
         return(
             <div className="Chat">
@@ -337,9 +317,7 @@ class Chat extends React.Component {
                 <div className="container">
 
                     <div className="chat" id="chatContainer">
-                        
                         {conversation}
-
                     </div>
 
                     <div className="keyboard">

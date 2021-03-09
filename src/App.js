@@ -75,7 +75,7 @@ class App extends React.Component {
           
             <ProtectedRoute
               exact
-              path="/messenger"
+              path="/messenger/:username?"
               component={Messenger}
             />
 

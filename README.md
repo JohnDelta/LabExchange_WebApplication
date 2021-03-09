@@ -6,11 +6,7 @@
 - npm i @stomp/stompjs
 
 
-- applications must have posts inside only. not the posts too.
-
-- show applications, add remove option
-
-- go to messenger, make it take parameter from url too, and if it has it fetch the rest of the info you want.
+- make messenger service to create initial conversation with someone to talk too ONLY QUEUE NO DB.
 
 - fix the message buttons to open the messenger with the contact. you need to create a queue between the users. nothing else.
 even if its empty klain.
