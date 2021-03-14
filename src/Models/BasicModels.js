@@ -49,4 +49,30 @@ class BasicModels {
         };
     }
 
+    static getMessageModel() {
+        return {
+            "messageId": "",
+            "chatroom": "",
+            "message": "",
+            "senderUser": "",
+            "timestamp": "",
+            "received": false
+        };
+    }
+
+    static getChatroomModel() {
+        return {
+            "chatroomId": "",
+            "users": [],
+            "chatroomName": ""
+        };
+    }
+
+    static getUserModel() {
+        return {
+            "username": "",
+            "received": false
+        };
+    }
+
 } export default BasicModels;

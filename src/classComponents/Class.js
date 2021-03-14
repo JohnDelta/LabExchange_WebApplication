@@ -19,12 +19,11 @@ class Class extends React.Component {
         this.loadClass = this.loadClass.bind(this);
         this.loadPosts = this.loadPosts.bind(this);
         this.applyToPost = this.applyToPost.bind(this);
+        this.openChatroom = this.openChatroom.bind(this);
     }
 
     componentDidMount() {
-        
         this.loadClass();
-
     }
 
     async loadClass() {
@@ -139,6 +138,14 @@ class Class extends React.Component {
 
     }
 
+    async openChatroom(e) {
+
+        var othersUsername = e.target.id.split("_")[2];
+
+        this.props.history.push("/messenger/" + othersUsername);
+
+    }
+
     render() {
 
         var postsWithoutMine = this.state.postsAndApplications.filter((postAndApplications) => postAndApplications.post.username !== localStorage.getItem("username"));
@@ -173,7 +180,7 @@ class Class extends React.Component {
                             <div className="tile-info-body">{(postAndApplication.post.requestedLab === "" || typeof postAndApplication.post.requestedLab === "undefined") ? ("Any choice") : postAndApplication.post.requestedLab.name }</div>
                         </div>
                         <div className="tile-buttons">
-                            <button>Message</button>
+                            <button onClick={this.openChatroom} id={"class_openchatroom_"+postAndApplication.post.username}>Message</button>
                             <button className={applyButtonCss} onClick={this.applyToPost} id={postAndApplication.post.postId} >Apply</button>
                         </div>
                     </div>

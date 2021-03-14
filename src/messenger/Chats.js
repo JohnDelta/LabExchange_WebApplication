@@ -3,46 +3,52 @@ import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import './Chats.css';
 
+import {withRouter} from 'react-router-dom';
+
 class Chats extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            conversations: [],
-            conversationsInfoQueue: "",
+            chatrooms: [],
+            chatroomsQueue: "",
             client: null,
-            othersUsernameFromUrl: ""
+            chatroomId: "",
+            activeChatroom: null
         };
 
-        this.getConversations = this.getConversations.bind(this);
-        this.getConversationsInfoQueue = this.getConversationsInfoQueue.bind(this);
-        this.subscribeToConversationsInfoQueue = this.subscribeToConversationsInfoQueue.bind(this);
-        this.subscribeToConversationsInfoQueueCallback = this.subscribeToConversationsInfoQueueCallback.bind(this);
+        this.getChatrooms = this.getChatrooms.bind(this);
+        this.getChatroomsQueue = this.getChatroomsQueue.bind(this);
+        this.subscribeToChatroomsQueue = this.subscribeToChatroomsQueue.bind(this);
+        this.subscribeToChatroomsQueueCallback = this.subscribeToChatroomsQueueCallback.bind(this);
         this.disconnectFromQueue = this.disconnectFromQueue.bind(this);
-        this.activeChat = this.activeChat.bind(this);
+        this.activateChat = this.activateChat.bind(this);
         this.onChatClick = this.onChatClick.bind(this);
+        this.initializeActiveChatroom = this.initializeActiveChatroom.bind(this);
+        this.isChatroomReceived = this.isChatroomReceived.bind(this);
+        this.chatroomReceived = this.chatroomReceived.bind(this);
     }
 
     componentDidMount() {
-        this.getConversations();
+        if (typeof this.props.match !== "undefined") {
+            this.setState({
+                chatroomId: this.props.match.params.username
+            }, () => {
+                this.initializeActiveChatroom();
+            });
+        } else {
+            this.getChatrooms();
+        }
     }
 
     componentWillUnmount() {
         this.disconnectFromQueue();
     }
 
-    componentDidUpdate() {
-        if (this.state.othersUsernameFromUrl !== this.props.match.params.username) {
-            this.setState({
-                othersUsernameFromUrl: this.props.match.params.username
-            });
-        }
-    }
+    async getChatrooms() {
 
-    async getConversations() {
-
-        var url = "http://localhost:8082/messenger/conversations"
+        var url = "http://localhost:8082/messenger/chatrooms";
 
         try {
 
@@ -59,46 +65,62 @@ class Chats extends React.Component {
             if(response.status === 200) {
 
                 response.json().then((res) => {
-
                     this.setState({
-                        conversations: res.body
-                    }, ()=> {
-                        this.getConversationsInfoQueue();
-                        this.activeChat();
-                    });
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
-
-    }
-
-    async getConversationsInfoQueue() {
-
-        var url = "http://localhost:8082/messenger/get-conversations-info-queue"
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:""}),
-            });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    this.setState({
-                        conversationsInfoQueue: res.body
+                        chatrooms: res.body
                     }, () => {
-                        this.subscribeToConversationsInfoQueue();
+
+                        this.getChatroomsQueue();
+                        
+                        if (typeof this.state.activeChatroom !== "undefined" && 
+                            this.state.activeChatroom !== null &&
+                            this.state.activeChatroom.chatroomId !== "") {
+
+                                let matchChatroom = this.state.chatrooms.filter(chatroom => {
+                                    chatroom.chatroomId === this.state.activeChatroom.chatroomId
+                                });
+
+                                if (matchChatroom === null || typeof matchChatroom === "undefined") {
+                                    var chatrooms = this.state.chatrooms;
+                                    chatrooms.push(this.state.activeChatroom);
+                                    this.setState({
+                                        chatrooms: chatrooms
+                                    });
+                                }
+                        }
+
+                    });
+                });
+
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
+    async getChatroomsQueue() {
+
+        var url = "http://localhost:8082/notifications/get/chatrooms-queue";
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:""}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    this.setState({
+                        chatroomsQueue: res.body
+                    }, () => {
+                        this.subscribeToChatroomsQueue();
                     });
 
                 });
@@ -109,7 +131,7 @@ class Chats extends React.Component {
 
     }
 
-    async subscribeToConversationsInfoQueue() {
+    async subscribeToChatroomsQueue() {
 
         var ws = new SockJS('http://localhost:8082/ws');
         var client = Stomp.over(ws);
@@ -120,15 +142,15 @@ class Chats extends React.Component {
           'X-Authorization': localStorage.getItem("jwt")
         };
 
-        if (this.state.conversationsInfoQueue !== "") {
+        if (this.state.chatroomsQueue !== "") {
 
             client.connect(
                 headers, 
                 () => {
 
                     var subscription = client.subscribe(
-                        "/queue/" + this.state.conversationsInfoQueue, 
-                        this.subscribeToConversationsInfoQueueCallback,
+                        "/queue/" + this.state.chatroomsQueue, 
+                        this.subscribeToChatroomsQueueCallback,
                         {'X-Authorization': localStorage.getItem("jwt")}
                     );
 
@@ -146,61 +168,111 @@ class Chats extends React.Component {
 
     }
 
-    subscribeToConversationsInfoQueueCallback(object) {
+    async chatroomReceived() {
 
-        var othersUsername = object.body;
-
-        if(othersUsername !== this.props.activeOthersUsername) {
-            this.getConversations();
+        if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
+            return;
         }
+
+        var url = "http://localhost:8083/messenger/chatroom-received";
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body: this.state.activeChatroom}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
 
     }
 
-    disconnectFromQueue() {
+    subscribeToChatroomsQueueCallback(object) {
+        var othersUsername = object.body;
+        this.getChatrooms();
+    }
 
+    disconnectFromQueue() {
         if(this.state.client !== null && typeof this.state.client !== "undefined") {
             this.state.client.disconnect(()=>{
                 console.log("disconected");
             });    
         }
-
     }
 
-    activeChat() {
+    activateChat() {
+        if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
+            return;
+        }
+        this.props.activeChatSet(this.state.activeChatroom);
+        this.chatroomReceived();
+    }
 
-        // sets the active conversation from url's username parameter
+    async initializeActiveChatroom() {
 
-        var conversationIndex = this.state.conversations.filter((conversation, index) => {
-            if (conversation.othersQueue.senderUsername === this.state.othersUsernameFromUrl) {
-                return index;
-            }
-        });
-        conversationIndex = (conversationIndex * 1) < 0 ? 0 : conversationIndex;
-        
-        var conversations = this.state.conversations;
+        if (typeof this.state.chatroomId === "undefined" || this.state.chatroomId === "") {
+            return;
+        }
 
-        var chatroom = conversations[conversationIndex];
+        var url = "http://localhost:8082/messenger/get/chatroom";
 
-        chatroom.received = true;
+        try {
 
-        var myQueue = chatroom.myQueue.queue;
-        var othersQueue = chatroom.othersQueue.queue;
-        var othersUsername = chatroom.othersQueue.senderUsername;
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:this.state.chatroomId}),
+            });
 
-        this.setState({
-            conversations: conversations
-        });
+            if(response.status === 200) {
 
-        this.props.activeChatSet(myQueue, othersQueue, othersUsername);
+                response.json().then((res) => {
+                    this.setState({
+                        activeChatroom: res.body
+                    }, () => {
+                        this.getChatrooms();
+                        this.activateChat();
+                    });
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
 
     }
 
     onChatClick(e) {
-
-        var othersUsername = e.target.id.split("_")[1];
+        var othersUsername = e.target.id.split("____")[1];
         this.props.history.push("/messenger/"+othersUsername);
+        this.activateChat();
+    }
 
-        this.activeChat();
+    isChatroomReceived(chatroom) {
+
+        let isReceived = false;
+        chatroom.users.forEach(user => {
+            if (user.received && user.username === localStorage.getItem("username")) {
+                isReceived = true;
+            }
+        });
+
+        return isReceived;
 
     }
 
@@ -208,31 +280,27 @@ class Chats extends React.Component {
 
         var showChatsCss = (this.props.showChats) ? "" : "showPanelFromLeft";
 
-        var chats = this.state.conversations.map((conversation, index) => {
-
-            var newMessagesIcon = (!conversation.received) ? "" : <i className="fa fa-comment" />;
-            
+        var chats = this.state.chatrooms.map((conversation, index) => {
+            var newMessagesIcon = (!this.isChatroomReceived(conversation)) ? "" : <i className="fa fa-comment" />;
             return (
                 <div className="chat" key={"chats_index"+index}>
                     <div className="title" 
-                        id={"conversations_"+conversation.othersQueue.senderUsername}
+                        id={"conversations____"+conversation.chatroomId}
                         onClick={this.onChatClick}>
-                            {conversation.othersQueue.senderUsername}
+                            {conversation.chatroomName}
                             {newMessagesIcon}
                     </div>
                 </div>
             );
         });
-
-        chats = (chats.length > 0) ? chats : "No chats active";
-
-        var chats = "No chats active";
+        
+        chats = (chats.length > 0) ? chats : "No Conversations Active";
 
         return(
             <div className={"Chats hidePanelToLeft " + showChatsCss}>
 
                 <div className="title">
-                    <p>Conversations</p>
+                    <p>chatrooms</p>
                     <button onClick={this.props.toggleChats} >
                         <i className="fa fa-times-circle" />
                     </button>
@@ -248,4 +316,4 @@ class Chats extends React.Component {
 
 }
 
-export default Chats;
+export default withRouter(Chats);

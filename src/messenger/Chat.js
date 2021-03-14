@@ -1,6 +1,7 @@
 import React from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
+import BasicModels from '../Models/BasicModels';
 import './Chat.css';
 
 class Chat extends React.Component {
@@ -9,19 +10,17 @@ class Chat extends React.Component {
         super();
 
         this.state = {
-            "activeChatGet": {
-                "activeChatOthersUsername": "",
-                "activeChatMyQueue": "",
-                "activeChatOthersQueue": ""
-            },
+            activeChatroom: null,
             conversation: [],
+            conversationQueue: "",
             message: "",
             chatClient: null
         };
 
         this.getConversation = this.getConversation.bind(this);
-        this.subscribeToConversation = this.subscribeToConversation.bind(this);
-        this.subscribeMyQueueCallback = this.subscribeMyQueueCallback.bind(this);
+        this.getConversationQueue = this.getConversationQueue.bind(this);
+        this.subscribeToConversationQueue = this.subscribeToConversationQueue.bind(this);
+        this.subscribeToConversationQueueCallback = this.subscribeToConversationQueueCallback.bind(this);
         this.disconnectFromQueue = this.disconnectFromQueue.bind(this);
         this.messageReceived = this.messageReceived.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
@@ -31,35 +30,23 @@ class Chat extends React.Component {
     }
 
     componentDidMount() {
-
-        if(this.state.activeChatGet.activeChatOthersUsername !== this.props.activeChatGet.activeChatOthersUsername) {
+        if(this.state.activeChatroom !== this.props.activeChatroom) {
             this.setState({
-                activeChatGet: {
-                    activeChatOthersUsername: this.props.activeChatGet.activeChatOthersUsername,
-                    activeChatMyQueue: this.props.activeChatGet.activeChatMyQueue,
-                    activeChatOthersQueue: this.props.activeChatGet.activeChatOthersQueue
-                }
+                activeChatroom: this.props.activeChatroom
             }, 
                 ()=>{this.getConversation()}
             );
         }
-
     }
 
     componentDidUpdate() {
-
-        if(this.state.activeChatGet.activeChatOthersUsername !== this.props.activeChatGet.activeChatOthersUsername) {
+        if(this.state.activeChatroom !== this.props.activeChatroom) {
             this.setState({
-                activeChat: {
-                    activeChatOthersUsername: this.props.activeChatGet.activeChatOthersUsername,
-                    activeChatMyQueue: this.props.activeChatGet.activeChatMyQueue,
-                    activeChatOthersQueue: this.props.activeChatGet.activeChatOthersQueue
-                }
+                activeChatroom: this.props.activeChatroom
             }, 
                 ()=>{this.getConversation()}
             );
         }
-
     }
 
     componentWillUnmount() {
@@ -67,6 +54,10 @@ class Chat extends React.Component {
     }
 
     async getConversation() {
+
+        if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
+            return;
+        }
 
         var url = "http://localhost:8082/messenger/conversation"
 
@@ -79,29 +70,19 @@ class Chat extends React.Component {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
-                body: JSON.stringify({body:this.props.activeChatGet.activeChatOthersUsername}),
+                body: JSON.stringify({body:this.state.activeChatroom}),
             });
 
             if(response.status === 200) {
 
                 response.json().then((res) => {
-
-                    var conversation = [];
-
-                    if (res.body !== null) {
-                        res.body.forEach((message) => {
-                            conversation.push(message);
-                        });
-                    }
-                    
                     this.setState({
-                        conversation: conversation
+                        conversation: res.body
                     }, () => {
-
                         this.chatFilter();
-
-                        this.subscribeToConversation();
-
+                        if (this.state.conversationQueue === "") {
+                            this.getConversationQueue();
+                        }
                     });
 
                 });
@@ -112,7 +93,41 @@ class Chat extends React.Component {
 
     }
 
-    async subscribeToConversation() {
+    async getConversationQueue() {
+
+        var url = "http://localhost:8082/notifications/get/conversation-queue";
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:""}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    this.setState({
+                        conversationQueue: res.body
+                    }, () => {
+                        this.subscribeToConversationQueue();
+                    });
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
+    async subscribeToConversationQueue() {
 
         var ws = new SockJS('http://localhost:8082/ws');
         var client = Stomp.over(ws);
@@ -128,8 +143,8 @@ class Chat extends React.Component {
             () => {
 
                 var subscription = client.subscribe(
-                    "/queue/" + this.state.activeChatGet.activeChatMyQueue, 
-                    this.subscribeMyQueueCallback,
+                    "/queue/" + this.state.conversationQueue, 
+                    this.subscribeToConversationQueueCallback,
                     {'X-Authorization': localStorage.getItem("jwt")}
                 );
 
@@ -145,43 +160,22 @@ class Chat extends React.Component {
 
     }
 
-    subscribeMyQueueCallback(object) {
-
+    subscribeToConversationQueueCallback(object) {
         var message = JSON.parse(object.body);
-
-        if(message.queueId === this.state.activeChatGet.activeChatMyQueue) {
-
-            this.messageReceived(message);
-
-            message.received = true;
-
-        }
-
-        var conversation = this.state.conversation;
-
-        conversation.push(message);
-
-        this.setState({
-            conversation: conversation
-        });
-
-        this.chatFilter();
-
+        this.getConversation();
     }
 
     disconnectFromQueue() {
-
         if(this.state.client !== null && this.state.client !== undefined) {
             this.state.client.disconnect(()=>{
                 console.log("disconected");
             });    
         }
-
     }
 
     async messageReceived(message) {
 
-        var url = "http://localhost:8082/messenger/message-received"
+        let url = "http://localhost:8083/messenger/message-received"
 
         try {
 
@@ -205,12 +199,11 @@ class Chat extends React.Component {
 
     async sendMessage() {
 
-        var url = "http://localhost:8082/messenger/message"
+        let url = "http://localhost:8083/messenger/message";
 
-        var body = {
-            "receiverUsername": this.props.activeChatGet.activeChatOthersUsername,
-            "message": this.state.message
-        };
+        let body = BasicModels.getMessageModel();
+        body.chatroom = this.state.activeChatroom;
+        body.message = this.state.message;
 
         try {
 
@@ -225,13 +218,7 @@ class Chat extends React.Component {
             });
 
             if(response.status === 200) {
-
-                this.setState({
-                    message: ""
-                });
-
-                this.chatFilter();
-
+                this.getConversation();
             }
 
         } catch (error) {console.log(error);}
@@ -289,7 +276,7 @@ class Chat extends React.Component {
     render() {
 
         var conversation = this.state.conversation.map((message, index) => {
-            var receiveOrSendCss = (message.queueId === this.props.activeChatGet.activeChatMyQueue) ? "sended" : "received";
+            var receiveOrSendCss = (message.senderUser.username === localStorage.getItem("username")) ? "sended" : "received";
             return (
                 <div className={"message-body "+receiveOrSendCss} key={"chat_conversation_"+index}>
                     <div className={"message "+receiveOrSendCss}>
@@ -302,7 +289,9 @@ class Chat extends React.Component {
             );
         });
 
-        conversation = conversation.length > 0 ? conversation : "Write a message to " + this.props.activeChatGet.activeChatOthersUsername + "!";
+        conversation = conversation.length > 0 ? conversation : "Say Hello!";
+
+        conversation = (this.state.activeChatroom.activeChatOthersQueue === "") ? "No conversations available" : conversation;
 
         return(
             <div className="Chat">
@@ -311,7 +300,7 @@ class Chat extends React.Component {
                     <button onClick={this.props.toggleChats} >
                         <i className="fa fa-users" />
                     </button>
-                    <p>{this.props.activeChatGet.activeChatOthersUsername}</p>
+                    <p>{this.props.activeChatroom.activeChatOthersUsername}</p>
                 </div>
 
                 <div className="container">

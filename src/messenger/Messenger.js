@@ -11,11 +11,7 @@ class Messenger extends React.Component {
     
         this.state = {
             "showChats": false,
-            "activeChatGet": {
-                "activeChatOthersUsername": "",
-                "activeChatMyQueue": "",
-                "activeChatOthersQueue": ""
-            }
+            "activeChatroom": null
         };
     
         this.toggleChats = this.toggleChats.bind(this);
@@ -28,13 +24,9 @@ class Messenger extends React.Component {
         });
     }
 
-    activeChatSet(myQueue, othersQueue, othersUsername) {
+    activeChatSet(chatroom) {
         this.setState({
-            activeChatGet: {
-                activeChatOthersUsername: othersUsername,
-                activeChatMyQueue: myQueue,
-                activeChatOthersQueue: othersQueue
-            }
+            activeChatroom: chatroom
         });
     }
 
@@ -53,7 +45,7 @@ class Messenger extends React.Component {
 
                         <Chat 
                             toggleChats={this.toggleChats} 
-                            activeChatGet={this.state.activeChatGet} />
+                            activeChatroom={this.state.activeChatroom} />
                     </div>
 
                 </div>
