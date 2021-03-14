@@ -75,7 +75,19 @@ class App extends React.Component {
           
             <ProtectedRoute
               exact
-              path="/messenger/:chatroomId?"
+              path="/messenger"
+              component={Messenger}
+            />
+
+            <ProtectedRoute
+              exact
+              path="/messenger/user/:username?"
+              component={Messenger}
+            />
+
+            <ProtectedRoute
+              exact
+              path="/messenger/chatroom/:chatroomId?"
               component={Messenger}
             />
 

@@ -74,7 +74,7 @@
 }
 
 .Chats .container > .chat {
-    background-color: #CAF0F8;
+    background-color: #f2f2f2;
     padding: 10px;
     display: grid;
     cursor: pointer;
@@ -82,6 +82,10 @@
 
 .Chats .chat > .title {
     font-size: 18px;
+}
+
+.Chats .chat > .title i {
+    margin-left: 8px;
 }
 
 .Chats .chat > .message {

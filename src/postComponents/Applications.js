@@ -93,7 +93,7 @@ class Applications extends React.Component {
 
     async openChatroom(e) {
         var othersUsername = e.target.id.split("_")[2];
-        this.props.history.push("/messenger/" + othersUsername);
+        this.props.history.push("/messenger/user/" + othersUsername);
     }
 
     render() {

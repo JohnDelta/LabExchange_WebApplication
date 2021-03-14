@@ -55,12 +55,12 @@ class Chat extends React.Component {
     }
 
     async getConversation() {
-
+        
         if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
             return;
         }
 
-        var url = ServiceHosts.getMessengerHost()+"/messenger/conversation"
+        var url = ServiceHosts.getMessengerHost()+"/messenger/conversation";
 
         try {
 
@@ -115,7 +115,7 @@ class Chat extends React.Component {
                 response.json().then((res) => {
 
                     this.setState({
-                        conversationQueue: res.body
+                        conversationQueue: res.body.queue
                     }, () => {
                         this.subscribeToConversationQueue();
                     });
@@ -129,6 +129,10 @@ class Chat extends React.Component {
     }
 
     async subscribeToConversationQueue() {
+
+        if (typeof this.state.conversationQueue === "undefined" || this.state.conversationQueue === "" || this.state.conversationQueue === null) {
+            return;
+        }
 
         var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
         var client = Stomp.over(ws);
@@ -220,6 +224,9 @@ class Chat extends React.Component {
 
             if(response.status === 200) {
                 this.getConversation();
+                this.setState({
+                    message: ""
+                });
             }
 
         } catch (error) {console.log(error);}
@@ -258,9 +265,7 @@ class Chat extends React.Component {
         let daysSince = Math.floor(Number(hoursSince) / 24);
         
         let dateSince = "Seconds ago";
-        if(minutesSince === 1) {
-            dateSince = minutesSince + " Minute ago";
-        } else {
+        if(minutesSince > 1 && minutesSince <= 59) {
             dateSince = minutesSince + " Minutes ago";
         }
         if(hoursSince > 0) {

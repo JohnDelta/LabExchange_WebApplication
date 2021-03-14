@@ -16,9 +16,11 @@ class Chats extends React.Component {
             chatroomsQueue: "",
             client: null,
             chatroomId: "",
+            receiverUsername: "",
             activeChatroom: null
         };
 
+        this.initializeChat = this.initializeChat.bind(this);
         this.getChatrooms = this.getChatrooms.bind(this);
         this.getChatroomsQueue = this.getChatroomsQueue.bind(this);
         this.subscribeToChatroomsQueue = this.subscribeToChatroomsQueue.bind(this);
@@ -31,20 +33,103 @@ class Chats extends React.Component {
         this.chatroomReceived = this.chatroomReceived.bind(this);
     }
 
-    componentDidMount() {
-        if (typeof this.props.match !== "undefined") {
-            this.setState({
-                chatroomId: this.props.match.params.chatroomId
-            }, () => {
-                this.initializeActiveChatroom();
-            });
+    initializeChat() {
+        if (typeof this.props.match !== "undefined" && typeof this.props.match.params !== "undefined") {
+            if (typeof this.props.match.params.chatroomId !== "undefined") {
+                this.setState({
+                    chatroomId: this.props.match.params.chatroomId
+                }, () => {
+                    this.initializeActiveChatroom("chatroomId");
+                });
+            } else if (typeof this.props.match.params.username !== "undefined") {
+                this.setState({
+                    receiverUsername: this.props.match.params.username
+                }, () => {
+                    this.initializeActiveChatroom("receiverUsername");
+                });
+            } else {
+                this.getChatrooms();    
+            }
         } else {
             this.getChatrooms();
         }
     }
 
+    componentDidMount() {
+        this.initializeChat();
+    }
+
+    componentDidUpdate() {
+        if (typeof this.props.match !== "undefined" && typeof this.props.match.params !== "undefined") {
+            if (typeof this.props.match.params.chatroomId !== "undefined") {
+                if (this.state.chatroomId !== this.props.match.params.chatroomId) {
+                    this.setState({
+                        chatroomId: this.props.match.params.chatroomId
+                    }, () => {
+                        this.initializeChat();
+                    });
+                }
+            } else if (typeof this.props.match.params.username !== "undefined") {
+                if (this.state.receiverUsername !== this.props.match.params.username) {
+                    this.setState({
+                        receiverUsername: this.props.match.params.username
+                    }, () => {
+                        this.initializeChat();
+                    });
+                }
+            }
+        }
+    }
+
     componentWillUnmount() {
         this.disconnectFromQueue();
+    }
+
+    async initializeActiveChatroom(commingFrom) {
+
+        var url = "";
+        var data = "";
+        if (commingFrom === "receiverUsername") {
+            if (typeof this.state.receiverUsername === "undefined" || this.state.receiverUsername === "") {
+                return;
+            }
+            url = ServiceHosts.getMessengerHost()+"/messenger/chatroom/initialize";
+            data = this.state.receiverUsername;
+        } else if (commingFrom === "chatroomId") {
+            if (typeof this.state.chatroomId === "undefined" || this.state.chatroomId === "") {
+                return;
+            }
+            url = ServiceHosts.getMessengerHost()+"/messenger/get/chatroom";
+            data = this.state.chatroomId;
+        }
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:data}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+                    this.setState({
+                        activeChatroom: res.body
+                    }, () => {
+                        this.getChatrooms();
+                        this.activateChat();
+                    });
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
     }
 
     async getChatrooms() {
@@ -80,7 +165,7 @@ class Chats extends React.Component {
                                 
                                 if (matchChatroom === null || typeof matchChatroom === "undefined" || matchChatroom.length < 1) {
                                     var chatrooms = this.state.chatrooms;
-                                    chatrooms.push(this.state.activeChatroom);console.log(chatrooms)
+                                    chatrooms.push(this.state.activeChatroom);
                                     this.setState({
                                         chatrooms: chatrooms
                                     });
@@ -117,7 +202,7 @@ class Chats extends React.Component {
                 response.json().then((res) => {
 
                     this.setState({
-                        chatroomsQueue: res.body
+                        chatroomsQueue: res.body.queue
                     }, () => {
                         this.subscribeToChatroomsQueue();
                     });
@@ -132,6 +217,10 @@ class Chats extends React.Component {
 
     async subscribeToChatroomsQueue() {
 
+        if (typeof this.state.chatroomsQueue === "undefined" || this.state.chatroomsQueue === "" || this.state.chatroomsQueue === null) {
+            return;
+        }
+
         var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
         var client = Stomp.over(ws);
 
@@ -141,29 +230,25 @@ class Chats extends React.Component {
           'X-Authorization': localStorage.getItem("jwt")
         };
 
-        if (this.state.chatroomsQueue !== "") {
+        client.connect(
+            headers, 
+            () => {
 
-            client.connect(
-                headers, 
-                () => {
+                var subscription = client.subscribe(
+                    "/queue/" + this.state.chatroomsQueue, 
+                    this.subscribeToChatroomsQueueCallback,
+                    {'X-Authorization': localStorage.getItem("jwt")}
+                );
 
-                    var subscription = client.subscribe(
-                        "/queue/" + this.state.chatroomsQueue, 
-                        this.subscribeToChatroomsQueueCallback,
-                        {'X-Authorization': localStorage.getItem("jwt")}
-                    );
+            },(error) => { console.log(error); }
+        );
 
-                },(error) => { console.log(error); }
-            );
+        client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
+        client.heartbeat.incoming = 0;
 
-            client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
-            client.heartbeat.incoming = 0;
-
-            this.setState({
-                client: client
-            });
-
-        }
+        this.setState({
+            client: client
+        });
 
     }
 
@@ -188,9 +273,6 @@ class Chats extends React.Component {
             });
 
             if(response.status === 200) {
-
-                response.json().then((res) => {
-                });
             
             } else {}
 
@@ -219,47 +301,9 @@ class Chats extends React.Component {
         this.chatroomReceived();
     }
 
-    async initializeActiveChatroom() {
-
-        if (typeof this.state.chatroomId === "undefined" || this.state.chatroomId === "") {
-            return;
-        }
-        
-        var url = ServiceHosts.getMessengerHost()+"/messenger/chatroom";
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:this.state.chatroomId}),
-            });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-                    this.setState({
-                        activeChatroom: res.body
-                    }, () => {
-                        this.getChatrooms();
-                        this.activateChat();
-                    });
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
-
-    }
-
     onChatClick(e) {
-        var othersUsername = e.target.id.split("____")[1];
-        this.props.history.push("/messenger/"+othersUsername);
-        this.activateChat();
+        var chatroomId = e.target.id.split("____")[1];
+        this.props.history.push("/messenger/chatroom/"+chatroomId);
     }
 
     isChatroomReceived(chatroom) {
@@ -270,7 +314,7 @@ class Chats extends React.Component {
                 isReceived = true;
             }
         });
-
+        
         return isReceived;
 
     }
@@ -280,7 +324,7 @@ class Chats extends React.Component {
         var showChatsCss = (this.props.showChats) ? "" : "showPanelFromLeft";
 
         var chats = this.state.chatrooms.map((conversation, index) => {
-            var newMessagesIcon = (!this.isChatroomReceived(conversation)) ? "" : <i className="fa fa-comment" />;
+            var newMessagesIcon = (this.isChatroomReceived(conversation)) ? "" : <i className="fa fa-comment" />;
             return (
                 <div className="chat" key={"chats_index"+index}>
                     <div className="title" 

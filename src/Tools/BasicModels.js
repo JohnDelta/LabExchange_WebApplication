@@ -54,8 +54,8 @@ class BasicModels {
             "messageId": "",
             "chatroom": "",
             "message": "",
-            "senderUser": "",
-            "timestamp": "",
+            "senderUser": this.getUserModel(),
+            "timestamp": 0,
             "received": false
         };
     }
@@ -72,6 +72,26 @@ class BasicModels {
         return {
             "username": "",
             "received": false
+        };
+    }
+
+    static getNotificationQueueModel() {
+        return {
+            "notificationQueueId": "",
+            "queue": "",
+            "username": "",
+            "notificationQueueType": null
+        };
+    }
+
+    static getNotificationModel() {
+        return {
+            "notificationId": "",
+            "timestamp": 0,
+            "notificationType": null,
+            "username": "",
+            "received": false,
+            "notificationQueue": this.getNotificationQueueModel()
         };
     }
 

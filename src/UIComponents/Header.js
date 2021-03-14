@@ -1,6 +1,10 @@
 import React from 'react';
 import './Header.css';
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 import Authentication from '../authentication/Authentication';
+import BasicModels from '../Tools/BasicModels';
+import ServiceHosts from '../Tools/ServiceHosts.js';
 
 class Header extends React.Component {
 
@@ -9,26 +13,8 @@ class Header extends React.Component {
         super(props);
 
         this.state = {
-            notifications: [
-                {
-                    "notificationId": 0,
-                    "referencedLink": "/classes",
-                    "title": "A new class has oppened",
-                    "timestamp": 23234234234
-                },
-                {
-                    "notificationId": 1,
-                    "referencedLink": "/messenger",
-                    "title": "You have a new message",
-                    "timestamp": 23234234234
-                },
-                {
-                    "notificationId": 2,
-                    "referencedLink": "/class/0",
-                    "title": "You've been assigned to another class",
-                    "timestamp": 23234234234
-                }
-            ]
+            notificationQueue: "",
+            notifications: []
         };
 
         this.onTabClick = this.onTabClick.bind(this);
@@ -36,7 +22,16 @@ class Header extends React.Component {
         this.openNotification = this.openNotification.bind(this);
         this.attachNotificationPanelToButton = this.attachNotificationPanelToButton.bind(this);
         this.dateSince = this.dateSince.bind(this);
-    
+        this.loadNotifications = this.loadNotifications.bind(this);
+        this.getNotificationQueue = this.getNotificationQueue.bind(this);
+        this.subscribeToNoficationQueue = this.subscribeToNoficationQueue.bind(this);
+        this.subscribeToNotificationQueueCallback = this.subscribeToNotificationQueueCallback.bind(this);
+        this.getNotificationTitle = this.getNotificationTitle.bind(this);
+        this.getNotificationLink = this.getNotificationLink.bind(this);
+        this.notificationsFilter = this.notificationsFilter.bind(this);
+        this.receiveNotification = this.receiveNotification.bind(this);
+        this.receiveAllNotifications = this.receiveAllNotifications.bind(this);
+
     }
 
     componentDidMount() {
@@ -56,6 +51,8 @@ class Header extends React.Component {
         };
 
         addEvent(window, "resize", this.attachNotificationPanelToButton);
+
+        this.getNotificationQueue();
 
     }
 
@@ -81,6 +78,10 @@ class Header extends React.Component {
 
         notificationsPanelElement.classList.toggle("notifications-panel-active");
 
+        if (notificationsPanelElement.classList.contains("notifications-panel-active")) {
+            this.receiveAllNotifications();
+        }
+
     }
 
     attachNotificationPanelToButton() {
@@ -99,11 +100,8 @@ class Header extends React.Component {
     }
 
     openNotification(e) {
-
-        var link = e.target.id.split("_")[2];
-
+        var link = e.target.id.split("___")[2];
         this.props.history.push(link);
-
     }
 
     dateSince(pastDate) {
@@ -114,9 +112,7 @@ class Header extends React.Component {
         let daysSince = Math.floor(Number(hoursSince) / 24);
         
         let dateSince = "Seconds ago";
-        if(minutesSince === 1) {
-            dateSince = minutesSince + " Minute ago";
-        } else {
+        if(minutesSince > 1 && minutesSince <= 59) {
             dateSince = minutesSince + " Minutes ago";
         }
         if(hoursSince > 0) {
@@ -130,19 +126,199 @@ class Header extends React.Component {
         
     }
 
+    async loadNotifications() {
+
+        if (typeof this.state.notificationQueue === "undefined" || this.state.notificationQueue === "" || this.state.notificationQueue === null) {
+            return;
+        }
+
+        let url = ServiceHosts.getNotificationsHost()+"/notifications/get/notifications";
+        let data = BasicModels.getNotificationQueueModel();
+        data.notificationQueueId = this.state.notificationQueue;
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:data}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    this.setState({
+                        notifications: res.body
+                    }, () => {
+                        this.notificationsFilter();
+                    });
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
+    async getNotificationQueue() {
+
+        var url = ServiceHosts.getNotificationsHost()+"/notifications/get/notification-queue";
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:""}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+
+                    this.setState({
+                        notificationQueue: res.body.queue
+                    }, () => {
+                        this.loadNotifications();
+                        this.subscribeToNoficationQueue();
+                    });
+
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
+    subscribeToNoficationQueue() {
+
+        if (typeof this.state.notificationQueue === "undefined" || this.state.notificationQueue === "" || this.state.notificationQueue === null) {
+            return;
+        }
+
+        var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
+        var client = Stomp.over(ws);
+
+        var headers = {
+          "login": "guest",
+          "passcode": "guest",
+          'X-Authorization': localStorage.getItem("jwt")
+        };
+
+        client.connect(
+            headers, 
+            () => {
+
+                var subscription = client.subscribe(
+                    "/queue/" + this.state.notificationQueue, 
+                    this.subscribeToNotificationQueueCallback,
+                    {'X-Authorization': localStorage.getItem("jwt")}
+                );
+
+            },(error) => { console.log(error); }
+        );
+
+        client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
+        client.heartbeat.incoming = 0;
+
+        this.setState({
+            client: client
+        });
+
+    }
+
+    subscribeToNotificationQueueCallback(object) {
+        var message = JSON.parse(object.body);
+        this.loadNotifications();
+    }
+
+    getNotificationTitle(notificationType) {
+        console.log(notificationType);
+        if (notificationType) {
+
+        }
+        return "li";
+    }
+
+    getNotificationLink(notificationType) {
+        return "sdf";
+    }
+
+    notificationsFilter() {
+        var notifications = this.state.notifications;
+        notifications.sort((a, b) => {
+            return a.timestamp - b.timestamp;
+        });
+        this.setState({
+            notifications: notifications
+        });
+    }
+
+    async receiveNotification(notificationId) {
+
+        let url = ServiceHosts.getNotificationsHost()+"/notifications/notification-received";
+
+        let data = BasicModels.getNotificationModel();
+        data.notificationId = notificationId;
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({body:data}),
+            });
+
+            if(response.status === 200) {
+
+                response.json().then((res) => {
+                });
+            
+            } else {}
+
+        } catch (error) {console.log(error);}
+
+    }
+
+    async receiveAllNotifications() {
+        this.state.notifications.forEach(notification => {
+            this.receiveNotification(notification.notificationId);
+        });
+        this.loadNotifications();
+    }
+ 
     render() {
 
-        let notifications = this.state.notifications.map((notification) => {
+        let receivedNotifications = this.state.notifications.filter(notification => notification.received === true);
+
+        let notifications = receivedNotifications.map((notification) => {
             return (
                 <div className="notification"
                     onClick={this.openNotification}
                     key={"notification" + notification.notificationId}
-                    id={"notification_" + notification.notificationId + "_" + notification.referencedLink}>
-                    <div className="notification-message">{notification.title}</div>
+                    id={"notification_" + notification.notificationId + "___" + this.getNotificationLink(notification.notificationType)}>
+                    <div className="notification-message">{this.getNotificationTitle(notification.notificationType)}</div>
                     <div className="notification-time">{this.dateSince(notification.timestamp)}</div>
                 </div>
             )
         });
+
+        notifications = (notifications.length > 0) ? notifications : "You don't have any notifications yet.";
 
         return (
             <div className="Header">
