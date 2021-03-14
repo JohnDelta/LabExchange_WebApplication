@@ -1,14 +1,20 @@
-# messenger web app
+# Lab Exchange - Web Application
 
-- npm install --save react-stomp
-- npm install --save react-route-dom
-- npm i sockjs-client
-- npm i @stomp/stompjs
+## Description
 
+## Install
 
-- make messenger service to create initial conversation with someone to talk too ONLY QUEUE NO DB.
+## Services
 
-- fix the message buttons to open the messenger with the contact. you need to create a queue between the users. nothing else.
-even if its empty klain.
+### Authentication Service : localhost:8081
 
-- create the service to send notifications data to messenger .... etc
+### Classses Service : localhost:8082
+
+### Notification Service : localhost:8083
+
+### Messenger Service : localhost:8084
+
+### MongoDB : localhost:27017
+
+### notes
+

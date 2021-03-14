@@ -1,8 +1,9 @@
 import React from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-import BasicModels from '../Models/BasicModels';
+import BasicModels from '../Tools/BasicModels';
 import './Chat.css';
+import ServiceHosts from '../Tools/ServiceHosts.js';
 
 class Chat extends React.Component {
 
@@ -59,7 +60,7 @@ class Chat extends React.Component {
             return;
         }
 
-        var url = "http://localhost:8082/messenger/conversation"
+        var url = ServiceHosts.getMessengerHost()+"/messenger/conversation"
 
         try {
 
@@ -95,7 +96,7 @@ class Chat extends React.Component {
 
     async getConversationQueue() {
 
-        var url = "http://localhost:8082/notifications/get/conversation-queue";
+        var url = ServiceHosts.getNotificationsHost()+"/notifications/get/conversation-queue";
 
         try {
 
@@ -129,7 +130,7 @@ class Chat extends React.Component {
 
     async subscribeToConversationQueue() {
 
-        var ws = new SockJS('http://localhost:8082/ws');
+        var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
         var client = Stomp.over(ws);
 
         var headers = {
@@ -175,7 +176,7 @@ class Chat extends React.Component {
 
     async messageReceived(message) {
 
-        let url = "http://localhost:8083/messenger/message-received"
+        let url = ServiceHosts.getMessengerHost()+"/messenger/message-received"
 
         try {
 
@@ -199,7 +200,7 @@ class Chat extends React.Component {
 
     async sendMessage() {
 
-        let url = "http://localhost:8083/messenger/message";
+        let url = ServiceHosts.getMessengerHost()+"/messenger/message";
 
         let body = BasicModels.getMessageModel();
         body.chatroom = this.state.activeChatroom;
@@ -290,8 +291,13 @@ class Chat extends React.Component {
         });
 
         conversation = conversation.length > 0 ? conversation : "Say Hello!";
+        let conversationTitle = "";
 
-        conversation = (this.state.activeChatroom.activeChatOthersQueue === "") ? "No conversations available" : conversation;
+        if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
+            conversation = "Choose a conversation to send messages";
+        } else {
+            conversationTitle = this.state.activeChatroom.chatroomName;
+        }
 
         return(
             <div className="Chat">
@@ -300,7 +306,7 @@ class Chat extends React.Component {
                     <button onClick={this.props.toggleChats} >
                         <i className="fa fa-users" />
                     </button>
-                    <p>{this.props.activeChatroom.activeChatOthersUsername}</p>
+                    <p>{conversationTitle}</p>
                 </div>
 
                 <div className="container">

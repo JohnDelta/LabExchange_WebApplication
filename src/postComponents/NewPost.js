@@ -1,7 +1,8 @@
 import React from 'react';
 import './NewPost.css';
 import Header from '../UIComponents/Header.js';
-import BasicModels from '../Models/BasicModels.js';
+import BasicModels from '../Tools/BasicModels.js';
+import ServiceHosts from '../Tools/ServiceHosts.js';
 
 import {
     Link
@@ -32,7 +33,7 @@ class NewPost extends React.Component {
 
     async loadUserClasses() {
 
-        var url = "http://localhost:8083/classes/get/by/me";
+        var url = ServiceHosts.getClassesHost()+"/classes/get/by/me";
 
         try {
 
@@ -68,7 +69,7 @@ class NewPost extends React.Component {
 
     async loadUserLab() {
 
-        var url = "http://localhost:8083/classes/get/lab/by/me";
+        var url = ServiceHosts.getClassesHost()+"/classes/get/lab/by/me";
 
         var labClassObject = BasicModels.getLabClassModel();
         var el = document.getElementById("labClassDropdown");
@@ -111,7 +112,7 @@ class NewPost extends React.Component {
 
     async loadLabClassLabs() {
 
-        var url = "http://localhost:8083/classes/get/labs/by/class";
+        var url = ServiceHosts.getClassesHost()+"/classes/get/labs/by/class";
 
         var labClassObject = BasicModels.getLabClassModel();
         var el = document.getElementById("labClassDropdown");
@@ -165,7 +166,7 @@ class NewPost extends React.Component {
             post.requestedLab.labId = labDropdown.value;
             post.labClass.labClassId = labClassDropdown.value;
     
-            var url = "http://localhost:8083/posts/new";
+            var url = ServiceHosts.getClassesHost()+"/posts/new";
     
             try {
     

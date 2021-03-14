@@ -2,6 +2,7 @@ import React from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import './Chats.css';
+import ServiceHosts from '../Tools/ServiceHosts.js';
 
 import {withRouter} from 'react-router-dom';
 
@@ -33,7 +34,7 @@ class Chats extends React.Component {
     componentDidMount() {
         if (typeof this.props.match !== "undefined") {
             this.setState({
-                chatroomId: this.props.match.params.username
+                chatroomId: this.props.match.params.chatroomId
             }, () => {
                 this.initializeActiveChatroom();
             });
@@ -48,7 +49,7 @@ class Chats extends React.Component {
 
     async getChatrooms() {
 
-        var url = "http://localhost:8082/messenger/chatrooms";
+        var url = ServiceHosts.getMessengerHost()+"/messenger/chatrooms";
 
         try {
 
@@ -75,13 +76,11 @@ class Chats extends React.Component {
                             this.state.activeChatroom !== null &&
                             this.state.activeChatroom.chatroomId !== "") {
 
-                                let matchChatroom = this.state.chatrooms.filter(chatroom => {
-                                    chatroom.chatroomId === this.state.activeChatroom.chatroomId
-                                });
-
-                                if (matchChatroom === null || typeof matchChatroom === "undefined") {
+                                let matchChatroom = this.state.chatrooms.filter(chatroom => chatroom.chatroomId === this.state.activeChatroom.chatroomId);
+                                
+                                if (matchChatroom === null || typeof matchChatroom === "undefined" || matchChatroom.length < 1) {
                                     var chatrooms = this.state.chatrooms;
-                                    chatrooms.push(this.state.activeChatroom);
+                                    chatrooms.push(this.state.activeChatroom);console.log(chatrooms)
                                     this.setState({
                                         chatrooms: chatrooms
                                     });
@@ -99,7 +98,7 @@ class Chats extends React.Component {
 
     async getChatroomsQueue() {
 
-        var url = "http://localhost:8082/notifications/get/chatrooms-queue";
+        var url = ServiceHosts.getNotificationsHost()+"/notifications/get/chatrooms-queue";
 
         try {
 
@@ -133,7 +132,7 @@ class Chats extends React.Component {
 
     async subscribeToChatroomsQueue() {
 
-        var ws = new SockJS('http://localhost:8082/ws');
+        var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
         var client = Stomp.over(ws);
 
         var headers = {
@@ -174,7 +173,7 @@ class Chats extends React.Component {
             return;
         }
 
-        var url = "http://localhost:8083/messenger/chatroom-received";
+        var url = ServiceHosts.getMessengerHost()+"/messenger/chatroom-received";
 
         try {
 
@@ -225,8 +224,8 @@ class Chats extends React.Component {
         if (typeof this.state.chatroomId === "undefined" || this.state.chatroomId === "") {
             return;
         }
-
-        var url = "http://localhost:8082/messenger/get/chatroom";
+        
+        var url = ServiceHosts.getMessengerHost()+"/messenger/chatroom";
 
         try {
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import './MyPosts.css';
 import Header from '../UIComponents/Header.js';
-import BasicModels from '../Models/BasicModels.js';
+import BasicModels from '../Tools/BasicModels.js';
+import ServiceHosts from '../Tools/ServiceHosts.js';
 
 class MyPosts extends React.Component {
 
@@ -23,7 +24,7 @@ class MyPosts extends React.Component {
 
      async loadMyPosts() {
 
-        var url = "http://localhost:8083/posts/get/by/me";
+        var url = ServiceHosts.getClassesHost()+"/posts/get/by/me";
 
         try {
 
@@ -57,7 +58,7 @@ class MyPosts extends React.Component {
 
     async removePost(e) {
 
-        var url = "http://localhost:8083/posts/remove";
+        var url = ServiceHosts.getClassesHost()+"/posts/remove";
 
         let postId = e.target.id;
 

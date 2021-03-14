@@ -23,6 +23,7 @@
 .Chat > .title > p {
     text-align: center;
     font-size: 16px;
+    align-self: center;
 }
 
 .Chat > .title > button {

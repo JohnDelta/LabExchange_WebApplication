@@ -1,6 +1,7 @@
 import React from 'react';
 import './Classes.css';
 import Header from '../UIComponents/Header.js';
+import ServiceHosts from '../Tools/ServiceHosts.js';
 
 import {
     Link
@@ -33,7 +34,7 @@ class Classes extends React.Component {
 
     async loadUserClasses() {
 
-        var url = "http://localhost:8083/classes/get/by/me"
+        var url = ServiceHosts.getClassesHost()+"/classes/get/by/me"
 
         try {
 

@@ -1,3 +1,5 @@
+import ServiceHosts from '../Tools/ServiceHosts.js';
+
 class Auth {
 
     constructor() {
@@ -14,7 +16,7 @@ class Auth {
 
     async login(credentials, success, error) {
         
-        var url = "http://localhost:8081/account/login"
+        var url = ServiceHosts.getAuthenticationHost()+"/account/login"
 
         try {
 
@@ -74,7 +76,7 @@ class Auth {
 
     async signup(credentials, success, error) { // temporal
         
-        var url = "http://localhost:8081/account/create"
+        var url = ServiceHosts.getAuthenticationHost()+"/account/create"
 
         try {
 

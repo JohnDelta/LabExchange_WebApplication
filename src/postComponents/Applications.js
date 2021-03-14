@@ -1,7 +1,8 @@
 import React from 'react';
 import './Applications.css';
 import Header from '../UIComponents/Header.js';
-import BasicModels from '../Models/BasicModels.js';
+import BasicModels from '../Tools/BasicModels.js';
+import ServiceHosts from '../Tools/ServiceHosts.js';
 
 class Applications extends React.Component {
 
@@ -12,17 +13,16 @@ class Applications extends React.Component {
         };
         this.loadApplications = this.loadApplications.bind(this);
         this.removeApplication = this.removeApplication.bind(this);
+        this.openChatroom = this.openChatroom.bind(this);
     }
 
     componentDidMount() {
-        
         this.loadApplications();
-    
     }
 
     async loadApplications() {
 
-        var url = "http://localhost:8083/posts/applications/get/by/me"
+        var url = ServiceHosts.getClassesHost()+"/posts/applications/get/by/me"
 
         try {
 
@@ -56,7 +56,7 @@ class Applications extends React.Component {
 
     async removeApplication(e) {
 
-        var url = "http://localhost:8083/posts/applications/remove";
+        var url = ServiceHosts.getClassesHost()+"/posts/applications/remove";
 
         let applicationid = e.target.id;
 
@@ -91,12 +91,17 @@ class Applications extends React.Component {
 
     }
 
+    async openChatroom(e) {
+        var othersUsername = e.target.id.split("_")[2];
+        this.props.history.push("/messenger/" + othersUsername);
+    }
+
     render() {
 
         var applications = this.state.applications.map((application, index) => {
             return (
                 <div className="tile" id={"application" + application.applicationId + index} key={"class_tile_key" + application.applicationId + index}>
-                    <div className="tile-header">{application.post.labClass.name}</div>
+                    <div className="tile-header">{application.user.username}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Class</div>
@@ -111,7 +116,7 @@ class Applications extends React.Component {
                             <div className="tile-info-body">{(application.post.requestedLab.name === "" || typeof application.post.requestedLab === "undefined") ? ("Any choice") : application.post.requestedLab.name }</div>
                         </div>
                         <div className="tile-buttons">
-                            <button>Message</button>
+                            <button onClick={this.openChatroom} id={"application_openchatroom_"+application.user.username} >Message</button>
                             <button id={application.applicationId} onClick={this.removeApplication} >Cancel Application</button>
                         </div>
                     </div>

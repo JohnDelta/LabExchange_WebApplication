@@ -1,7 +1,8 @@
 import React from 'react';
 import './Class.css';
 import Header from '../UIComponents/Header.js';
-import BasicModels from '../Models/BasicModels.js';
+import BasicModels from '../Tools/BasicModels.js';
+import ServiceHosts from '../Tools/ServiceHosts.js';
 
 import {
     Link
@@ -30,7 +31,7 @@ class Class extends React.Component {
 
         let id = this.props.match.params.id;
 
-        var url = "http://localhost:8083/classes/get/class/by/me"
+        var url = ServiceHosts.getClassesHost()+"/classes/get/class/by/me"
 
         var labClassObject = BasicModels.getLabClassModel();
         labClassObject.labClassId = id;
@@ -69,7 +70,7 @@ class Class extends React.Component {
 
     async loadPosts() {
 
-        var url = "http://localhost:8083/posts/get/by/class"
+        var url = ServiceHosts.getClassesHost()+"/posts/get/by/class"
 
         try {
 
@@ -103,7 +104,7 @@ class Class extends React.Component {
 
     async applyToPost(e) {
 
-        var url = "http://localhost:8083/posts/applications/new";
+        var url = ServiceHosts.getClassesHost()+"/posts/applications/new";
 
         let postId = e.target.id;
 
@@ -139,11 +140,8 @@ class Class extends React.Component {
     }
 
     async openChatroom(e) {
-
         var othersUsername = e.target.id.split("_")[2];
-
         this.props.history.push("/messenger/" + othersUsername);
-
     }
 
     render() {
