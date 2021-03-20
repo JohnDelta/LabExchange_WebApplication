@@ -3,8 +3,12 @@ import './Messenger.css';
 import Chat from './Chat';
 import Chats from './Chats';
 import Header from '../UIComponents/Header.js';
+import BasicModels from '../Tools/BasicModels.js';
+import SharedMethods from '../Tools/SharedMethods.js';
 
 class Messenger extends React.Component {
+
+    _isMounted = false;
 
     constructor(props) {
         super(props);
@@ -16,6 +20,22 @@ class Messenger extends React.Component {
     
         this.toggleChats = this.toggleChats.bind(this);
         this.activeChatSet = this.activeChatSet.bind(this);
+        this.remountHeaderFromMessenger = this.remountHeaderFromMessenger.bind(this);
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNewMessage());
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    remountHeaderFromMessenger() {
+        this.setState({
+            remountHeaderValue: Math.random()
+        });
     }
 
     toggleChats() {
@@ -35,13 +55,17 @@ class Messenger extends React.Component {
             <div className="MessengerWrapper">
                 <div className="Messenger">
 
-                    <Header activeTab={"messenger"} history={this.props.history} />
+                    <Header 
+                        activeTab={"messenger"} 
+                        history={this.props.history} 
+                        remountHeader={this.remountHeaderFromMessenger} 
+                        key={this.state.remountHeaderValue} />
 
                     <div className="messenger-content">
                         <Chats 
                             toggleChats={this.toggleChats} 
                             showChats={this.state.showChats} 
-                            activeChatSet={this.activeChatSet} />
+                            activeChatSet={this.activeChatSet}  />
 
                         <Chat 
                             toggleChats={this.toggleChats} 

@@ -70,7 +70,6 @@
 }
 
 .Header-body-wrapper > .lower .notifications-button {
-    margin-right: 10px;
     justify-self: end;
     display: flex;
     justify-content: center;
@@ -80,8 +79,30 @@
     outline: none;
 }
 
-.Header-body-wrapper > .lower .notifications-button i {
-    font-size: 18px;
+.Header-body-wrapper > .lower .notifications-button-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Header-body-wrapper > .lower .notifications-button-total {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    margin-bottom:15px;
+}
+
+.Header-body-wrapper > .lower .notifications-button-total span {
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.Header-body-wrapper .lower .notifications-button-body i {
+    font-size: 22px;
 }
 
 .Header-body-wrapper > .lower .notifications-panel {
@@ -96,6 +117,8 @@
     grid-template-columns: 1fr;
     align-content: start;
     pointer-events: none;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .notifications-panel-active {
@@ -132,4 +155,9 @@
     pointer-events: none;
     justify-self: end;
     font-size: 11px;
+}
+
+.notification-received {
+    opacity: 0.7;
+    border: none;
 }

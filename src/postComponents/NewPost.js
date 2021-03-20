@@ -3,12 +3,15 @@ import './NewPost.css';
 import Header from '../UIComponents/Header.js';
 import BasicModels from '../Tools/BasicModels.js';
 import ServiceHosts from '../Tools/ServiceHosts.js';
+import SharedMethods from '../Tools/SharedMethods.js';
 
 import {
     Link
  } from "react-router-dom";
 
 class NewPost extends React.Component {
+
+    _isMounted = false;
 
     constructor(props) {
         super(props);
@@ -23,15 +26,28 @@ class NewPost extends React.Component {
         this.loadUserLab = this.loadUserLab.bind(this);
         this.loadLabClassLabs = this.loadLabClassLabs.bind(this);
         this.createPost = this.createPost.bind(this);
+        this.remountHeaderFromPost = this.remountHeaderFromPost.bind(this);
     }
 
     componentDidMount() {
-
+        this._isMounted = true;
         this.loadUserClasses();
-
+        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNone());
     }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    remountHeaderFromPost() {
+        this.setState({
+            remountHeaderValue: Math.random()
+        });
+      }
+
     async loadUserClasses() {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getClassesHost()+"/classes/get/by/me";
 
@@ -68,6 +84,8 @@ class NewPost extends React.Component {
     }
 
     async loadUserLab() {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getClassesHost()+"/classes/get/lab/by/me";
 
@@ -111,6 +129,8 @@ class NewPost extends React.Component {
     }
 
     async loadLabClassLabs() {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getClassesHost()+"/classes/get/labs/by/class";
 
@@ -232,7 +252,11 @@ class NewPost extends React.Component {
             <div className="NewPostWrapper">
                 <div className="NewPost">
 
-                    <Header activeTab={"class"} history={this.props.history} />
+                    <Header 
+                        activeTab={"class"} 
+                        history={this.props.history} 
+                        remountHeader={this.remountHeaderFromPost} 
+                        key={this.state.remountHeaderValue} />
 
                     <div className="NewPost-container">
                         <div className="NewPost-header">

@@ -8,13 +8,16 @@ import ServiceHosts from '../Tools/ServiceHosts.js';
 
 class Header extends React.Component {
 
+    _isMounted = false;
+
     constructor(props) {
         
         super(props);
 
         this.state = {
             notificationQueue: "",
-            notifications: []
+            notifications: [],
+            client: null
         };
 
         this.onTabClick = this.onTabClick.bind(this);
@@ -30,12 +33,11 @@ class Header extends React.Component {
         this.getNotificationLink = this.getNotificationLink.bind(this);
         this.notificationsFilter = this.notificationsFilter.bind(this);
         this.receiveNotification = this.receiveNotification.bind(this);
-        this.receiveAllNotifications = this.receiveAllNotifications.bind(this);
-
+        this.disconnectFromQueue = this.disconnectFromQueue.bind(this);
     }
 
     componentDidMount() {
-
+        this._isMounted = true;
         this.attachNotificationPanelToButton();
 
         // ref: https://stackoverflow.com/questions/641857/javascript-window-resize-event
@@ -51,9 +53,12 @@ class Header extends React.Component {
         };
 
         addEvent(window, "resize", this.attachNotificationPanelToButton);
-
         this.getNotificationQueue();
+    }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+        this.disconnectFromQueue();
     }
 
     onTabClick(e) {
@@ -78,10 +83,6 @@ class Header extends React.Component {
 
         notificationsPanelElement.classList.toggle("notifications-panel-active");
 
-        if (notificationsPanelElement.classList.contains("notifications-panel-active")) {
-            this.receiveAllNotifications();
-        }
-
     }
 
     attachNotificationPanelToButton() {
@@ -100,7 +101,10 @@ class Header extends React.Component {
     }
 
     openNotification(e) {
-        var link = e.target.id.split("___")[2];
+        var vars = e.target.id.split("___");
+        var link = vars[1];
+        var notificationId = vars[2];
+        this.receiveNotification(notificationId);
         this.props.history.push(link);
     }
 
@@ -127,6 +131,8 @@ class Header extends React.Component {
     }
 
     async loadNotifications() {
+
+        if (!this._isMounted) {return;}
 
         if (typeof this.state.notificationQueue === "undefined" || this.state.notificationQueue === "" || this.state.notificationQueue === null) {
             return;
@@ -167,6 +173,8 @@ class Header extends React.Component {
     }
 
     async getNotificationQueue() {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getNotificationsHost()+"/notifications/get/notification-queue";
 
@@ -209,6 +217,7 @@ class Header extends React.Component {
 
         var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
         var client = Stomp.over(ws);
+        client.debug = null;
 
         var headers = {
           "login": "guest",
@@ -229,8 +238,8 @@ class Header extends React.Component {
             },(error) => { console.log(error); }
         );
 
-        client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
-        client.heartbeat.incoming = 0;
+        // client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
+        // client.heartbeat.incoming = 0;
 
         this.setState({
             client: client
@@ -239,26 +248,56 @@ class Header extends React.Component {
     }
 
     subscribeToNotificationQueueCallback(object) {
+        if (!this._isMounted) {return;}
+        this.props.remountHeader();
         var message = JSON.parse(object.body);
         this.loadNotifications();
     }
 
-    getNotificationTitle(notificationType) {
-        console.log(notificationType);
-        if (notificationType) {
-
+    disconnectFromQueue() {
+        if(this.state.client !== null && this.state.client !== undefined) {
+            this.state.client.disconnect(()=>{
+                //console.log("disconected");
+            });    
         }
-        return "li";
+    }
+
+    getNotificationTitle(notificationType) {
+        
+        let message = "";
+
+        if (notificationType === BasicModels.NotificationTypeNewMessage()) {
+            message = "You've got a new message!";
+        } else if (notificationType === BasicModels.NotificationTypeLabExchanged()) {
+            message = "You've Exchanged your lab!";
+        } else if (notificationType === BasicModels.NotificationTypeNewApplication()) {
+            message = "Someone applied to your post!";
+        }
+
+        return message;
     }
 
     getNotificationLink(notificationType) {
-        return "sdf";
+        
+        let link = "";
+        
+        if (notificationType === BasicModels.NotificationTypeNewMessage()) {
+            link = "/messenger";
+        } else if (notificationType === BasicModels.NotificationTypeLabExchanged()) {
+            link = "/my-labs";
+        } else if (notificationType === BasicModels.NotificationTypeNewApplication()) {
+            link = "/post/applications";
+        }
+
+        return link;
     }
 
     notificationsFilter() {
+        if (!this._isMounted) {return;}
+
         var notifications = this.state.notifications;
         notifications.sort((a, b) => {
-            return a.timestamp - b.timestamp;
+            return b.timestamp - a.timestamp;
         });
         this.setState({
             notifications: notifications
@@ -294,24 +333,20 @@ class Header extends React.Component {
         } catch (error) {console.log(error);}
 
     }
-
-    async receiveAllNotifications() {
-        this.state.notifications.forEach(notification => {
-            this.receiveNotification(notification.notificationId);
-        });
-        this.loadNotifications();
-    }
  
     render() {
 
-        let receivedNotifications = this.state.notifications.filter(notification => notification.received === true);
-
-        let notifications = receivedNotifications.map((notification) => {
+        let unreceivedNotificationsNumber = this.state.notifications.filter(notification => !notification.received).length;
+        let notificationsNumber = unreceivedNotificationsNumber > 0 ? <div className="notifications-button-total"><span>{unreceivedNotificationsNumber}</span></div> : '';
+        notificationsNumber = unreceivedNotificationsNumber > 99 ? <div className="notifications-button-total"><span>99+</span></div> : notificationsNumber;
+        
+        let notifications = this.state.notifications.map((notification) => {
+            let receivedCss = notification.received ? "notification-received" : "";
             return (
-                <div className="notification"
+                <div className={"notification " + receivedCss}
                     onClick={this.openNotification}
                     key={"notification" + notification.notificationId}
-                    id={"notification_" + notification.notificationId + "___" + this.getNotificationLink(notification.notificationType)}>
+                    id={"notification_" + notification.notificationId + "___" + this.getNotificationLink(notification.notificationType) + "___" + notification.notificationId}>
                     <div className="notification-message">{this.getNotificationTitle(notification.notificationType)}</div>
                     <div className="notification-time">{this.dateSince(notification.timestamp)}</div>
                 </div>
@@ -361,7 +396,10 @@ class Header extends React.Component {
                             className="notifications-button" 
                             id="notificationsButton"
                             onClick={this.toggleNotificationsPanel}>
-                                <i className="fa fa-bell" />
+                                <div className="notifications-button-body">
+                                    <i className="fa fa-bell" />
+                                    {notificationsNumber}
+                                </div>
                         </button>
 
                         <div className="notifications-panel" id="notificationsPanel">

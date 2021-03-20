@@ -64,13 +64,15 @@ class BasicModels {
         return {
             "chatroomId": "",
             "users": [],
-            "chatroomName": ""
+            "chatroomName": "",
+            "chatroomReceived": false
         };
     }
 
     static getUserModel() {
         return {
             "username": "",
+            "fullname": "",
             "received": false
         };
     }
@@ -93,6 +95,22 @@ class BasicModels {
             "received": false,
             "notificationQueue": this.getNotificationQueueModel()
         };
+    }
+
+    static NotificationTypeNewApplication() {
+        return "NewApplication";
+    }
+
+    static NotificationTypeLabExchanged() {
+        return "LabExchanged";
+    }
+
+    static NotificationTypeNewMessage() {
+        return "NewMessage";
+    }
+
+    static NotificationTypeNone() {
+        return "None";
     }
 
 } export default BasicModels;

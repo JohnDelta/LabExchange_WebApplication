@@ -3,12 +3,15 @@ import './Class.css';
 import Header from '../UIComponents/Header.js';
 import BasicModels from '../Tools/BasicModels.js';
 import ServiceHosts from '../Tools/ServiceHosts.js';
+import SharedMethods from '../Tools/SharedMethods.js';
 
 import {
     Link
  } from "react-router-dom";
 
 class Class extends React.Component {
+
+    _isMounted = false;
 
     constructor(props) {
         super(props);
@@ -21,13 +24,28 @@ class Class extends React.Component {
         this.loadPosts = this.loadPosts.bind(this);
         this.applyToPost = this.applyToPost.bind(this);
         this.openChatroom = this.openChatroom.bind(this);
+        this.remountHeaderFromClass = this.remountHeaderFromClass.bind(this);
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.loadClass();
+        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNone());
     }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    remountHeaderFromClass() {
+        this.setState({
+            remountHeaderValue: Math.random()
+        });
+      }
+
     async loadClass() {
+
+        if (!this._isMounted) {return;}
 
         let id = this.props.match.params.id;
 
@@ -69,6 +87,8 @@ class Class extends React.Component {
     }
 
     async loadPosts() {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getClassesHost()+"/posts/get/by/class"
 
@@ -192,7 +212,11 @@ class Class extends React.Component {
             <div className="ClassWrapper">
                 <div className="Class">
 
-                    <Header activeTab={"class"} history={this.props.history} />
+                    <Header 
+                        activeTab={"class"} 
+                        history={this.props.history} 
+                        remountHeader={this.remountHeaderFromClass} 
+                        key={this.state.remountHeaderValue} />
 
                     <div className="class-container">
                         <div className="class-header">

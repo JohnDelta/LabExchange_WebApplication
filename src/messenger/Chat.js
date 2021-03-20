@@ -7,6 +7,8 @@ import ServiceHosts from '../Tools/ServiceHosts.js';
 
 class Chat extends React.Component {
 
+    _isMounted = false;
+
     constructor() {
         super();
 
@@ -23,7 +25,7 @@ class Chat extends React.Component {
         this.subscribeToConversationQueue = this.subscribeToConversationQueue.bind(this);
         this.subscribeToConversationQueueCallback = this.subscribeToConversationQueueCallback.bind(this);
         this.disconnectFromQueue = this.disconnectFromQueue.bind(this);
-        this.messageReceived = this.messageReceived.bind(this);
+        //this.messageReceived = this.messageReceived.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.onMessageChange = this.onMessageChange.bind(this);
         this.chatFilter = this.chatFilter.bind(this);
@@ -31,6 +33,7 @@ class Chat extends React.Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         if(this.state.activeChatroom !== this.props.activeChatroom) {
             this.setState({
                 activeChatroom: this.props.activeChatroom
@@ -51,10 +54,13 @@ class Chat extends React.Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         this.disconnectFromQueue();
     }
 
     async getConversation() {
+
+        if (!this._isMounted) {return;}
         
         if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
             return;
@@ -96,6 +102,8 @@ class Chat extends React.Component {
 
     async getConversationQueue() {
 
+        if (!this._isMounted) {return;}
+
         var url = ServiceHosts.getNotificationsHost()+"/notifications/get/conversation-queue";
 
         try {
@@ -136,6 +144,7 @@ class Chat extends React.Component {
 
         var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
         var client = Stomp.over(ws);
+        client.debug = null;
 
         var headers = {
           "login": "guest",
@@ -156,8 +165,8 @@ class Chat extends React.Component {
             },(error) => { console.log(error); }
         );
 
-        client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
-        client.heartbeat.incoming = 0;
+        // client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
+        // client.heartbeat.incoming = 0;
 
         this.setState({
             client: client
@@ -173,34 +182,34 @@ class Chat extends React.Component {
     disconnectFromQueue() {
         if(this.state.client !== null && this.state.client !== undefined) {
             this.state.client.disconnect(()=>{
-                console.log("disconected");
+                //console.log("disconected");
             });    
         }
     }
 
-    async messageReceived(message) {
+    // async messageReceived(message) {
 
-        let url = ServiceHosts.getMessengerHost()+"/messenger/message-received"
+    //     let url = ServiceHosts.getMessengerHost()+"/messenger/message-received"
 
-        try {
+    //     try {
 
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:message}),
-            });
+    //         const response = await fetch(url, {
+    //             method: 'POST',
+    //             cache: 'no-cache',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+    //             },
+    //             body: JSON.stringify({body:message}),
+    //         });
 
-            if(response.status === 200) {
-                // seen message
-            }
+    //         if(response.status === 200) {
+    //             // seen message
+    //         }
 
-        } catch (error) {console.log(error);}
+    //     } catch (error) {console.log(error);}
 
-    }
+    // }
 
     async sendMessage() {
 

@@ -8,6 +8,8 @@ import {withRouter} from 'react-router-dom';
 
 class Chats extends React.Component {
 
+    _isMounted = false;
+
     constructor(props) {
         super(props);
 
@@ -29,8 +31,8 @@ class Chats extends React.Component {
         this.activateChat = this.activateChat.bind(this);
         this.onChatClick = this.onChatClick.bind(this);
         this.initializeActiveChatroom = this.initializeActiveChatroom.bind(this);
-        this.isChatroomReceived = this.isChatroomReceived.bind(this);
         this.chatroomReceived = this.chatroomReceived.bind(this);
+        this.filterChatrooms = this.filterChatrooms.bind(this);
     }
 
     initializeChat() {
@@ -56,6 +58,7 @@ class Chats extends React.Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.initializeChat();
     }
 
@@ -82,10 +85,13 @@ class Chats extends React.Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         this.disconnectFromQueue();
     }
 
     async initializeActiveChatroom(commingFrom) {
+
+        if (!this._isMounted) {return;}
 
         var url = "";
         var data = "";
@@ -134,6 +140,8 @@ class Chats extends React.Component {
 
     async getChatrooms() {
 
+        if (!this._isMounted) {return;}
+
         var url = ServiceHosts.getMessengerHost()+"/messenger/chatrooms";
 
         try {
@@ -168,10 +176,15 @@ class Chats extends React.Component {
                                     chatrooms.push(this.state.activeChatroom);
                                     this.setState({
                                         chatrooms: chatrooms
+                                    }, () => {
+                                        this.filterChatrooms();
                                     });
+                                } else {
+                                    this.filterChatrooms();
                                 }
+                        } else {
+                            this.filterChatrooms();
                         }
-
                     });
                 });
 
@@ -182,6 +195,8 @@ class Chats extends React.Component {
     }
 
     async getChatroomsQueue() {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getNotificationsHost()+"/notifications/get/chatrooms-queue";
 
@@ -223,6 +238,7 @@ class Chats extends React.Component {
 
         var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
         var client = Stomp.over(ws);
+        client.debug = null;
 
         var headers = {
           "login": "guest",
@@ -243,8 +259,8 @@ class Chats extends React.Component {
             },(error) => { console.log(error); }
         );
 
-        client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
-        client.heartbeat.incoming = 0;
+        // client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
+        // client.heartbeat.incoming = 0;
 
         this.setState({
             client: client
@@ -273,7 +289,11 @@ class Chats extends React.Component {
             });
 
             if(response.status === 200) {
-            
+                response.json().then((res) => {
+                    if (res.status === 200) {
+                        this.getChatrooms();
+                    }
+                });
             } else {}
 
         } catch (error) {console.log(error);}
@@ -283,12 +303,16 @@ class Chats extends React.Component {
     subscribeToChatroomsQueueCallback(object) {
         var othersUsername = object.body;
         this.getChatrooms();
+        if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
+            return;
+        }
+        this.chatroomReceived();
     }
 
     disconnectFromQueue() {
         if(this.state.client !== null && typeof this.state.client !== "undefined") {
             this.state.client.disconnect(()=>{
-                console.log("disconected");
+                //console.log("disconected");
             });    
         }
     }
@@ -306,28 +330,34 @@ class Chats extends React.Component {
         this.props.history.push("/messenger/chatroom/"+chatroomId);
     }
 
-    isChatroomReceived(chatroom) {
-
-        let isReceived = false;
-        chatroom.users.forEach(user => {
-            if (user.received && user.username === localStorage.getItem("username")) {
-                isReceived = true;
-            }
+    filterChatrooms() {
+        if (typeof this.state.chatrooms === "undefined" || this.state.chatrooms === [] || this.state.chatrooms === null) {
+            return;
+        }
+        let chatrooms = [];
+        this.state.chatrooms.forEach(chatroom => {
+            let received = false;
+            chatroom.users.forEach(user => { 
+                if (user.received && user.username === localStorage.getItem("username")) 
+                    received = true; 
+            });
+            chatroom.chatroomReceived = received;
+            chatrooms.push(chatroom);
         });
-        
-        return isReceived;
-
+        this.setState({
+            chatrooms: chatrooms
+        });
     }
 
     render() {
 
-        var showChatsCss = (this.props.showChats) ? "" : "showPanelFromLeft";
+        let showChatsCss = (this.props.showChats) ? "" : "showPanelFromLeft";
 
-        var chats = this.state.chatrooms.map((conversation, index) => {
-            var newMessagesIcon = (this.isChatroomReceived(conversation)) ? "" : <i className="fa fa-comment" />;
+        let chats = this.state.chatrooms.length > 0 ? this.state.chatrooms.map((conversation, index) => {
+            var newMessagesIcon =  conversation.chatroomReceived ? "" : <i className="fa fa-comment" />;
             return (
                 <div className="chat" key={"chats_index"+index}>
-                    <div className="title" 
+                    <div className="title"
                         id={"conversations____"+conversation.chatroomId}
                         onClick={this.onChatClick}>
                             {conversation.chatroomName}
@@ -335,9 +365,7 @@ class Chats extends React.Component {
                     </div>
                 </div>
             );
-        });
-        
-        chats = (chats.length > 0) ? chats : "No Conversations Active";
+        }) : "No Conversations Active";
 
         return(
             <div className={"Chats hidePanelToLeft " + showChatsCss}>

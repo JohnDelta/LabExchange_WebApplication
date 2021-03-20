@@ -3,8 +3,11 @@ import './Applications.css';
 import Header from '../UIComponents/Header.js';
 import BasicModels from '../Tools/BasicModels.js';
 import ServiceHosts from '../Tools/ServiceHosts.js';
+import SharedMethods from '../Tools/SharedMethods.js';
 
 class Applications extends React.Component {
+
+    _isMounted = false;
 
     constructor(props) {
         super(props);
@@ -14,15 +17,30 @@ class Applications extends React.Component {
         this.loadApplications = this.loadApplications.bind(this);
         this.removeApplication = this.removeApplication.bind(this);
         this.openChatroom = this.openChatroom.bind(this);
+        this.remountHeaderFromApplication = this.remountHeaderFromApplication.bind(this);
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.loadApplications();
+        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNewApplication());
     }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    remountHeaderFromApplication() {
+        this.setState({
+            remountHeaderValue: Math.random()
+        });
+      }
 
     async loadApplications() {
 
-        var url = ServiceHosts.getClassesHost()+"/posts/applications/get/by/me"
+        if (!this._isMounted) {return;}
+
+        var url = ServiceHosts.getClassesHost()+"/posts/applications/get/by/me";
 
         try {
 
@@ -55,6 +73,8 @@ class Applications extends React.Component {
     }
 
     async removeApplication(e) {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getClassesHost()+"/posts/applications/remove";
 
@@ -130,7 +150,11 @@ class Applications extends React.Component {
             <div className="ApplicationsWrapper">
                 <div className="Applications">
 
-                    <Header activeTab={"applications"} history={this.props.history} />
+                    <Header 
+                        activeTab={"applications"} 
+                        history={this.props.history} 
+                        remountHeader={this.remountHeaderFromApplication} 
+                        key={this.state.remountHeaderValue} />
                     
                     <div className="container-info">
                         <div className="help-message">Helpfull message here</div>

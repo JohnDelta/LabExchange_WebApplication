@@ -3,26 +3,43 @@ import './MyPosts.css';
 import Header from '../UIComponents/Header.js';
 import BasicModels from '../Tools/BasicModels.js';
 import ServiceHosts from '../Tools/ServiceHosts.js';
+import SharedMethods from '../Tools/SharedMethods.js';
 
 class MyPosts extends React.Component {
+
+    _isMounted = false;
 
     constructor(props) {
         super(props);
         this.state = {
-            "postsAndApplications": []
+            "postsAndApplications": [],
+            remountHeaderValue: Math.random()
         };
         this.toggleCollapsible = this.toggleCollapsible.bind(this);
         this.loadMyPosts = this.loadMyPosts.bind(this);
         this.removePost = this.removePost.bind(this);
+        this.remountHeaderFromMyPosts = this.remountHeaderFromMyPosts.bind(this);
     }
 
     componentDidMount() {
-
+        this._isMounted = true;
         this.loadMyPosts();
+        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNone());
+    }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    remountHeaderFromMyPosts() {
+        this.setState({
+            remountHeaderValue: Math.random()
+        });
     }
 
      async loadMyPosts() {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getClassesHost()+"/posts/get/by/me";
 
@@ -57,6 +74,8 @@ class MyPosts extends React.Component {
     }
 
     async removePost(e) {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getClassesHost()+"/posts/remove";
 
@@ -151,7 +170,11 @@ class MyPosts extends React.Component {
             <div className="MyPostsWrapper">
                 <div className="MyPosts">
 
-                    <Header activeTab={"my-posts"} history={this.props.history} />
+                    <Header 
+                        activeTab={"my-posts"} 
+                        history={this.props.history} 
+                        remountHeader={this.remountHeaderFromMyPosts} 
+                        key={this.state.remountHeaderValue} />
 
                     <div className="container-info">
                         <div className="help-message">Helpfull message here</div>

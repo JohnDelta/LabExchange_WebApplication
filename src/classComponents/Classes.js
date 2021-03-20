@@ -2,26 +2,44 @@ import React from 'react';
 import './Classes.css';
 import Header from '../UIComponents/Header.js';
 import ServiceHosts from '../Tools/ServiceHosts.js';
+import SharedMethods from '../Tools/SharedMethods.js';
 
 import {
     Link
   } from "react-router-dom";
+import BasicModels from '../Tools/BasicModels';
 
 class Classes extends React.Component {
+
+    _isMounted = false;
 
     constructor(props) {
         super(props);
         this.state = {
-            "labClassesAndLabs": []
+            "labClassesAndLabs": [],
+            remountHeaderValue: Math.random()
         };
 
         this.openClass = this.openClass.bind(this);
         this.loadUserClasses = this.loadUserClasses.bind(this);
+        this.remountHeaderFromClasses = this.remountHeaderFromClasses.bind(this);
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.loadUserClasses();
+        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNone());
     }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    remountHeaderFromClasses() {
+        this.setState({
+            remountHeaderValue: Math.random()
+        });
+      }
 
     openClass(e) {
 
@@ -33,6 +51,8 @@ class Classes extends React.Component {
     }
 
     async loadUserClasses() {
+
+        if (!this._isMounted) {return;}
 
         var url = ServiceHosts.getClassesHost()+"/classes/get/by/me"
 
@@ -98,7 +118,11 @@ class Classes extends React.Component {
             <div className="ClassesWrapper">
                 <div className="Classes">
 
-                    <Header activeTab={"class"} history={this.props.history} />
+                    <Header 
+                        activeTab={"class"} 
+                        history={this.props.history} 
+                        remountHeader={this.remountHeaderFromClasses} 
+                        key={this.state.remountHeaderValue} />
                     
                     <div className="container-info classes-new-post">
                         <div className="help-message">Helpfull message here</div>
