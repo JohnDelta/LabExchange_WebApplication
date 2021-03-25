@@ -1,3 +1,4 @@
+import BasicModels from '../Tools/BasicModels.js';
 import ServiceHosts from '../Tools/ServiceHosts.js';
 import SharedMethods from '../Tools/SharedMethods.js';
 
@@ -12,12 +13,12 @@ class Auth {
         }
     }
 
-    async login(credentials, onSuccess, onError) {
+    async login(credentials, onSuccess, onError, history) {
 
         var url = ServiceHosts.getAuthenticationHost()+"/account/login";
         var jsonBody = JSON.stringify({body:credentials});
 
-        SharedMethods.authPost(url, jsonBody, (sucess)=>{
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
 
             this.authenticated = true;
             localStorage.setItem("jwt", sucess.body.jwt);
@@ -26,9 +27,9 @@ class Auth {
             localStorage.setItem("username", credentials.username);
             localStorage.setItem("userType", sucess.body.userType); 
             if (sucess.body.userType === "Student") {
-                this.history.push("/Student")
+                history.push("/student");
             } else if (sucess.body.userType === "Professor") {
-                this.history.push("/professor");
+                history.push("/professor");
             }
 
         }, (error)=>{
@@ -50,7 +51,7 @@ class Auth {
     }
 
     isAuthenticated(userType) {
-        if (localStorage.getItem("userType") === userType) {
+        if (userType === BasicModels.UserTypeBoth() || localStorage.getItem("userType") === userType) {
             return this.authenticated;
         }
         return false;

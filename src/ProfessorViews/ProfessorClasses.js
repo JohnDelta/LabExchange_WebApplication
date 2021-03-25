@@ -1,8 +1,9 @@
 import React from 'react';
 import './ProfessorClasses.css';
-import Header from '../UIComponents/Header.js';
-import ServiceHosts from '../Tools/ServiceHosts.js';
-import SharedMethods from '../Tools/SharedMethods.js';
+import Header from '../UIComponents/Header';
+import ServiceHosts from '../Tools/ServiceHosts';
+import SharedMethods from '../Tools/SharedMethods';
+import Authentication from '../authentication/Authentication';
 
 import {
     Link

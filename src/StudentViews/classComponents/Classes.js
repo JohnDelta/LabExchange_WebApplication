@@ -1,8 +1,9 @@
 import React from 'react';
 import './Classes.css';
-import Header from '../../UIComponents/Header.js';
-import ServiceHosts from '../../Tools/ServiceHosts.js';
-import SharedMethods from '../../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header';
+import ServiceHosts from '../../Tools/ServiceHosts';
+import SharedMethods from '../../Tools/SharedMethods';
+import Authentication from '../../authentication/Authentication';
 
 import {
     Link
@@ -44,7 +45,7 @@ class Classes extends React.Component {
     openClass(e) {
         e.preventDefault(false);
         var id = e.target.id;
-        this.props.history.push("student/class/"+id);
+        this.props.history.push("/student/class/"+id);
     }
 
     async loadUserClasses() {
@@ -103,7 +104,7 @@ class Classes extends React.Component {
                     
                     <div className="container-info classes-new-post">
                         <div className="help-message">Helpfull message here</div>
-                        <Link to="student/post/new/classes">
+                        <Link to="/student/post/new/classes">
                             <i className="fa fa-plus" />
                             <div>New Post</div>
                         </Link>

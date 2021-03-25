@@ -2,10 +2,10 @@ import React from 'react';
 import './Header.css';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-import Authentication from '../authentication/Authentication';
 import BasicModels from '../Tools/BasicModels';
-import ServiceHosts from '../Tools/ServiceHosts.js';
+import ServiceHosts from '../Tools/ServiceHosts';
 import SharedMethods from '../Tools/SharedMethods';
+import Authentication from '../authentication/Authentication';
 
 class Header extends React.Component {
 
@@ -278,6 +278,27 @@ class Header extends React.Component {
 
         notifications = (notifications.length > 0) ? notifications : "You don't have any notifications yet.";
 
+        let studentButtons = [];
+        if (localStorage.getItem("userType") === BasicModels.UserTypeStudent()) {
+            studentButtons.push(
+                <button
+                    className={"tab " + ((this.props.activeTab === "my-posts") ? "active-tab" : "")} 
+                    onClick={this.onTabClick} 
+                    id="/student/post/my-posts_1" 
+                    key="header_student_mypost">My Posts</button>,
+                <button
+                    className={"tab " + ((this.props.activeTab === "applications") ? "active-tab" : "")} 
+                    onClick={this.onTabClick} 
+                    id="/student/post/applications_2"
+                    key="header_student_applications">Applications</button>,
+                <button
+                    className={"tab " + ((this.props.activeTab === "messenger") ? "active-tab" : "")} 
+                    onClick={this.onTabClick} 
+                    id="/student/messenger_3"
+                    key="header_student_messenger">Chat</button>
+            );
+        }
+
         return (
             <div className="Header">
                 <div className="Header-body-wrapper">
@@ -298,22 +319,9 @@ class Header extends React.Component {
                         <button
                             className={"tab " + ((this.props.activeTab === "class") ? "active-tab" : "")} 
                             onClick={this.onTabClick} 
-                            id="/classes_0">Classes</button>
+                            id={"/" + localStorage.getItem("userType").toLowerCase() + "/classes_0"}>Classes</button>
 
-                        <button
-                            className={"tab " + ((this.props.activeTab === "my-posts") ? "active-tab" : "")} 
-                            onClick={this.onTabClick} 
-                            id="/post/my-posts_1">My Posts</button>
-
-                        <button
-                            className={"tab " + ((this.props.activeTab === "applications") ? "active-tab" : "")} 
-                            onClick={this.onTabClick} 
-                            id="/post/applications_2">Applications</button>
-
-                        <button
-                            className={"tab " + ((this.props.activeTab === "messenger") ? "active-tab" : "")} 
-                            onClick={this.onTabClick} 
-                            id="/messenger_3">Chat</button>
+                        {studentButtons}
 
                         <button
                             className="notifications-button" 

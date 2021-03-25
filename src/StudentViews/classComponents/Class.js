@@ -1,9 +1,10 @@
 import React from 'react';
 import './Class.css';
-import Header from '../../UIComponents/Header.js';
-import BasicModels from '../../Tools/BasicModels.js';
-import ServiceHosts from '../../Tools/ServiceHosts.js';
-import SharedMethods from '../../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header';
+import BasicModels from '../../Tools/BasicModels';
+import ServiceHosts from '../../Tools/ServiceHosts';
+import SharedMethods from '../../Tools/SharedMethods';
+import Authentication from '../../authentication/Authentication';
 
 import {
     Link
@@ -156,7 +157,7 @@ class Class extends React.Component {
                     <div className="class-container">
                         <div className="class-header">
                             <div className="class-title">{this.state.labClassAndLab.labClass.name}</div>
-                            <Link className="class-back" to="student/classes">
+                            <Link className="class-back" to="/student/classes">
                                 <i className="fa fa-arrow-left" />
                             </Link>
                         </div>
@@ -170,7 +171,7 @@ class Class extends React.Component {
                                 <div className="class-info-body">{this.state.labClassAndLab.labClass.openForRegistrations}</div>
                             </div>
                             <div className="class-buttons">
-                                <Link to={"/post/new/class-"+this.state.labClassAndLab.labClass.labClassId}>
+                                <Link to={"/student/post/new/class-"+this.state.labClassAndLab.labClass.labClassId}>
                                     <i className="fa fa-plus" />
                                     <div>New Post</div>
                                 </Link>

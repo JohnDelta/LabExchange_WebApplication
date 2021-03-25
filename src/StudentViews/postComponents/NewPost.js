@@ -1,9 +1,10 @@
 import React from 'react';
 import './NewPost.css';
-import Header from '../../UIComponents/Header.js';
-import BasicModels from '../../Tools/BasicModels.js';
-import ServiceHosts from '../../Tools/ServiceHosts.js';
-import SharedMethods from '../../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header';
+import BasicModels from '../../Tools/BasicModels';
+import ServiceHosts from '../../Tools/ServiceHosts';
+import SharedMethods from '../../Tools/SharedMethods';
+import Authentication from '../../authentication/Authentication';
 
 import {
     Link
@@ -139,7 +140,7 @@ class NewPost extends React.Component {
 
     render() {
 
-        let backLink = "/" + this.props.match.params.link.replace("-", "/");
+        let backLink = "/student/" + this.props.match.params.link.replace("-", "/");
 
         let labClassOptions = this.state.labClassesAndLabs.map((labClassAndLab, index) => {
             return (

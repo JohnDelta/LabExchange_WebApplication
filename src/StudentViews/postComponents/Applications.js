@@ -1,9 +1,10 @@
 import React from 'react';
 import './Applications.css';
-import Header from '../../UIComponents/Header.js';
-import BasicModels from '../../Tools/BasicModels.js';
-import ServiceHosts from '../../Tools/ServiceHosts.js';
-import SharedMethods from '../../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header';
+import BasicModels from '../../Tools/BasicModels';
+import ServiceHosts from '../../Tools/ServiceHosts';
+import SharedMethods from '../../Tools/SharedMethods';
+import Authentication from '../../authentication/Authentication';
 
 class Applications extends React.Component {
 
@@ -72,7 +73,7 @@ class Applications extends React.Component {
 
     async openChatroom(e) {
         var othersUsername = e.target.id.split("_")[2];
-        this.props.history.push("student/messenger/user/" + othersUsername);
+        this.props.history.push("/student/messenger/user/" + othersUsername);
     }
 
     render() {

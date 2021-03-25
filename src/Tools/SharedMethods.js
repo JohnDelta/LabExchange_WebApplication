@@ -17,7 +17,7 @@ class SharedMethods {
     static async authPost(url, jsonBody, sucessCallback, errorCallback) {
 
         // works for the lab exchange ResponseDTO model
-
+        
         try {
 
             const response = await fetch(url, {

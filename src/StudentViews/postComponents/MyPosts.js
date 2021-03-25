@@ -1,9 +1,10 @@
 import React from 'react';
 import './MyPosts.css';
-import Header from '../../UIComponents/Header.js';
-import BasicModels from '../../Tools/BasicModels.js';
-import ServiceHosts from '../../Tools/ServiceHosts.js';
-import SharedMethods from '../../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header';
+import BasicModels from '../../Tools/BasicModels';
+import ServiceHosts from '../../Tools/ServiceHosts';
+import SharedMethods from '../../Tools/SharedMethods';
+import Authentication from '../../authentication/Authentication';
 
 class MyPosts extends React.Component {
 
@@ -47,7 +48,7 @@ class MyPosts extends React.Component {
         
         SharedMethods.authPost(url, jsonBody, (sucess) => {
             this.setState({
-                postsAndApplications: res.body
+                postsAndApplications: sucess.body
             });
         }, (err) => {Authentication.logout(this.props.history);});
 

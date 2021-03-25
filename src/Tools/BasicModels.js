@@ -121,4 +121,8 @@ class BasicModels {
         return "Professor";
     }
 
+    static UserTypeBoth() {
+        return "Both";
+    }
+
 } export default BasicModels;

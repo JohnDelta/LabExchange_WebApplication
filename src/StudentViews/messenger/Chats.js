@@ -2,8 +2,9 @@ import React from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import './Chats.css';
-import ServiceHosts from '../../Tools/ServiceHosts.js';
-import SharedMethods from '../../Tools/SharedMethods.js';
+import ServiceHosts from '../../Tools/ServiceHosts';
+import SharedMethods from '../../Tools/SharedMethods';
+import Authentication from '../../authentication/Authentication';
 
 import {withRouter} from 'react-router-dom';
 

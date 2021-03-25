@@ -34,7 +34,7 @@ class Login extends React.Component {
                 this.setState({
                     error: "Unable to login"
                 });
-            }
+            }, this.props.history
         );
         
     }

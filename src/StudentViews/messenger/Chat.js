@@ -3,8 +3,9 @@ import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import BasicModels from '../../Tools/BasicModels';
 import './Chat.css';
-import ServiceHosts from '../../Tools/ServiceHosts.js';
-import SharedMethods from '../../Tools/SharedMethods.js';
+import ServiceHosts from '../../Tools/ServiceHosts';
+import SharedMethods from '../../Tools/SharedMethods';
+import Authentication from '../../authentication/Authentication';
 
 class Chat extends React.Component {
 

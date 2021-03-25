@@ -2,12 +2,12 @@ import React from 'react';
 import {Route, Redirect} from 'react-router-dom';
 import Authentication from './Authentication';
 
-function ProtectedRoute({ component: Component, requiredUserType: requiredUserType, ...rest}) {
+function ProtectedRoute({ component: Component, ...rest}) {
     return (
         <Route
             {...rest}
             render={props => {
-                if(Authentication.isAuthenticated(requiredUserType)) {
+                if(Authentication.isAuthenticated(rest.requiredUserType)) {
                     return <Component {...props} />;
                 } else {
                     return <Redirect to={{
