@@ -1,13 +1,13 @@
 import React from 'react';
 import './Classes.css';
-import Header from '../UIComponents/Header.js';
-import ServiceHosts from '../Tools/ServiceHosts.js';
-import SharedMethods from '../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header.js';
+import ServiceHosts from '../../Tools/ServiceHosts.js';
+import SharedMethods from '../../Tools/SharedMethods.js';
 
 import {
     Link
   } from "react-router-dom";
-import BasicModels from '../Tools/BasicModels';
+import BasicModels from '../../Tools/BasicModels';
 
 class Classes extends React.Component {
 
@@ -42,47 +42,24 @@ class Classes extends React.Component {
       }
 
     openClass(e) {
-
         e.preventDefault(false);
-        
         var id = e.target.id;
-        this.props.history.push("class/"+id);
-
+        this.props.history.push("student/class/"+id);
     }
 
     async loadUserClasses() {
 
         if (!this._isMounted) {return;}
 
-        var url = ServiceHosts.getClassesHost()+"/classes/get/by/me"
+        var url = ServiceHosts.getClassesHost()+"/classes/get/by/me";
 
-        try {
+        var jsonBody = JSON.stringify({body:""});
 
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:""}),
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                labClassesAndLabs: sucess.body
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200) {
-                        this.setState({
-                            labClassesAndLabs: res.body
-                        });
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -126,7 +103,7 @@ class Classes extends React.Component {
                     
                     <div className="container-info classes-new-post">
                         <div className="help-message">Helpfull message here</div>
-                        <Link to="/post/new/classes">
+                        <Link to="student/post/new/classes">
                             <i className="fa fa-plus" />
                             <div>New Post</div>
                         </Link>

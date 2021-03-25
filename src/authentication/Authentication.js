@@ -1,105 +1,59 @@
 import ServiceHosts from '../Tools/ServiceHosts.js';
+import SharedMethods from '../Tools/SharedMethods.js';
 
 class Auth {
 
     constructor() {
-
         var auth = localStorage.getItem("jwt");
-        
         if(auth !== undefined && auth !== null && auth !== "") {
             this.authenticated = true; 
         } else {
             this.authenticated = false;
         }
-    
     }
 
-    async login(credentials, success, error) {
-        
-        var url = ServiceHosts.getAuthenticationHost()+"/account/login"
+    async login(credentials, onSuccess, onError) {
 
-        try {
+        var url = ServiceHosts.getAuthenticationHost()+"/account/login";
+        var jsonBody = JSON.stringify({body:credentials});
 
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({body:credentials}),
-            });
+        SharedMethods.authPost(url, jsonBody, (sucess)=>{
 
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if (res.status === 200) {
-                     
-                        this.authenticated = true;
-
-                        localStorage.setItem("jwt", res.body.jwt);
-    
-                        localStorage.setItem("username", credentials.username);   
-    
-                        success();
-
-                    } else {
-                        error();
-                    }
-
-                });
-            
-            } else {
-                error();
+            this.authenticated = true;
+            localStorage.setItem("jwt", sucess.body.jwt);
+            localStorage.setItem("name", sucess.body.name);
+            localStorage.setItem("lastname", sucess.body.lastname);
+            localStorage.setItem("username", credentials.username);
+            localStorage.setItem("userType", sucess.body.userType); 
+            if (sucess.body.userType === "Student") {
+                this.history.push("/Student")
+            } else if (sucess.body.userType === "Professor") {
+                this.history.push("/professor");
             }
 
-        } catch (e) {
-            error();
-        }
-
+        }, (error)=>{
+            onError();
+        });
+        
     }
 
     logout(history) {
     
         this.authenticated = false;
         localStorage.removeItem("jwt");
+        localStorage.removeItem("name");
+        localStorage.removeItem("lastname");
         localStorage.removeItem("username");
+        localStorage.removeItem("userType"); 
     
-        history.push("/");
+        history.push("/login");
     }
 
-    isAuthenticated() {
-        return this.authenticated;
-    }
-
-
-
-    async signup(credentials, success, error) { // temporal
-        
-        var url = ServiceHosts.getAuthenticationHost()+"/account/create"
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({body:credentials}),
-            });
-
-            if(response.status === 200) {
-                success();
-            
-            } else {
-                error();
-            }
-
-        } catch (error) {
-            error();
+    isAuthenticated(userType) {
+        if (localStorage.getItem("userType") === userType) {
+            return this.authenticated;
         }
-
+        return false;
     }
     
 }

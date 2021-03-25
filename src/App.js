@@ -1,15 +1,18 @@
 import React from 'react';
 import './App.css';
-import Messenger from './messenger/Messenger';
-import Classes from './classComponents/Classes.js';
-import Class from './classComponents/Class.js';
-import NewPost from './postComponents/NewPost.js';
-import MyPosts from './postComponents/MyPosts.js';
-import Applications from './postComponents/Applications.js';
+import Messenger from './StudentViews/messenger/Messenger';
+import Classes from './StudentViews/classComponents/Classes.js';
+import Class from './StudentViews/classComponents/Class.js';
+import NewPost from './StudentViews/postComponents/NewPost.js';
+import MyPosts from './StudentViews/postComponents/MyPosts.js';
+import Applications from './StudentViews/postComponents/Applications.js';
 import ProtectedRoute from './authentication/ProtectedRoute';
 import SignUp from './authentication/SignUp';
 import Login from './authentication/Login';
 import NotFound from './UIComponents/NotFound.js';
+import BasicModels from './Tools/BasicModels.js';
+import ProfessorClasses from './ProfessorViews/ProfessorClasses.js';
+import ProfessorClass from './ProfessorViews/ProfessorClass.js';
 
 import {
   BrowserRouter as Router,
@@ -33,31 +36,50 @@ class App extends React.Component {
 
             <ProtectedRoute
               exact
-              path={"/(classes)?"}
+              path={"/professor/(classes)?"}
+              requiredUserType={BasicModels.UserTypeProfessor}
+              component={ProfessorClass}
+            />
+
+            <ProtectedRoute
+              exact
+              path="/professor/class/:id"
+              requiredUserType={BasicModels.UserTypeProfessor}
+              component={ProfessorClasses}
+            />
+
+            <ProtectedRoute
+              exact
+              path={"/student/(classes)?"}
+              requiredUserType={BasicModels.UserTypeStudent}
               component={Classes}
             />
 
             <ProtectedRoute
               exact
-              path="/class/:id"
+              path="/student/class/:id"
+              requiredUserType={BasicModels.UserTypeStudent}
               component={Class}
             />
 
             <ProtectedRoute
               exact
-              path="/post/new/:link"
+              path="/student/post/new/:link"
+              requiredUserType={BasicModels.UserTypeStudent}
               component={NewPost}
             />
 
             <ProtectedRoute
               exact
-              path="/post/my-posts"
+              path="/student/post/my-posts"
+              requiredUserType={BasicModels.UserTypeStudent}
               component={MyPosts}
             />
 
             <ProtectedRoute
               exact
-              path="/post/applications"
+              path="/student/post/applications"
+              requiredUserType={BasicModels.UserTypeStudent}
               component={Applications}
             />
 
@@ -75,19 +97,22 @@ class App extends React.Component {
           
             <ProtectedRoute
               exact
-              path="/messenger"
+              path="/student/messenger"
+              requiredUserType={BasicModels.UserTypeStudent}
               component={Messenger}
             />
 
             <ProtectedRoute
               exact
-              path="/messenger/user/:username?"
+              path="/student/messenger/user/:username?"
+              requiredUserType={BasicModels.UserTypeStudent}
               component={Messenger}
             />
 
             <ProtectedRoute
               exact
-              path="/messenger/chatroom/:chatroomId?"
+              path="/student/messenger/chatroom/:chatroomId?"
+              requiredUserType={BasicModels.UserTypeStudent}
               component={Messenger}
             />
 

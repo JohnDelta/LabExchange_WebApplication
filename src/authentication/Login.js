@@ -28,7 +28,7 @@ class Login extends React.Component {
         Authentication.login(
             credentials,
             () => {
-                this.props.history.push("/");
+                //this.props.history.push("/student");
             },
             () => {
                 this.setState({

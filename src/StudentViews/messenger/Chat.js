@@ -1,9 +1,10 @@
 import React from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-import BasicModels from '../Tools/BasicModels';
+import BasicModels from '../../Tools/BasicModels';
 import './Chat.css';
-import ServiceHosts from '../Tools/ServiceHosts.js';
+import ServiceHosts from '../../Tools/ServiceHosts.js';
+import SharedMethods from '../../Tools/SharedMethods.js';
 
 class Chat extends React.Component {
 
@@ -25,11 +26,9 @@ class Chat extends React.Component {
         this.subscribeToConversationQueue = this.subscribeToConversationQueue.bind(this);
         this.subscribeToConversationQueueCallback = this.subscribeToConversationQueueCallback.bind(this);
         this.disconnectFromQueue = this.disconnectFromQueue.bind(this);
-        //this.messageReceived = this.messageReceived.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.onMessageChange = this.onMessageChange.bind(this);
         this.chatFilter = this.chatFilter.bind(this);
-        this.dateSince = this.dateSince.bind(this);
     }
 
     componentDidMount() {
@@ -67,36 +66,19 @@ class Chat extends React.Component {
         }
 
         var url = ServiceHosts.getMessengerHost()+"/messenger/conversation";
+        
+        var jsonBody = JSON.stringify({body:this.state.activeChatroom});
 
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:this.state.activeChatroom}),
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                conversation: sucess.body
+            }, () => {
+                this.chatFilter();
+                if (this.state.conversationQueue === "") {
+                    this.getConversationQueue();
+                }
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-                    this.setState({
-                        conversation: res.body
-                    }, () => {
-                        this.chatFilter();
-                        if (this.state.conversationQueue === "") {
-                            this.getConversationQueue();
-                        }
-                    });
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -106,33 +88,15 @@ class Chat extends React.Component {
 
         var url = ServiceHosts.getNotificationsHost()+"/notifications/get/conversation-queue";
 
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:""}),
+        var jsonBody = JSON.stringify({body:""});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                conversationQueue: sucess.body.queue
+            }, () => {
+                this.subscribeToConversationQueue();
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    this.setState({
-                        conversationQueue: res.body.queue
-                    }, () => {
-                        this.subscribeToConversationQueue();
-                    });
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -187,30 +151,6 @@ class Chat extends React.Component {
         }
     }
 
-    // async messageReceived(message) {
-
-    //     let url = ServiceHosts.getMessengerHost()+"/messenger/message-received"
-
-    //     try {
-
-    //         const response = await fetch(url, {
-    //             method: 'POST',
-    //             cache: 'no-cache',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-    //             },
-    //             body: JSON.stringify({body:message}),
-    //         });
-
-    //         if(response.status === 200) {
-    //             // seen message
-    //         }
-
-    //     } catch (error) {console.log(error);}
-
-    // }
-
     async sendMessage() {
 
         let url = ServiceHosts.getMessengerHost()+"/messenger/message";
@@ -218,27 +158,14 @@ class Chat extends React.Component {
         let body = BasicModels.getMessageModel();
         body.chatroom = this.state.activeChatroom;
         body.message = this.state.message;
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:body}),
+        let jsonBody = JSON.stringify({body:body});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.getConversation();
+            this.setState({
+                message: ""
             });
-
-            if(response.status === 200) {
-                this.getConversation();
-                this.setState({
-                    message: ""
-                });
-            }
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -266,28 +193,6 @@ class Chat extends React.Component {
         });
     }
 
-    dateSince(pastDate) {
-
-        let secondsSince = Math.floor(Number(new Date() - new Date(pastDate)) / 1000);
-        let minutesSince = Math.floor(Number(secondsSince) / 60);
-        let hoursSince = Math.floor(Number(minutesSince) / 60);
-        let daysSince = Math.floor(Number(hoursSince) / 24);
-        
-        let dateSince = "Seconds ago";
-        if(minutesSince > 1 && minutesSince <= 59) {
-            dateSince = minutesSince + " Minutes ago";
-        }
-        if(hoursSince > 0) {
-          dateSince = hoursSince + " Hours ago";
-        }
-        if(daysSince > 0) {
-          dateSince = daysSince + " Days ago";
-        }
-
-        return dateSince;
-        
-    }
-
     render() {
 
         var conversation = this.state.conversation.map((message, index) => {
@@ -298,7 +203,7 @@ class Chat extends React.Component {
                         {message.message}
                     </div>
                     <div className="info">
-                        {this.dateSince(message.timestamp)}
+                        {SharedMethods.dateSince(message.timestamp)}
                     </div>
                 </div>
             );
@@ -310,7 +215,9 @@ class Chat extends React.Component {
         if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
             conversation = "Choose a conversation to send messages";
         } else {
-            conversationTitle = this.state.activeChatroom.chatroomName;
+            let chatroomName = this.state.activeChatroom.chatroomName.replace(localStorage.getItem("name"), "");
+            chatroomName = chatroomName.replace(localStorage.getItem("lastname"), "");
+            conversationTitle = chatroomName;
         }
 
         return(

@@ -113,4 +113,12 @@ class BasicModels {
         return "None";
     }
 
+    static UserTypeStudent() {
+        return "Student";
+    }
+
+    static UserTypeProfessor() {
+        return "Professor";
+    }
+
 } export default BasicModels;

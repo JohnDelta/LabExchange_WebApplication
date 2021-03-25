@@ -1,9 +1,9 @@
 import React from 'react';
 import './MyPosts.css';
-import Header from '../UIComponents/Header.js';
-import BasicModels from '../Tools/BasicModels.js';
-import ServiceHosts from '../Tools/ServiceHosts.js';
-import SharedMethods from '../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header.js';
+import BasicModels from '../../Tools/BasicModels.js';
+import ServiceHosts from '../../Tools/ServiceHosts.js';
+import SharedMethods from '../../Tools/SharedMethods.js';
 
 class MyPosts extends React.Component {
 
@@ -43,33 +43,13 @@ class MyPosts extends React.Component {
 
         var url = ServiceHosts.getClassesHost()+"/posts/get/by/me";
 
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:""}),
+        var jsonBody = JSON.stringify({body:""});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                postsAndApplications: res.body
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200) {
-                        this.setState({
-                            postsAndApplications: res.body
-                        });
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -80,35 +60,13 @@ class MyPosts extends React.Component {
         var url = ServiceHosts.getClassesHost()+"/posts/remove";
 
         let postId = e.target.id;
-
         let post = BasicModels.getPostModel();
         post.postId = postId;
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:post}),
-            });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200) {
-                        this.loadMyPosts();
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        let jsonBody = JSON.stringify({body:post});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.loadMyPosts();
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 

@@ -5,6 +5,7 @@ import Stomp from 'stompjs';
 import Authentication from '../authentication/Authentication';
 import BasicModels from '../Tools/BasicModels';
 import ServiceHosts from '../Tools/ServiceHosts.js';
+import SharedMethods from '../Tools/SharedMethods';
 
 class Header extends React.Component {
 
@@ -24,7 +25,6 @@ class Header extends React.Component {
         this.toggleNotificationsPanel = this.toggleNotificationsPanel.bind(this);
         this.openNotification = this.openNotification.bind(this);
         this.attachNotificationPanelToButton = this.attachNotificationPanelToButton.bind(this);
-        this.dateSince = this.dateSince.bind(this);
         this.loadNotifications = this.loadNotifications.bind(this);
         this.getNotificationQueue = this.getNotificationQueue.bind(this);
         this.subscribeToNoficationQueue = this.subscribeToNoficationQueue.bind(this);
@@ -108,28 +108,6 @@ class Header extends React.Component {
         this.props.history.push(link);
     }
 
-    dateSince(pastDate) {
-
-        let secondsSince = Math.floor(Number(new Date() - new Date(pastDate)) / 1000);
-        let minutesSince = Math.floor(Number(secondsSince) / 60);
-        let hoursSince = Math.floor(Number(minutesSince) / 60);
-        let daysSince = Math.floor(Number(hoursSince) / 24);
-        
-        let dateSince = "Seconds ago";
-        if(minutesSince > 1 && minutesSince <= 59) {
-            dateSince = minutesSince + " Minutes ago";
-        }
-        if(hoursSince > 0) {
-          dateSince = hoursSince + " Hours ago";
-        }
-        if(daysSince > 0) {
-          dateSince = daysSince + " Days ago";
-        }
-
-        return dateSince;
-        
-    }
-
     async loadNotifications() {
 
         if (!this._isMounted) {return;}
@@ -141,34 +119,15 @@ class Header extends React.Component {
         let url = ServiceHosts.getNotificationsHost()+"/notifications/get/notifications";
         let data = BasicModels.getNotificationQueueModel();
         data.notificationQueueId = this.state.notificationQueue;
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:data}),
+        let jsonBody = JSON.stringify({body:data});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                notifications: sucess.body
+            }, () => {
+                this.notificationsFilter();
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    this.setState({
-                        notifications: res.body
-                    }, () => {
-                        this.notificationsFilter();
-                    });
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -178,34 +137,16 @@ class Header extends React.Component {
 
         var url = ServiceHosts.getNotificationsHost()+"/notifications/get/notification-queue";
 
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:""}),
+        var jsonBody = JSON.stringify({body:""});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                notificationQueue: sucess.body.queue
+            }, () => {
+                this.loadNotifications();
+                this.subscribeToNoficationQueue();
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    this.setState({
-                        notificationQueue: res.body.queue
-                    }, () => {
-                        this.loadNotifications();
-                        this.subscribeToNoficationQueue();
-                    });
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -282,11 +223,11 @@ class Header extends React.Component {
         let link = "";
         
         if (notificationType === BasicModels.NotificationTypeNewMessage()) {
-            link = "/messenger";
+            link = "student/messenger";
         } else if (notificationType === BasicModels.NotificationTypeLabExchanged()) {
-            link = "/my-labs";
+            link = "student/my-labs";
         } else if (notificationType === BasicModels.NotificationTypeNewApplication()) {
-            link = "/post/applications";
+            link = "student/post/applications";
         }
 
         return link;
@@ -310,27 +251,9 @@ class Header extends React.Component {
 
         let data = BasicModels.getNotificationModel();
         data.notificationId = notificationId;
+        let jsonBody = JSON.stringify({body:data}); 
 
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:data}),
-            });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        SharedMethods.authPost(url, jsonBody, (sucess) => {}, (err) => {});
 
     }
  
@@ -348,7 +271,7 @@ class Header extends React.Component {
                     key={"notification" + notification.notificationId}
                     id={"notification_" + notification.notificationId + "___" + this.getNotificationLink(notification.notificationType) + "___" + notification.notificationId}>
                     <div className="notification-message">{this.getNotificationTitle(notification.notificationType)}</div>
-                    <div className="notification-time">{this.dateSince(notification.timestamp)}</div>
+                    <div className="notification-time">{SharedMethods.dateSince(notification.timestamp)}</div>
                 </div>
             )
         });

@@ -1,5 +1,5 @@
 import React from 'react';
-import './Class.css';
+import './ProfessorClass.css';
 import Header from '../UIComponents/Header.js';
 import BasicModels from '../Tools/BasicModels.js';
 import ServiceHosts from '../Tools/ServiceHosts.js';
@@ -9,7 +9,7 @@ import {
     Link
  } from "react-router-dom";
 
-class Class extends React.Component {
+class ProfessorClass extends React.Component {
 
     _isMounted = false;
 
@@ -48,41 +48,19 @@ class Class extends React.Component {
         if (!this._isMounted) {return;}
 
         let id = this.props.match.params.id;
-
-        var url = ServiceHosts.getClassesHost()+"/classes/get/class/by/me"
+        var url = ServiceHosts.getClassesHost()+"/classes/get/class/by/me";
 
         var labClassObject = BasicModels.getLabClassModel();
         labClassObject.labClassId = id;
+        var jsonBody = JSON.stringify({body:labClassObject});
 
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:labClassObject}),
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                labClassAndLab: sucess.body
+            }, () => {
+                this.loadPosts();
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200 && res.body !== null) {
-                        this.setState({
-                            labClassAndLab: res.body
-                        }, () => {
-                            this.loadPosts();
-                        });
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (error) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -90,35 +68,14 @@ class Class extends React.Component {
 
         if (!this._isMounted) {return;}
 
-        var url = ServiceHosts.getClassesHost()+"/posts/get/by/class"
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:this.state.labClassAndLab.labClass}),
+        var url = ServiceHosts.getClassesHost()+"/posts/get/by/class";
+        var jsonBody = JSON.stringify({body:this.state.labClassAndLab.labClass});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess)=>{
+            this.setState({
+                postsAndApplications: sucess.body
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200 && res.body !== null) {
-                        this.setState({
-                            postsAndApplications: res.body
-                        });
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -127,46 +84,24 @@ class Class extends React.Component {
         var url = ServiceHosts.getClassesHost()+"/posts/applications/new";
 
         let postId = e.target.id;
-
         let post = BasicModels.getPostModel();
         post.postId = postId;
+        let jsonBody = JSON.stringify({body:post}); 
 
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:post}),
-            });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200) {
-                        this.loadPosts();
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.loadPosts();
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
     async openChatroom(e) {
         var othersUsername = e.target.id.split("_")[2];
-        this.props.history.push("/messenger/user/" + othersUsername);
+        this.props.history.push("student/messenger/user/" + othersUsername);
     }
 
     render() {
 
-        var postsWithoutMine = this.state.postsAndApplications.filter((postAndApplications) => postAndApplications.post.username !== localStorage.getItem("username"));
+        var postsWithoutMine = this.state.postsAndApplications.filter((postAndApplications) => postAndApplications.post.user.username !== localStorage.getItem("username"));
         var postsWithoutMyApplied = [];
         postsWithoutMine.forEach(postWithoutMine => {
             if (postWithoutMine.applications.length > 0) {
@@ -187,7 +122,7 @@ class Class extends React.Component {
 
             return (
                 <div className="tile" id={"tile_"+postAndApplication.post.postId} key={"class_tile_key"+postAndApplication.post.postId}>
-                    <div className="tile-header">{postAndApplication.post.username}</div>
+                    <div className="tile-header">{postAndApplication.post.user.name + " " + postAndApplication.post.user.lastname}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Exchanging</div>
@@ -198,7 +133,7 @@ class Class extends React.Component {
                             <div className="tile-info-body">{(postAndApplication.post.requestedLab === "" || typeof postAndApplication.post.requestedLab === "undefined") ? ("Any choice") : postAndApplication.post.requestedLab.name }</div>
                         </div>
                         <div className="tile-buttons">
-                            <button onClick={this.openChatroom} id={"class_openchatroom_"+postAndApplication.post.username}>Message</button>
+                            <button onClick={this.openChatroom} id={"class_openchatroom_"+postAndApplication.post.user.username}>Message</button>
                             <button className={applyButtonCss} onClick={this.applyToPost} id={postAndApplication.post.postId} >Apply</button>
                         </div>
                     </div>
@@ -210,7 +145,7 @@ class Class extends React.Component {
 
         return (
             <div className="ClassWrapper">
-                <div className="Class">
+                <div className="ProfessorClass">
 
                     <Header 
                         activeTab={"class"} 
@@ -221,7 +156,7 @@ class Class extends React.Component {
                     <div className="class-container">
                         <div className="class-header">
                             <div className="class-title">{this.state.labClassAndLab.labClass.name}</div>
-                            <Link className="class-back" to="/classes">
+                            <Link className="class-back" to="student/classes">
                                 <i className="fa fa-arrow-left" />
                             </Link>
                         </div>
@@ -254,4 +189,4 @@ class Class extends React.Component {
 
 }
 
-export default Class;
+export default ProfessorClass;

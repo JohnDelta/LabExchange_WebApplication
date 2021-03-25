@@ -1,9 +1,9 @@
 import React from 'react';
 import './NewPost.css';
-import Header from '../UIComponents/Header.js';
-import BasicModels from '../Tools/BasicModels.js';
-import ServiceHosts from '../Tools/ServiceHosts.js';
-import SharedMethods from '../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header.js';
+import BasicModels from '../../Tools/BasicModels.js';
+import ServiceHosts from '../../Tools/ServiceHosts.js';
+import SharedMethods from '../../Tools/SharedMethods.js';
 
 import {
     Link
@@ -51,35 +51,15 @@ class NewPost extends React.Component {
 
         var url = ServiceHosts.getClassesHost()+"/classes/get/by/me";
 
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:""}),
+        var jsonBody = JSON.stringify({body:""});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                labClassesAndLabs: sucess.body
+            }, () => {
+                this.loadUserLab();
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200) {
-                        this.setState({
-                            labClassesAndLabs: res.body
-                        }, () => {
-                            this.loadUserLab();
-                        });
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -92,39 +72,18 @@ class NewPost extends React.Component {
         var labClassObject = BasicModels.getLabClassModel();
         var el = document.getElementById("labClassDropdown");
         labClassObject.labClassId = el.value;
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:labClassObject}),
+        var jsonBody = JSON.stringify({body:labClassObject});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                providedLab: sucess.body
+            }, () => {
+                if (this.state.labClassId !== "" && typeof this.state.labClassId !== "undefined") {
+                    el.value = this.state.labClassId;
+                }
+                this.loadLabClassLabs();
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200) {
-                        this.setState({
-                            providedLab: res.body
-                        }, () => {
-                            if (this.state.labClassId !== "" && typeof this.state.labClassId !== "undefined") {
-                                el.value = this.state.labClassId;
-                            }
-                            this.loadLabClassLabs();
-                        });
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -137,34 +96,13 @@ class NewPost extends React.Component {
         var labClassObject = BasicModels.getLabClassModel();
         var el = document.getElementById("labClassDropdown");
         labClassObject.labClassId = el.value;
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:labClassObject}),
+        var jsonBody = JSON.stringify({body:labClassObject});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                labs: sucess.body
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200) {
-                        this.setState({
-                            labs: res.body
-                        });
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -185,36 +123,15 @@ class NewPost extends React.Component {
             post.providedLab.labId = this.state.providedLab.labId;
             post.requestedLab.labId = labDropdown.value;
             post.labClass.labClassId = labClassDropdown.value;
+            let jsonBody = JSON.stringify({body:post});
     
             var url = ServiceHosts.getClassesHost()+"/posts/new";
     
-            try {
-    
-                const response = await fetch(url, {
-                    method: 'POST',
-                    cache: 'no-cache',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                    },
-                    body: JSON.stringify({body:post}),
+            SharedMethods.authPost(url, jsonBody, (sucess) => {
+                this.setState({
+                    message: "Post created!"
                 });
-    
-                if(response.status === 200) {
-    
-                    response.json().then((res) => {
-    
-                        if(res.status === 200) {
-                            this.setState({
-                                message: "Post created!"
-                            });
-                        }
-    
-                    });
-                
-                } else {}
-    
-            } catch (error) {console.log(error);}
+            }, (err) => {Authentication.logout(this.props.history);});
 
         }
 

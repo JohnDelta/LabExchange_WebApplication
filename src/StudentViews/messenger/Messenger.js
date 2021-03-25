@@ -2,9 +2,9 @@ import React from 'react';
 import './Messenger.css';
 import Chat from './Chat';
 import Chats from './Chats';
-import Header from '../UIComponents/Header.js';
-import BasicModels from '../Tools/BasicModels.js';
-import SharedMethods from '../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header.js';
+import BasicModels from '../../Tools/BasicModels.js';
+import SharedMethods from '../../Tools/SharedMethods.js';
 
 class Messenger extends React.Component {
 

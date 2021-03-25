@@ -1,9 +1,9 @@
 import React from 'react';
 import './Applications.css';
-import Header from '../UIComponents/Header.js';
-import BasicModels from '../Tools/BasicModels.js';
-import ServiceHosts from '../Tools/ServiceHosts.js';
-import SharedMethods from '../Tools/SharedMethods.js';
+import Header from '../../UIComponents/Header.js';
+import BasicModels from '../../Tools/BasicModels.js';
+import ServiceHosts from '../../Tools/ServiceHosts.js';
+import SharedMethods from '../../Tools/SharedMethods.js';
 
 class Applications extends React.Component {
 
@@ -42,33 +42,13 @@ class Applications extends React.Component {
 
         var url = ServiceHosts.getClassesHost()+"/posts/applications/get/by/me";
 
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:""}),
+        var jsonBody = JSON.stringify({body:""});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.setState({
+                applications: sucess.body
             });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200) {
-                        this.setState({
-                            applications: res.body
-                        });
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
@@ -82,38 +62,17 @@ class Applications extends React.Component {
 
         let application = BasicModels.getApplicationModel();
         application.applicationId = applicationid;
-
-        try {
-
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                body: JSON.stringify({body:application}),
-            });
-
-            if(response.status === 200) {
-
-                response.json().then((res) => {
-
-                    if(res.status === 200) {
-                        this.loadApplications();
-                    }
-
-                });
-            
-            } else {}
-
-        } catch (error) {console.log(error);}
+        let jsonBody = JSON.stringify({body:application});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.loadApplications();
+        }, (err) => {Authentication.logout(this.props.history);});
 
     }
 
     async openChatroom(e) {
         var othersUsername = e.target.id.split("_")[2];
-        this.props.history.push("/messenger/user/" + othersUsername);
+        this.props.history.push("student/messenger/user/" + othersUsername);
     }
 
     render() {

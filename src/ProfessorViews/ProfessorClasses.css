@@ -1,0 +1,250 @@
+.ClassesWrapper {
+    z-index: 1;
+    border-radius: 10px;
+    background-color: #e3e3e3;
+    height: 80vh;
+    width: 70vw;
+    max-width: 1000px;
+    margin: 10vh 0px 0px 0px;
+    padding: 10px;
+    display: flex;
+}
+
+.ProfessorClasses {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    width: 100%;
+}
+
+@media only screen and (max-width: 900px) {
+    .ClassesWrapper {
+        margin: 0px;
+        height: 100vh;
+        width: 100vw;
+        padding: 0px;
+    }
+    .ProfessorClasses {
+        padding-top: 40px;
+    }   
+}
+
+.tiles {
+    background-color: #FFF;
+    height: 100%;
+    padding: 20px;
+    overflow-y: scroll;
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(2, 1fr);
+    align-content: start;
+}
+
+@media only screen and (max-width: 1000px) {
+    .tiles {
+        grid-template-columns: 1fr;
+    }   
+}
+
+.cancelEvents div {
+    pointer-events: none;
+}
+
+.tile {
+    width: 100%;
+    border-radius: 10px;
+    display: grid;
+    padding: 10px;
+    grid-template-rows: repeat(3, auto);
+    grid-template-columns: 1fr;
+    border: 1px solid #627aaf;
+}
+
+.oneRow {
+    grid-column: 1/4;    
+}
+
+.tiles .tile-header {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 18px;
+    color: #627aaf;
+}
+
+.tiles .tile-header * {
+    font-size: 18px;
+    color: #627aaf;
+}
+
+.tiles .tile-header button {
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.tiles .tile-header button i {
+    font-size: 18px;
+    color: #627aaf;
+}
+
+.tiles .tile-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+}
+
+.tiles .tile-info {
+    margin: 5px;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+}
+
+.tiles .tile-info-header {
+    background-color: #627aaf;
+    color: #FFF;
+    padding: 2px 5px;
+    height: 100%;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+}
+
+.tiles .tile-info-body {
+    padding: 2px 5px;
+    height: 100%;
+    color: #627aaf;
+    background-color: rgb(241, 241, 241);
+    font-weight: 500;
+}
+
+.tiles .tile-buttons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: end;
+}
+
+.tiles .tile-buttons button {
+    border: none;
+    border-radius: 10px;
+    margin: 5px;
+}
+
+.tiles .tile-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow-y: hidden;
+    padding: 5px;
+}
+
+.tiles .tile-list-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px;
+    margin: 2px 10px;
+}
+
+.tiles .tile-list-row:nth-child(odd) {
+    background-color: rgb(241, 241, 241);
+}
+
+.tiles .tile-list-row-title {
+}
+
+.tiles .tile-list-row-body {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px;
+    justify-content: end;
+    align-items: center;
+}
+
+.tiles .tile-list-row-body button {
+    border: none;
+}
+
+.tiles .tile-list-button {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #627aaf;
+}
+
+.open-tile-list-button {
+    border-bottom-left-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+}
+
+.tiles .tile-list-button i {
+    color: #FFF;
+    margin-left: 6px;
+    pointer-events: none;
+}
+
+.tiles .tile-list-button div {
+    color: #FFF;
+    pointer-events: none;
+}
+
+.tiles .tile-list-body {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    background-color: #FFF;
+    height: auto;
+    max-height: 150px;
+    gap: 5px;
+    overflow-y: scroll;
+}
+
+.tiles .tile-list-numberOfApplications {
+    min-height: 20px;
+    min-width: 20px;
+    background-color: #e3e3e3;
+    border-radius: 50%;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tiles .tile-list-numberOfApplications div {
+    text-align: center;
+    color: #627aaf !important;
+    font-weight: 500;
+}
+
+.close-tile-list-body {
+    max-height: 0px !important;
+    padding: 0px !important;
+}
+
+.inactiveButton {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.classes-new-post a {
+    background-color: #627aaf;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 10px;
+}
+
+.classes-new-post a * {
+    color: #FFF;
+    pointer-events: none;
+}
