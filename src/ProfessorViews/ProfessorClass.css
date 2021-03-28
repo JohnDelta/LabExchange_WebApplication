@@ -1,4 +1,4 @@
-.ClassWrapper {
+.ProfessorClassWrapper {
     z-index: 1;
     border-radius: 10px;
     background-color: #e3e3e3;
@@ -19,7 +19,7 @@
 }
 
 @media only screen and (max-width: 900px) {
-    .ClassWrapper {
+    .ProfessorClassWrapper {
         margin: 0px;
         height: 100vh;
         width: 100vw;
@@ -77,13 +77,9 @@
     justify-content: end;
 }
 
-.class-container .class-buttons a {
+.class-container .class-buttons button {
     background-color: #627aaf;
-    display: grid;
-    grid-template-columns: auto auto;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
+    outline: none;
     border: none;
     border-radius: 10px;
 }

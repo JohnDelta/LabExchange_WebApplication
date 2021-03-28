@@ -141,12 +141,15 @@ class Messenger extends React.Component {
     }
 
     disconnectFromQueue() {
-        this.state.subscription.unsubscribe();
-        this.state.client.disconnect();
-        this.setState({
-            subscription: null,
-            client: null
-        });
+        if (typeof this.state.subscription !== "undefined" && this.state.subscription !== null) {
+            this.state.subscription.unsubscribe();
+            this.setState({subscription: null});    
+        }
+
+        if (typeof this.state.client !== "undefined" && this.state.client !== null) {
+            this.state.client.disconnect();
+            this.setState({client: null});
+        }
     }
 
     async chatroomReceived() {

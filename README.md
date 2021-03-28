@@ -31,16 +31,4 @@ https://github.com/JohnDelta/Messenger-service
 ### notes
 
 
-- professor can see all his classes
-and if he opens one , see all their assigned labs and option to open for registrations the class.
-
-then he can open a lab and see its state - students - labs
-
-and give choice to download the state for each lab.
-
-
-- add professor classes and class - labs view 
-- add exchanges db and save there
-- fix services to check if open for assignments first
-- you can open lab and see state
-- you can open class and print exchanges
+- create the lab exchanges view for class

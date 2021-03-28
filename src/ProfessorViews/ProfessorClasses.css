@@ -1,4 +1,4 @@
-.ClassesWrapper {
+.ProfessorClassesWrapper {
     z-index: 1;
     border-radius: 10px;
     background-color: #e3e3e3;
@@ -19,7 +19,7 @@
 }
 
 @media only screen and (max-width: 900px) {
-    .ClassesWrapper {
+    .ProfessorClassesWrapper {
         margin: 0px;
         height: 100vh;
         width: 100vw;

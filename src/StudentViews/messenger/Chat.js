@@ -145,7 +145,7 @@ class Chat extends React.Component {
     }
 
     disconnectFromQueue() {
-        if(this.state.client !== null && this.state.client !== undefined) {
+        if(this.state.client !== null && typeof this.state.client !== "undefined") {
             this.state.client.disconnect(()=>{
                 //console.log("disconected");
             });    

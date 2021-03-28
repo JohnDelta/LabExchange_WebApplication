@@ -45,7 +45,7 @@ class ProfessorClasses extends React.Component {
     openClass(e) {
         e.preventDefault(false);
         var id = e.target.id;
-        this.props.history.push("professor/class/"+id);
+        this.props.history.push("/professor/class/"+id);
     }
 
     async loadUserClasses() {
@@ -66,24 +66,20 @@ class ProfessorClasses extends React.Component {
 
     render() {
 
-        var classes = this.state.labClassesAndLabs.map((labClassAndLab) => {
+        var classes = this.state.labClassesAndLabs.map((labClassAndLabs) => {
             return (
                 <div 
                     className="tile cancelEvents" 
                     onClick={this.openClass} 
-                    id={labClassAndLab.labClass.labClassId} 
-                    key={"classes_lab_"+labClassAndLab.labClass.labClassId}
+                    id={labClassAndLabs.labClass.labClassId} 
+                    key={"classes_lab_"+labClassAndLabs.labClass.labClassId}
                     style={{"cursor":"pointer"}}
                 >
-                    <div className="tile-header">{labClassAndLab.labClass.name}</div>
+                    <div className="tile-header">{labClassAndLabs.labClass.name}</div>
                     <div className="tile-body">
                         <div className="tile-info">
-                            <div className="tile-info-header">Assigned Lab</div>
-                            <div className="tile-info-body">{labClassAndLab.lab.name}</div>
-                        </div>
-                        <div className="tile-info">
                             <div className="tile-info-header">Open for registrations</div>
-                            <div className="tile-info-body">{(labClassAndLab.labClass.openForRegistrations) ? ("Open") : ("Closed") }</div>
+                            <div className="tile-info-body">{(labClassAndLabs.labClass.openForRegistrations) ? ("Open") : ("Closed") }</div>
                         </div>
                     </div>
                 </div>
@@ -104,10 +100,6 @@ class ProfessorClasses extends React.Component {
                     
                     <div className="container-info ProfessorClasses-new-post">
                         <div className="help-message">Helpfull message here</div>
-                        <Link to="professor/post/new/professor/classes">
-                            <i className="fa fa-plus" />
-                            <div>New Post</div>
-                        </Link>
                     </div>
 
                     <div className="tiles">

@@ -38,19 +38,19 @@ class App extends React.Component {
               exact
               path={"/professor/(classes)?"}
               requiredUserType={BasicModels.UserTypeProfessor()}
-              component={ProfessorClass}
+              component={ProfessorClasses}
             />
 
             <ProtectedRoute
               exact
               path="/professor/class/:id"
               requiredUserType={BasicModels.UserTypeProfessor()}
-              component={ProfessorClasses}
+              component={ProfessorClass}
             />
 
             <ProtectedRoute
               exact
-              path="/professor/lab/:link"
+              path="/professor/lab/:link/:id"
               requiredUserType={BasicModels.UserTypeProfessor()}
               component={ProfessorLab}
             />

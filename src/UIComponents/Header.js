@@ -78,8 +78,10 @@ class Header extends React.Component {
         let notificationsButtonElement = e.target;
         let notificationsPanelElement = document.getElementById("notificationsPanel");
 
-        notificationsButtonElement.firstElementChild.classList.toggle("fa-times");
-        notificationsButtonElement.firstElementChild.classList.toggle("fa-bell");
+        let icon = notificationsButtonElement.firstElementChild.firstElementChild;
+
+        icon.classList.toggle("fa-times");
+        icon.classList.toggle("fa-bell");
 
         notificationsPanelElement.classList.toggle("notifications-panel-active");
 
@@ -152,6 +154,8 @@ class Header extends React.Component {
 
     subscribeToNoficationQueue() {
 
+        if (!this._isMounted) {return;}
+        
         if (typeof this.state.notificationQueue === "undefined" || this.state.notificationQueue === "" || this.state.notificationQueue === null) {
             return;
         }
@@ -196,10 +200,8 @@ class Header extends React.Component {
     }
 
     disconnectFromQueue() {
-        if(this.state.client !== null && this.state.client !== undefined) {
-            this.state.client.disconnect(()=>{
-                //console.log("disconected");
-            });    
+        if(this.state.client !== null && typeof this.state.client !== "undefined") {
+            this.state.client.disconnect();    
         }
     }
 
@@ -278,6 +280,7 @@ class Header extends React.Component {
 
         notifications = (notifications.length > 0) ? notifications : "You don't have any notifications yet.";
 
+        let lowerLayoutCss = "lower-layout-2-columns";
         let studentButtons = [];
         if (localStorage.getItem("userType") === BasicModels.UserTypeStudent()) {
             studentButtons.push(
@@ -297,6 +300,7 @@ class Header extends React.Component {
                     id="/student/messenger_3"
                     key="header_student_messenger">Chat</button>
             );
+            lowerLayoutCss = "";
         }
 
         return (
@@ -314,7 +318,7 @@ class Header extends React.Component {
                         </button>
                     </div>
 
-                    <div className="lower">
+                    <div className={"lower" + " " + lowerLayoutCss}>
 
                         <button
                             className={"tab " + ((this.props.activeTab === "class") ? "active-tab" : "")} 
