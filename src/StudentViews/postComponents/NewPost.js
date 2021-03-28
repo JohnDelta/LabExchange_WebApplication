@@ -50,7 +50,7 @@ class NewPost extends React.Component {
 
         if (!this._isMounted) {return;}
 
-        var url = ServiceHosts.getClassesHost()+"/classes/get/by/me";
+        var url = ServiceHosts.getClassesHost()+"/classes/student/get/by/me";
 
         var jsonBody = JSON.stringify({body:""});
         
@@ -68,7 +68,7 @@ class NewPost extends React.Component {
 
         if (!this._isMounted) {return;}
 
-        var url = ServiceHosts.getClassesHost()+"/classes/get/lab/by/me";
+        var url = ServiceHosts.getClassesHost()+"/classes/student/get/lab/by/me";
 
         var labClassObject = BasicModels.getLabClassModel();
         var el = document.getElementById("labClassDropdown");
@@ -92,7 +92,7 @@ class NewPost extends React.Component {
 
         if (!this._isMounted) {return;}
 
-        var url = ServiceHosts.getClassesHost()+"/classes/get/labs/by/class";
+        var url = ServiceHosts.getClassesHost()+"/classes/student/get/labs/by/class";
 
         var labClassObject = BasicModels.getLabClassModel();
         var el = document.getElementById("labClassDropdown");

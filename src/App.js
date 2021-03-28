@@ -12,6 +12,7 @@ import NotFound from './UIComponents/NotFound';
 import BasicModels from './Tools/BasicModels';
 import ProfessorClasses from './ProfessorViews/ProfessorClasses';
 import ProfessorClass from './ProfessorViews/ProfessorClass';
+import ProfessorLab from './ProfessorViews/ProfessorLab';
 
 import {
   BrowserRouter as Router,
@@ -45,6 +46,13 @@ class App extends React.Component {
               path="/professor/class/:id"
               requiredUserType={BasicModels.UserTypeProfessor()}
               component={ProfessorClasses}
+            />
+
+            <ProtectedRoute
+              exact
+              path="/professor/lab/:link"
+              requiredUserType={BasicModels.UserTypeProfessor()}
+              component={ProfessorLab}
             />
 
             <ProtectedRoute

@@ -223,11 +223,11 @@ class Header extends React.Component {
         let link = "";
         
         if (notificationType === BasicModels.NotificationTypeNewMessage()) {
-            link = "student/messenger";
+            link = "/student/messenger";
         } else if (notificationType === BasicModels.NotificationTypeLabExchanged()) {
-            link = "student/my-labs";
+            link = "/student/my-labs";
         } else if (notificationType === BasicModels.NotificationTypeNewApplication()) {
-            link = "student/post/applications";
+            link = "/student/post/applications";
         }
 
         return link;

@@ -18,7 +18,8 @@ class Class extends React.Component {
         super(props);
         this.state = {
             "labClassAndLab": BasicModels.getLabClassAndLabModel(),
-            "postsAndApplications": []
+            "postsAndApplications": [],
+            "errorMessage": ""
         };
 
         this.loadClass = this.loadClass.bind(this);
@@ -49,7 +50,7 @@ class Class extends React.Component {
         if (!this._isMounted) {return;}
 
         let id = this.props.match.params.id;
-        var url = ServiceHosts.getClassesHost()+"/classes/get/class/by/me";
+        var url = ServiceHosts.getClassesHost()+"/classes/student/get/class/by/me";
 
         var labClassObject = BasicModels.getLabClassModel();
         labClassObject.labClassId = id;
@@ -91,13 +92,17 @@ class Class extends React.Component {
 
         SharedMethods.authPost(url, jsonBody, (sucess) => {
             this.loadPosts();
-        }, (err) => {Authentication.logout(this.props.history);});
+        }, (err) => {
+            this.setState({
+                errorMessage: "You aren't assigned to this lab."
+            });
+        });
 
     }
 
     async openChatroom(e) {
         var othersUsername = e.target.id.split("_")[2];
-        this.props.history.push("student/messenger/user/" + othersUsername);
+        this.props.history.push("/student/messenger/user/" + othersUsername);
     }
 
     render() {
@@ -175,6 +180,9 @@ class Class extends React.Component {
                                     <i className="fa fa-plus" />
                                     <div>New Post</div>
                                 </Link>
+                            </div>
+                            <div className="class-info">
+                                <div className="class-info-header">{this.state.errorMessage}</div>
                             </div>
                         </div>
                     </div>

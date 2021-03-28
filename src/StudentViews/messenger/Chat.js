@@ -66,7 +66,7 @@ class Chat extends React.Component {
             return;
         }
 
-        var url = ServiceHosts.getMessengerHost()+"/messenger/conversation";
+        var url = ServiceHosts.getMessengerHost()+"/messenger/student/conversation";
         
         var jsonBody = JSON.stringify({body:this.state.activeChatroom});
 
@@ -154,7 +154,7 @@ class Chat extends React.Component {
 
     async sendMessage() {
 
-        let url = ServiceHosts.getMessengerHost()+"/messenger/message";
+        let url = ServiceHosts.getMessengerHost()+"/messenger/student/message";
 
         let body = BasicModels.getMessageModel();
         body.chatroom = this.state.activeChatroom;

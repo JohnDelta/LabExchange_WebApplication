@@ -18,23 +18,44 @@ class Auth {
         var url = ServiceHosts.getAuthenticationHost()+"/account/login";
         var jsonBody = JSON.stringify({body:credentials});
 
-        SharedMethods.authPost(url, jsonBody, (sucess) => {
+        try {
 
-            this.authenticated = true;
-            localStorage.setItem("jwt", sucess.body.jwt);
-            localStorage.setItem("name", sucess.body.name);
-            localStorage.setItem("lastname", sucess.body.lastname);
-            localStorage.setItem("username", credentials.username);
-            localStorage.setItem("userType", sucess.body.userType); 
-            if (sucess.body.userType === "Student") {
-                history.push("/student");
-            } else if (sucess.body.userType === "Professor") {
-                history.push("/professor");
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonBody,
+            });
+
+            if(response.status === 200) {
+                response.json().then((res) => {
+                    if (res.status === 200) {
+
+                        this.authenticated = true;
+                        localStorage.setItem("jwt", res.body.jwt);
+                        localStorage.setItem("name", res.body.name);
+                        localStorage.setItem("lastname", res.body.lastname);
+                        localStorage.setItem("username", credentials.username);
+                        localStorage.setItem("userType", res.body.userType); 
+                        if (res.body.userType === "Student") {
+                            history.push("/student");
+                        } else if (res.body.userType === "Professor") {
+                            history.push("/professor");
+                        }
+
+                    } else {
+                        onError();
+                    }
+                }, (err) => {onError();});
+            } else {
+                onError();
             }
 
-        }, (error)=>{
+        } catch (error) {
             onError();
-        });
+        }
         
     }
 

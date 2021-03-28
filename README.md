@@ -31,24 +31,16 @@ https://github.com/JohnDelta/Messenger-service
 ### notes
 
 
-- finish the lab exchange function (ok for now)
+- professor can see all his classes
+and if he opens one , see all their assigned labs and option to open for registrations the class.
 
-in classes service
-- users must have a user type of student or professor. (k)
-- generate professors too, but they should only have labClasses assigned to them. k
-- in each service, make sure the requested call comes from the correct user role too. Not only by his jwt. Make it a function you're gonna use it alot. difficult.
+then he can open a lab and see its state - students - labs
 
-in authentication service
-- add the user role there too. k
+and give choice to download the state for each lab.
 
 
-in web app
-- change the auth.js to read the returning user role and redirect him there.
-
-
-fix header to redirect depending the user type.
-and to show only the corresponding headers.
-
-then create the classes view for professors.
-
-then try to add the userType to jwt so you can read it from services
+- add professor classes and class - labs view 
+- add exchanges db and save there
+- fix services to check if open for assignments first
+- you can open lab and see state
+- you can open class and print exchanges

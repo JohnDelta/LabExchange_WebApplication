@@ -1,6 +1,4 @@
 import React from 'react';
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
 import './Chats.css';
 import ServiceHosts from '../../Tools/ServiceHosts';
 import SharedMethods from '../../Tools/SharedMethods';
@@ -19,6 +17,7 @@ class Chats extends React.Component {
             chatrooms: [],
             chatroomsQueue: "",
             client: null,
+            subscription: null,
             chatroomId: "",
             receiverUsername: "",
             activeChatroom: null
@@ -26,10 +25,6 @@ class Chats extends React.Component {
 
         this.initializeChat = this.initializeChat.bind(this);
         this.getChatrooms = this.getChatrooms.bind(this);
-        this.getChatroomsQueue = this.getChatroomsQueue.bind(this);
-        this.subscribeToChatroomsQueue = this.subscribeToChatroomsQueue.bind(this);
-        this.subscribeToChatroomsQueueCallback = this.subscribeToChatroomsQueueCallback.bind(this);
-        this.disconnectFromQueue = this.disconnectFromQueue.bind(this);
         this.activateChat = this.activateChat.bind(this);
         this.onChatClick = this.onChatClick.bind(this);
         this.initializeActiveChatroom = this.initializeActiveChatroom.bind(this);
@@ -88,7 +83,6 @@ class Chats extends React.Component {
 
     componentWillUnmount() {
         this._isMounted = false;
-        this.disconnectFromQueue();
     }
 
     async initializeActiveChatroom(commingFrom) {
@@ -101,13 +95,13 @@ class Chats extends React.Component {
             if (typeof this.state.receiverUsername === "undefined" || this.state.receiverUsername === "") {
                 return;
             }
-            url = ServiceHosts.getMessengerHost()+"/messenger/chatroom/initialize";
+            url = ServiceHosts.getMessengerHost()+"/messenger/student/chatroom/initialize";
             data = this.state.receiverUsername;
         } else if (commingFrom === "chatroomId") {
             if (typeof this.state.chatroomId === "undefined" || this.state.chatroomId === "") {
                 return;
             }
-            url = ServiceHosts.getMessengerHost()+"/messenger/get/chatroom";
+            url = ServiceHosts.getMessengerHost()+"/messenger/student/get/chatroom";
             data = this.state.chatroomId;
         }
         var jsonBody = JSON.stringify({body:data});
@@ -127,7 +121,7 @@ class Chats extends React.Component {
 
         if (!this._isMounted) {return;}
 
-        var url = ServiceHosts.getMessengerHost()+"/messenger/chatrooms";
+        var url = ServiceHosts.getMessengerHost()+"/messenger/student/chatrooms";
 
         var jsonBody = JSON.stringify({body:""});
         
@@ -135,9 +129,6 @@ class Chats extends React.Component {
             this.setState({
                 chatrooms: success.body
             }, () => {
-
-                this.getChatroomsQueue();
-                
                 if (typeof this.state.activeChatroom !== "undefined" && 
                     this.state.activeChatroom !== null &&
                     this.state.activeChatroom.chatroomId !== "") {
@@ -163,69 +154,13 @@ class Chats extends React.Component {
 
     }
 
-    async getChatroomsQueue() {
-
-        if (!this._isMounted) {return;}
-
-        var url = ServiceHosts.getNotificationsHost()+"/notifications/get/chatrooms-queue";
-
-        var jsonBody = JSON.stringify({body:""});
-        
-        SharedMethods.authPost(url, jsonBody, (sucess) => {
-            this.setState({
-                chatroomsQueue: sucess.body.queue
-            }, () => {
-                this.subscribeToChatroomsQueue();
-            });
-        }, (err) => {Authentication.logout(this.props.history);});
-
-    }
-
-    async subscribeToChatroomsQueue() {
-
-        if (typeof this.state.chatroomsQueue === "undefined" || this.state.chatroomsQueue === "" || this.state.chatroomsQueue === null) {
-            return;
-        }
-
-        var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
-        var client = Stomp.over(ws);
-        client.debug = null;
-
-        var headers = {
-          "login": "guest",
-          "passcode": "guest",
-          'X-Authorization': localStorage.getItem("jwt")
-        };
-
-        client.connect(
-            headers, 
-            () => {
-
-                var subscription = client.subscribe(
-                    "/queue/" + this.state.chatroomsQueue, 
-                    this.subscribeToChatroomsQueueCallback,
-                    {'X-Authorization': localStorage.getItem("jwt")}
-                );
-
-            },(error) => { console.log(error); }
-        );
-
-        // client.heartbeat.outgoing = 1000; // client will send heartbeats every 20000ms
-        // client.heartbeat.incoming = 0;
-
-        this.setState({
-            client: client
-        });
-
-    }
-
     async chatroomReceived() {
 
         if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
             return;
         }
 
-        var url = ServiceHosts.getMessengerHost()+"/messenger/chatroom-received";
+        var url = ServiceHosts.getMessengerHost()+"/messenger/student/chatroom-received";
 
         var jsonBody = JSON.stringify({body: this.state.activeChatroom});
 
@@ -233,23 +168,6 @@ class Chats extends React.Component {
             this.getChatrooms();
         }, (err) => {Authentication.logout(this.props.history);});
 
-    }
-
-    subscribeToChatroomsQueueCallback(object) {
-        var othersUsername = object.body;
-        this.getChatrooms();
-        if (typeof this.state.activeChatroom === "undefined" || this.state.activeChatroom === null || this.state.activeChatroom === "") {
-            return;
-        }
-        this.chatroomReceived();
-    }
-
-    disconnectFromQueue() {
-        if(this.state.client !== null && typeof this.state.client !== "undefined") {
-            this.state.client.disconnect(()=>{
-                //console.log("disconected");
-            });    
-        }
     }
 
     activateChat() {
@@ -262,7 +180,7 @@ class Chats extends React.Component {
 
     onChatClick(e) {
         var chatroomId = e.target.id.split("____")[1];
-        this.props.history.push("student/messenger/chatroom/"+chatroomId);
+        this.props.history.push("/student/messenger/chatroom/"+chatroomId);
     }
 
     filterChatrooms() {

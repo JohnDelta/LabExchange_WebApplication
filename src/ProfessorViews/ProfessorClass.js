@@ -17,14 +17,12 @@ class ProfessorClass extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "labClassAndLab": BasicModels.getLabClassAndLabModel(),
+            "labClassAndLabs": BasicModels.getLabClassAndLabsModel(),
             "postsAndApplications": []
         };
 
         this.loadClass = this.loadClass.bind(this);
-        this.loadPosts = this.loadPosts.bind(this);
-        this.applyToPost = this.applyToPost.bind(this);
-        this.openChatroom = this.openChatroom.bind(this);
+        this.openLab = this.openLab.bind(this);
         this.remountHeaderFromClass = this.remountHeaderFromClass.bind(this);
     }
 
@@ -49,7 +47,7 @@ class ProfessorClass extends React.Component {
         if (!this._isMounted) {return;}
 
         let id = this.props.match.params.id;
-        var url = ServiceHosts.getClassesHost()+"/classes/get/class/by/me";
+        var url = ServiceHosts.getClassesHost()+"/classes/professor/get/class/by/me";
 
         var labClassObject = BasicModels.getLabClassModel();
         labClassObject.labClassId = id;
@@ -57,92 +55,37 @@ class ProfessorClass extends React.Component {
 
         SharedMethods.authPost(url, jsonBody, (sucess) => {
             this.setState({
-                labClassAndLab: sucess.body
-            }, () => {
-                this.loadPosts();
+                labClassAndLabs: sucess.body
             });
         }, (error) => {Authentication.logout(this.props.history);});
 
     }
 
-    async loadPosts() {
-
-        if (!this._isMounted) {return;}
-
-        var url = ServiceHosts.getClassesHost()+"/posts/get/by/class";
-        var jsonBody = JSON.stringify({body:this.state.labClassAndLab.labClass});
-        
-        SharedMethods.authPost(url, jsonBody, (sucess)=>{
-            this.setState({
-                postsAndApplications: sucess.body
-            });
-        }, (err) => {Authentication.logout(this.props.history);});
-
-    }
-
-    async applyToPost(e) {
-
-        var url = ServiceHosts.getClassesHost()+"/posts/applications/new";
-
-        let postId = e.target.id;
-        let post = BasicModels.getPostModel();
-        post.postId = postId;
-        let jsonBody = JSON.stringify({body:post}); 
-
-        SharedMethods.authPost(url, jsonBody, (sucess) => {
-            this.loadPosts();
-        }, (err) => {Authentication.logout(this.props.history);});
-
-    }
-
-    async openChatroom(e) {
-        var othersUsername = e.target.id.split("_")[2];
-        this.props.history.push("student/messenger/user/" + othersUsername);
+    openLab(e) {
+        e.preventDefault(false);
+        var id = e.target.id;
+        this.props.history.push("professor/lab/"+id);
     }
 
     render() {
 
-        var postsWithoutMine = this.state.postsAndApplications.filter((postAndApplications) => postAndApplications.post.user.username !== localStorage.getItem("username"));
-        var postsWithoutMyApplied = [];
-        postsWithoutMine.forEach(postWithoutMine => {
-            if (postWithoutMine.applications.length > 0) {
-                postWithoutMine.applications.forEach(application => {
-                    if (application.user.username !== localStorage.getItem("username")) {
-                        postsWithoutMyApplied.push(postWithoutMine);
-                    }
-                });
-            } else {
-                postsWithoutMyApplied.push(postWithoutMine);
-            }
-        });
-
-        var posts = postsWithoutMyApplied.map((postAndApplication) => {
-
-            let applyButtonCss = (postAndApplication.post.requestedLab !== this.state.labClassAndLab.lab.name &&
-                postAndApplication.post.requestedLab !== "" && postAndApplication.post.assignedLab === this.state.labClassAndLab.lab.name) ? "inactiveButton" : "";
-
+        var labs = this.state.labClassAndLabs.labs.map((lab) => {
             return (
-                <div className="tile" id={"tile_"+postAndApplication.post.postId} key={"class_tile_key"+postAndApplication.post.postId}>
-                    <div className="tile-header">{postAndApplication.post.user.name + " " + postAndApplication.post.user.lastname}</div>
+                <div 
+                    className="tile cancelEvents" 
+                    onClick={this.openClass} 
+                    id={lab.labId} 
+                    key={"classes_lab_"+lab.labId}
+                    style={{"cursor":"pointer"}}
+                >
+                    <div className="tile-header">{lab.name}</div>
                     <div className="tile-body">
-                        <div className="tile-info">
-                            <div className="tile-info-header">Exchanging</div>
-                            <div className="tile-info-body">{postAndApplication.post.providedLab.name}</div>
-                        </div>
-                        <div className="tile-info">
-                            <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(postAndApplication.post.requestedLab === "" || typeof postAndApplication.post.requestedLab === "undefined") ? ("Any choice") : postAndApplication.post.requestedLab.name }</div>
-                        </div>
-                        <div className="tile-buttons">
-                            <button onClick={this.openChatroom} id={"class_openchatroom_"+postAndApplication.post.user.username}>Message</button>
-                            <button className={applyButtonCss} onClick={this.applyToPost} id={postAndApplication.post.postId} >Apply</button>
-                        </div>
                     </div>
                 </div>
             );
         });
 
-        posts = posts.length > 0 ? posts : "There aren't any lab exchange posts for this class yet.";
+        labs = labs.length > 0 ? labs : "There aren't any classes in your account yet.";
 
         return (
             <div className="ClassWrapper">
@@ -156,31 +99,21 @@ class ProfessorClass extends React.Component {
 
                     <div className="class-container">
                         <div className="class-header">
-                            <div className="class-title">{this.state.labClassAndLab.labClass.name}</div>
-                            <Link className="class-back" to="student/classes">
+                            <div className="class-title">{this.state.labClassAndLabs.labClass.name}</div>
+                            <Link className="class-back" to="professor/classes">
                                 <i className="fa fa-arrow-left" />
                             </Link>
                         </div>
                         <div className="class-body">
                             <div className="class-info">
-                                <div className="class-info-header">Assigned Lab:</div>
-                                <div className="class-info-body">{this.state.labClassAndLab.lab.name}</div>
-                            </div>
-                            <div className="class-info">
                                 <div className="class-info-header">Open for registrations</div>
                                 <div className="class-info-body">{this.state.labClassAndLab.labClass.openForRegistrations}</div>
-                            </div>
-                            <div className="class-buttons">
-                                <Link to={"/post/new/class-"+this.state.labClassAndLab.labClass.labClassId}>
-                                    <i className="fa fa-plus" />
-                                    <div>New Post</div>
-                                </Link>
                             </div>
                         </div>
                     </div>
                     
                     <div className="tiles">
-                        {posts}
+                        {labs}
                     </div>
 
                 </div>

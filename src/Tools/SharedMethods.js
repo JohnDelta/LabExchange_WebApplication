@@ -37,7 +37,7 @@ class SharedMethods {
                     } else {
                         errorCallback();
                     }
-                });
+                }, (err) => {errorCallback();});
             } else {
                 errorCallback();
             }

@@ -7,6 +7,13 @@ class BasicModels {
         };
     }
 
+    static getLabClassAndLabsModel() {
+        return {
+            "labClass": this.getLabClassModel(),
+            "labs": [this.getLabModel()]
+        };
+    }
+
     static getLabClassModel() {
         return {
             "labClassId": 0,
@@ -43,8 +50,11 @@ class BasicModels {
                 "username": "",
                 "name": "",
                 "lastname": "",
-                "userId": ""
+                "userId": "",
+                "professorLabClassesAndLabs": [],
+                "studentLabClassesAndLabs": []
             },
+            "isComplete": false,
             "post": this.getPostModel()
         };
     }
@@ -69,7 +79,7 @@ class BasicModels {
         };
     }
 
-    static getUserModel() {
+    static getUserModel() { // for messenger
         return {
             "username": "",
             "fullname": "",
@@ -93,6 +103,8 @@ class BasicModels {
             "notificationType": null,
             "username": "",
             "received": false,
+            "messageBody": "",
+            "messageTitle": "",
             "notificationQueue": this.getNotificationQueueModel()
         };
     }

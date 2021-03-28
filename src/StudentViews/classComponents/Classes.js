@@ -52,7 +52,7 @@ class Classes extends React.Component {
 
         if (!this._isMounted) {return;}
 
-        var url = ServiceHosts.getClassesHost()+"/classes/get/by/me";
+        var url = ServiceHosts.getClassesHost()+"/classes/student/get/by/me";
 
         var jsonBody = JSON.stringify({body:""});
 
