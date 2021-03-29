@@ -31,4 +31,4 @@ https://github.com/JohnDelta/Messenger-service
 ### notes
 
 
-- create the lab exchanges view for class
+- create the lab exchanges query in service. Its applications order by username and by timestamp for all posts of this class

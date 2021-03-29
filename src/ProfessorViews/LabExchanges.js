@@ -1,5 +1,5 @@
 import React from 'react';
-import './ProfessorClass.css';
+import './LabExchanges.css';
 import Header from '../UIComponents/Header';
 import BasicModels from '../Tools/BasicModels';
 import ServiceHosts from '../Tools/ServiceHosts';
@@ -10,7 +10,7 @@ import {
     Link
  } from "react-router-dom";
 
-class ProfessorClass extends React.Component {
+class LabExchanges extends React.Component {
 
     _isMounted = false;
 
@@ -18,14 +18,12 @@ class ProfessorClass extends React.Component {
         super(props);
         this.state = {
             "labClassAndLabs": BasicModels.getLabClassAndLabsModel(),
-            "postsAndApplications": []
+            "labExchanges": [] // applications order by username order by timestamp
         };
 
         this.toggleRegistrations = this.toggleRegistrations.bind(this);
         this.loadClass = this.loadClass.bind(this);
-        this.openLab = this.openLab.bind(this);
-        this.remountHeaderFromClass = this.remountHeaderFromClass.bind(this);
-        this.openLabExchanges = this.openLabExchanges.bind(this);
+        this.remountHeaderFromLabExchanges = this.remountHeaderFromLabExchanges.bind(this);
     }
 
     componentDidMount() {
@@ -38,7 +36,7 @@ class ProfessorClass extends React.Component {
         this._isMounted = false;
     }
 
-    remountHeaderFromClass() {
+    remountHeaderFromLabExchanges() {
         this.setState({
             remountHeaderValue: Math.random()
         });
@@ -80,51 +78,40 @@ class ProfessorClass extends React.Component {
 
     }
 
-    openLab(e) {
-        e.preventDefault(false);
-        var id = e.target.id;
-        this.props.history.push("/professor/lab/" + this.props.match.params.id + "/" +id);
-    }
-
-    openLabExchanges(e) {
-        e.preventDefault();
-        this.props.history.push("/professor/class/" + this.props.match.params.id + "/lab-exchanges");
-    }
-
     render() {
 
-        var labs = this.state.labClassAndLabs.labs.map((lab) => {
-            return (
-                <div 
-                    className="tile cancelEvents" 
-                    onClick={this.openLab} 
-                    id={lab.labId} 
-                    key={"classes_lab_"+lab.labId}
-                    style={{"cursor":"pointer"}}
-                >
-                    <div className="tile-header">{lab.name}</div>
-                    <div className="tile-body">
-                    </div>
-                </div>
-            );
-        });
+        // var labs = this.state.labClassAndLabs.labs.map((lab) => {
+        //     return (
+        //         <div 
+        //             className="tile cancelEvents" 
+        //             onClick={this.openLab} 
+        //             id={lab.labId} 
+        //             key={"classes_lab_"+lab.labId}
+        //             style={{"cursor":"pointer"}}
+        //         >
+        //             <div className="tile-header">{lab.name}</div>
+        //             <div className="tile-body">
+        //             </div>
+        //         </div>
+        //     );
+        // });
 
-        labs = labs.length > 0 ? labs : "There aren't any classes in your account yet.";
+        // labs = labs.length > 0 ? labs : "There aren't any classes in your account yet.";
 
         return (
-            <div className="ProfessorClassWrapper">
-                <div className="ProfessorClass">
+            <div className="LabExchangesWrapper">
+                <div className="LabExchanges">
 
                     <Header 
                         activeTab={"class"} 
                         history={this.props.history} 
-                        remountHeader={this.remountHeaderFromClass} 
+                        remountHeader={this.remountHeaderFromLabExchanges} 
                         key={this.state.remountHeaderValue} />
 
                     <div className="class-container">
                         <div className="class-header">
                             <div className="class-title">{this.state.labClassAndLabs.labClass.name}</div>
-                            <Link className="class-back" to="/professor/classes">
+                            <Link className="class-back" to={"/professor/class/" + this.props.match.params.id}>
                                 <i className="fa fa-arrow-left" />
                             </Link>
                         </div>
@@ -143,7 +130,7 @@ class ProfessorClass extends React.Component {
                     </div>
                     
                     <div className="tiles">
-                        {labs}
+                        
                     </div>
 
                 </div>
@@ -153,4 +140,4 @@ class ProfessorClass extends React.Component {
 
 }
 
-export default ProfessorClass;
+export default LabExchanges;

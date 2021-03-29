@@ -13,6 +13,7 @@ import BasicModels from './Tools/BasicModels';
 import ProfessorClasses from './ProfessorViews/ProfessorClasses';
 import ProfessorClass from './ProfessorViews/ProfessorClass';
 import ProfessorLab from './ProfessorViews/ProfessorLab';
+import LabExchanges from './ProfessorViews/LabExchanges';
 
 import {
   BrowserRouter as Router,
@@ -39,6 +40,13 @@ class App extends React.Component {
               path={"/professor/(classes)?"}
               requiredUserType={BasicModels.UserTypeProfessor()}
               component={ProfessorClasses}
+            />
+
+            <ProtectedRoute
+              exact
+              path={"/professor/class/:id/lab-exchanges"}
+              requiredUserType={BasicModels.UserTypeProfessor()}
+              component={LabExchanges}
             />
 
             <ProtectedRoute

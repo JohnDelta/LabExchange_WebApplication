@@ -1,4 +1,4 @@
-.ProfessorClassWrapper {
+.LabExchangesWrapper {
     z-index: 1;
     border-radius: 10px;
     background-color: #e3e3e3;
@@ -10,7 +10,7 @@
     display: flex;
 }
 
-.ProfessorClass {
+.LabExchanges {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -19,18 +19,18 @@
 }
 
 @media only screen and (max-width: 900px) {
-    .ProfessorClassWrapper {
+    .LabExchangesWrapper {
         margin: 0px;
         height: 100vh;
         width: 100vw;
         padding: 0px;
     }
-    .ProfessorClass {
+    .LabExchanges {
         padding-top: 40px;
     }   
 }
 
-.ProfessorClass .class-container {
+.class-container {
     border-top-right-radius: 10px;
     background-color: #FFF;
     padding: 15px;
@@ -39,53 +39,52 @@
     gap: 10px;
 }
 
-.ProfessorClass .class-container .class-header {
+.class-container .class-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.ProfessorClass .class-container .class-header .class-title {
+.class-container .class-header .class-title {
     font-size: 18px;
 }
 
-.ProfessorClass .class-container .class-header .class-back {
+.class-container .class-header .class-back {
     cursor: pointer;
 }
 
-.ProfessorClass .class .class-body {
+.class .class-body {
 }
 
-.ProfessorClass .class-container .class-info {
+.class-container .class-info {
     margin: 5px;
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.ProfessorClass .class-container .class-info-header {
+.class-container .class-info-header {
     margin-right: 10px;
 }
 
-.ProfessorClass .class-container .class-info-body {
+.class-container .class-info-body {
 }
 
-.ProfessorClass .class-container .class-buttons {
+.class-container .class-buttons {
     display: grid;
     grid-template-columns: repeat(2, auto);
     gap: 10px;
-    justify-content: space-between;
-    margin: 20px 10px 0px 10px;
+    justify-content: end;
 }
 
-.ProfessorClass .class-container .class-buttons button {
+.class-container .class-buttons button {
     background-color: #627aaf;
     outline: none;
     border: none;
     border-radius: 10px;
 }
 
-.ProfessorClass .class-container .class-buttons a * {
+.class-container .class-buttons a * {
     color: #FFF;
     pointer-events: none;
 }
