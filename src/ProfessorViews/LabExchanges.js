@@ -18,10 +18,11 @@ class LabExchanges extends React.Component {
         super(props);
         this.state = {
             "labClassAndLabs": BasicModels.getLabClassAndLabsModel(),
-            "labExchanges": [] // applications order by username order by timestamp
+            "labExchanges": []
         };
 
-        this.toggleRegistrations = this.toggleRegistrations.bind(this);
+        this.getFullTime = this.getFullTime.bind(this);
+        this.loadLabExchanges = this.loadLabExchanges.bind(this);
         this.loadClass = this.loadClass.bind(this);
         this.remountHeaderFromLabExchanges = this.remountHeaderFromLabExchanges.bind(this);
     }
@@ -29,6 +30,7 @@ class LabExchanges extends React.Component {
     componentDidMount() {
         this._isMounted = true;
         this.loadClass();
+        this.loadLabExchanges();
         SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNone());
     }
 
@@ -61,42 +63,73 @@ class LabExchanges extends React.Component {
 
     }
 
-    async toggleRegistrations() {
+    async loadLabExchanges() {
 
         if (!this._isMounted) {return;}
 
         let id = this.props.match.params.id;
-        var url = ServiceHosts.getClassesHost()+"/classes/professor/toggle-registrations";
+        var url = ServiceHosts.getClassesHost()+"/posts/lab-exchanges/get/by/class";
 
         var labClassObject = BasicModels.getLabClassModel();
         labClassObject.labClassId = id;
         var jsonBody = JSON.stringify({body:labClassObject});
 
         SharedMethods.authPost(url, jsonBody, (sucess) => {
-            this.loadClass();
-        }, (error) => {Authentication.logout(this.props.history);});        
+            this.setState({
+                labExchanges: sucess.body
+            });
+        }, (error) => {Authentication.logout(this.props.history);});
 
+    }
+
+    getFullTime(timeInMillis) {
+        var currentdate = new Date(timeInMillis); 
+        var datetime = "" + currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+        return datetime;
     }
 
     render() {
 
-        // var labs = this.state.labClassAndLabs.labs.map((lab) => {
-        //     return (
-        //         <div 
-        //             className="tile cancelEvents" 
-        //             onClick={this.openLab} 
-        //             id={lab.labId} 
-        //             key={"classes_lab_"+lab.labId}
-        //             style={{"cursor":"pointer"}}
-        //         >
-        //             <div className="tile-header">{lab.name}</div>
-        //             <div className="tile-body">
-        //             </div>
-        //         </div>
-        //     );
-        // });
+        var labExchanges = this.state.labExchanges.map((application, index) => {
+            return (
+                <div className="tile" id={"application" + application.applicationId + index} key={"class_tile_key" + application.applicationId + index}>
+                    <div className="tile-header">{application.user.username}</div>
+                    <div className="tile-body">
+                        <div className="tile-info">
+                            <div className="tile-info-header">Class</div>
+                            <div className="tile-info-body">{application.post.labClass.name}</div>
+                        </div>
+                        <div className="tile-info">
+                            <div className="tile-info-header">Application User</div>
+                            <div className="tile-info-body">{application.user.username}</div>
+                        </div>
+                        <div className="tile-info">
+                            <div className="tile-info-header">Exchanged Lab</div>
+                            <div className="tile-info-body">{application.post.providedLab.name}</div>
+                        </div>
+                        <div className="tile-info">
+                            <div className="tile-info-header">Post User</div>
+                            <div className="tile-info-body">{application.post.user.username}</div>
+                        </div>
+                        <div className="tile-info">
+                            <div className="tile-info-header">Exchanged Lab</div>
+                            <div className="tile-info-body">{application.post.requestedLab.name}</div>
+                        </div>
+                        <div className="tile-info">
+                            <div className="tile-info-header">Time</div>
+                            <div className="tile-info-body">{this.getFullTime(application.timestamp)}</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
 
-        // labs = labs.length > 0 ? labs : "There aren't any classes in your account yet.";
+        labExchanges = labExchanges.length > 0 ? labExchanges : "There aren't any lab exchanges in this class yet.";
 
         return (
             <div className="LabExchangesWrapper">
@@ -120,17 +153,11 @@ class LabExchanges extends React.Component {
                                 <div className="class-info-header">{(this.state.labClassAndLabs.labClass.openForRegistrations) ? ("Open for registrations") : ("Closed") }</div>
                                 <div className="class-info-body">{this.state.labClassAndLabs.labClass.openForRegistrations}</div>
                             </div>
-                            <div className="class-buttons">
-                                <button onClick={this.toggleRegistrations}>
-                                    {(this.state.labClassAndLabs.labClass.openForRegistrations) ? ("Close registrations") : ("Open registrations") }
-                                </button>
-                                <button onClick={this.openLabExchanges}>Open lab exchanges</button>
-                            </div>
                         </div>
                     </div>
                     
                     <div className="tiles">
-                        
+                        {labExchanges}
                     </div>
 
                 </div>
