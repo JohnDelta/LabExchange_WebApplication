@@ -59,7 +59,7 @@
     display: grid;
     grid-template-columns: 100%;
     grid-template-rows: repeat(4, 1fr);
-    gap: 60px;
+    gap: 30px;
 }
 
 .NewPost .NewPost-body .row {
@@ -87,4 +87,9 @@
     border-radius: 10px;
     padding: 5px 10px;
     outline: none;
+}
+
+.not-available {
+    opacity: 0.7;
+    pointer-events: none;
 }

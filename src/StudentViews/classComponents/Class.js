@@ -136,7 +136,7 @@ class Class extends React.Component {
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(postAndApplication.post.requestedLab === "" || typeof postAndApplication.post.requestedLab === "undefined") ? ("Any choice") : postAndApplication.post.requestedLab.name }</div>
+                            <div className="tile-info-body">{(postAndApplication.post.requestedLab.labId === "0") ? ("Any choice") : postAndApplication.post.requestedLab.name }</div>
                         </div>
                         <div className="tile-buttons">
                             <button onClick={this.openChatroom} id={"class_openchatroom_"+postAndApplication.post.user.username}>Message</button>

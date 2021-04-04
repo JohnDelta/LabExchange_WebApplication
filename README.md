@@ -31,4 +31,5 @@ https://github.com/JohnDelta/Messenger-service
 ### notes
 
 
-- create the lab exchanges query in service. Its applications order by username and by timestamp for all posts of this class
+- in new post, if the user doesn't have an assigned lab, then he cannot create a post about this class
+-made hash function for id, fixed creation of post with not requested lab

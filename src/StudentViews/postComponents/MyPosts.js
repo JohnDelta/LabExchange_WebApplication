@@ -14,8 +14,11 @@ class MyPosts extends React.Component {
         super(props);
         this.state = {
             "postsAndApplications": [],
-            remountHeaderValue: Math.random()
+            remountHeaderValue: Math.random(),
+            "message": ""
         };
+        this.exchangeLabs = this.exchangeLabs.bind(this);
+        this.openChatroom = this.openChatroom.bind(this);
         this.toggleCollapsible = this.toggleCollapsible.bind(this);
         this.loadMyPosts = this.loadMyPosts.bind(this);
         this.removePost = this.removePost.bind(this);
@@ -71,6 +74,27 @@ class MyPosts extends React.Component {
 
     }
 
+    async exchangeLabs(e) {
+        if (!this._isMounted) {return;}
+
+        var url = ServiceHosts.getClassesHost()+"/posts/exchange-lab";
+
+        let applicationid = e.target.id.split("_")[1];
+
+        let application = BasicModels.getApplicationModel();
+        application.applicationId = applicationid;
+
+        var jsonBody = JSON.stringify({body:application});
+        
+        SharedMethods.authPost(url, jsonBody, (sucess) => {
+        }, (err) => {this.setState({message: "Cannot make the lab exchange. The post is changed or removed."});});
+    }
+
+    async openChatroom(e) {
+        var othersUsername = e.target.id.split("_")[2];
+        this.props.history.push("/student/messenger/user/" + othersUsername);
+    }
+
     toggleCollapsible(e) {
         e.target.classList.toggle("open-tile-list-button");
         e.target.nextElementSibling.classList.toggle("close-tile-list-body");
@@ -82,10 +106,10 @@ class MyPosts extends React.Component {
             var applications = postAndApplication.applications.map((application) => {
                 return (
                     <div className="tile-list-row" key={"class_tile_application_key"+application.applicationId+postAndApplication.post.postId}>
-                        <div className="tile-list-row-title">{application.user.username}</div>
+                        <div className="tile-list-row-title">{application.user.username + " (Offers lab : " + application.offersLab.name + ")"}</div>
                         <div className="tile-list-row-body">
-                            <button>Message</button>
-                            <button>Request Exchange</button>
+                            <button onClick={this.openChatroom} id={"myposts_openchatroom_"+application.user.username}>Message</button>
+                            <button id={"my-posts-exchangelab_"+application.applicationId} >Exchange Labs</button>
                         </div>
                     </div>
                 );
@@ -106,7 +130,7 @@ class MyPosts extends React.Component {
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(postAndApplication.post.requestedLab === "" || typeof postAndApplication.post.requestedLab === "undefined") ? ("Any choice") : postAndApplication.post.requestedLab.name }</div>
+                            <div className="tile-info-body">{(postAndApplication.post.requestedLab.labId === "0") ? ("Any choice") : postAndApplication.post.requestedLab.name }</div>
                         </div>
                         <div className="tile-list">
                             <div className="tile-list-button" onClick={this.toggleCollapsible}>
@@ -137,6 +161,10 @@ class MyPosts extends React.Component {
 
                     <div className="container-info">
                         <div className="help-message">Helpfull message here</div>
+                    </div>
+
+                    <div className="container-info">
+                        <div className="help-message">{this.state.message}</div>
                     </div>
                     
                     <div className="tiles">

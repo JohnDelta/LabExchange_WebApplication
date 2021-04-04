@@ -54,6 +54,7 @@ class BasicModels {
                 "professorLabClassesAndLabs": [],
                 "studentLabClassesAndLabs": []
             },
+            "offersLab": this.getLabModel(),
             "isComplete": false,
             "post": this.getPostModel()
         };

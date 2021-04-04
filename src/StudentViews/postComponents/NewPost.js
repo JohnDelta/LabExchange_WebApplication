@@ -140,6 +140,8 @@ class NewPost extends React.Component {
 
     render() {
 
+        let ableToMakeNewPost = true;
+
         let backLink = "/student/" + this.props.match.params.link.replace("-", "/");
 
         let labClassOptions = this.state.labClassesAndLabs.map((labClassAndLab, index) => {
@@ -148,7 +150,10 @@ class NewPost extends React.Component {
             );
         });
 
-        labClassOptions = labClassOptions.length > 0 ? labClassOptions : <option value="-1">No Classes</option>;
+        if (labClassOptions.length <= 0) {
+            labClassOptions = <option value="-1">No Classes</option>;
+            ableToMakeNewPost = false;
+        }
 
         let title = "New post";
 
@@ -163,8 +168,30 @@ class NewPost extends React.Component {
                 );
             } else return null;
         });
+
+        if (labOptions.length <= 0) {
+            labOptions = <option value="-1">No labs for this class</option>;
+            ableToMakeNewPost = false;
+        } else {
+            labOptions.push(
+                <option key={"labs_xxx_111_all"} value={'0'}>{"Open to suggestions"}</option>
+            );
+        }
         
-        labOptions = labOptions.length > 0 ? labOptions : <option value="-1">No labs for this class</option>;
+        let providedLabName = "You don't have an assigned lab for this class";
+
+        if (this.state.providedLab !== null && typeof this.state.providedLab !== "undefined" && this.state.providedLab !== {}) {
+            providedLabName = this.state.providedLab.name;
+            ableToMakeNewPost = false;
+        }
+
+
+        let isAvailableCss = "";
+        let isAvailableMessage = "";
+        if (ableToMakeNewPost) {
+            isAvailableCss = "not-available";
+            isAvailableMessage = "You don't have all the necessary info to create a post";
+        }
 
         return (
             <div className="NewPostWrapper">
@@ -176,20 +203,24 @@ class NewPost extends React.Component {
                         remountHeader={this.remountHeaderFromPost} 
                         key={this.state.remountHeaderValue} />
 
-                    <div className="NewPost-container">
+                    <div className={"NewPost-container"}>
                         <div className="NewPost-header">
                             <div className="NewPost-title">{title}</div>
                             <Link className="NewPost-back" to={backLink}>
                                 <i className="fa fa-arrow-left" />
                             </Link>
                         </div>
-                        <div className="NewPost-body">
+                        <div className={"NewPost-body"}>
                             
+                            <div className="row">
+                                <p className="text">{isAvailableMessage}</p>
+                            </div>
+
                             <div className="row">
                                 <p className="text">{this.state.message}</p>
                             </div>
 
-                            <div className="row">
+                            <div className={"row" + " " + isAvailableCss}>
                                 <p className="text">Post for Class</p>
                                 <i className="fa fa-angle-right" />
                                 <select className="dropdown" id="labClassDropdown" onChange={this.loadUserLab} >
@@ -197,13 +228,13 @@ class NewPost extends React.Component {
                                 </select>
                             </div>
 
-                            <div className="row">
+                            <div className={"row" + " " + isAvailableCss}>
                                 <p className="text">My Assigend Lab</p>
                                 <i className="fa fa-angle-right" />
-                                <p className="text">{(this.state.providedLab !== "" ? this.state.providedLab.name : "No lab found")}</p>
+                                <p className="text">{providedLabName}</p>
                             </div>
 
-                            <div className="row">
+                            <div className={"row" + " " + isAvailableCss}>
                                 <p className="text">Looking for Lab</p>
                                 <i className="fa fa-angle-right" />
                                 <select className="dropdown" id="requestedLabDropdown" >
@@ -211,7 +242,7 @@ class NewPost extends React.Component {
                                 </select>
                             </div>
 
-                            <div className="row">
+                            <div className={"row" + " " + isAvailableCss}>
                                 <button onClick={this.createPost}>Create</button>
                             </div>
 

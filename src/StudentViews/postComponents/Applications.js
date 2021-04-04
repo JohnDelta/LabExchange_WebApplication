@@ -71,7 +71,7 @@ class Applications extends React.Component {
 
     }
 
-    async openChatroom(e) {
+    async openChatroom(e) {debugger;
         var othersUsername = e.target.id.split("_")[2];
         this.props.history.push("/student/messenger/user/" + othersUsername);
     }
@@ -93,10 +93,10 @@ class Applications extends React.Component {
                         </div>
                         <div className="tile-info">
                             <div className="tile-info-header">With</div>
-                            <div className="tile-info-body">{(application.post.requestedLab.name === "" || typeof application.post.requestedLab === "undefined") ? ("Any choice") : application.post.requestedLab.name }</div>
+                            <div className="tile-info-body">{application.offersLab.name}</div>
                         </div>
                         <div className="tile-buttons">
-                            <button onClick={this.openChatroom} id={"application_openchatroom_"+application.user.username} >Message</button>
+                            <button onClick={this.openChatroom} id={"application_openchatroom_"+application.post.user.username} >Message</button>
                             <button id={application.applicationId} onClick={this.removeApplication} >Cancel Application</button>
                         </div>
                     </div>
