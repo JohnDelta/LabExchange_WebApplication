@@ -28,7 +28,7 @@ class MyPosts extends React.Component {
     componentDidMount() {
         this._isMounted = true;
         this.loadMyPosts();
-        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNone());
+        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNewApplication());
     }
 
     componentWillUnmount() {
@@ -87,6 +87,7 @@ class MyPosts extends React.Component {
         var jsonBody = JSON.stringify({body:application});
         
         SharedMethods.authPost(url, jsonBody, (sucess) => {
+            this.loadMyPosts();
         }, (err) => {this.setState({message: "Cannot make the lab exchange. The post is changed or removed."});});
     }
 
@@ -109,7 +110,7 @@ class MyPosts extends React.Component {
                         <div className="tile-list-row-title">{application.user.username + " (Offers lab : " + application.offersLab.name + ")"}</div>
                         <div className="tile-list-row-body">
                             <button onClick={this.openChatroom} id={"myposts_openchatroom_"+application.user.username}>Message</button>
-                            <button id={"my-posts-exchangelab_"+application.applicationId} >Exchange Labs</button>
+                            <button onClick={this.exchangeLabs} id={"my-posts-exchangelab_"+application.applicationId} >Exchange Labs</button>
                         </div>
                     </div>
                 );

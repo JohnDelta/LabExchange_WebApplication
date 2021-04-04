@@ -24,7 +24,7 @@ class Applications extends React.Component {
     componentDidMount() {
         this._isMounted = true;
         this.loadApplications();
-        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNewApplication());
+        SharedMethods.blockNotificationsFrom(BasicModels.NotificationTypeNone());
     }
 
     componentWillUnmount() {
@@ -71,7 +71,7 @@ class Applications extends React.Component {
 
     }
 
-    async openChatroom(e) {debugger;
+    async openChatroom(e) {
         var othersUsername = e.target.id.split("_")[2];
         this.props.history.push("/student/messenger/user/" + othersUsername);
     }

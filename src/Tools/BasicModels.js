@@ -29,6 +29,7 @@ class BasicModels {
             "username": "",
             "requestedLab": {},
             "providedLab": {},
+            "isComplete": false,
             "labClass": this.getLabClassModel(),
             "applications": []
         };

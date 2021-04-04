@@ -29,7 +29,6 @@ class Header extends React.Component {
         this.getNotificationQueue = this.getNotificationQueue.bind(this);
         this.subscribeToNoficationQueue = this.subscribeToNoficationQueue.bind(this);
         this.subscribeToNotificationQueueCallback = this.subscribeToNotificationQueueCallback.bind(this);
-        this.getNotificationTitle = this.getNotificationTitle.bind(this);
         this.getNotificationLink = this.getNotificationLink.bind(this);
         this.notificationsFilter = this.notificationsFilter.bind(this);
         this.receiveNotification = this.receiveNotification.bind(this);
@@ -96,7 +95,7 @@ class Header extends React.Component {
 
             var rect = notificationsButtonElement.getBoundingClientRect();
             notificationsPanelElement.style.top = (rect.top + 50) + 'px';
-            notificationsPanelElement.style.left = (rect.left - 215) + 'px';
+            notificationsPanelElement.style.left = (rect.left - 300) + 'px';
         
         }
 
@@ -201,35 +200,23 @@ class Header extends React.Component {
 
     disconnectFromQueue() {
         if(this.state.client !== null && typeof this.state.client !== "undefined") {
-            this.state.client.disconnect();    
+            // make sure you wait to actualy have a connection before you try to disconect from it
+            setTimeout(() => {
+                this.state.client.disconnect();
+            }, 500);    
         }
     }
 
-    getNotificationTitle(notificationType) {
-        
-        let message = "";
-
-        if (notificationType === BasicModels.NotificationTypeNewMessage()) {
-            message = "You've got a new message!";
-        } else if (notificationType === BasicModels.NotificationTypeLabExchanged()) {
-            message = "You've Exchanged your lab!";
-        } else if (notificationType === BasicModels.NotificationTypeNewApplication()) {
-            message = "Someone applied to your post!";
-        }
-
-        return message;
-    }
-
-    getNotificationLink(notificationType) {
+    getNotificationLink(notificationType, id) {
         
         let link = "";
         
         if (notificationType === BasicModels.NotificationTypeNewMessage()) {
-            link = "/student/messenger";
+            link = "/student/messenger/chatroom/" + id;
         } else if (notificationType === BasicModels.NotificationTypeLabExchanged()) {
             link = "/student/my-labs";
         } else if (notificationType === BasicModels.NotificationTypeNewApplication()) {
-            link = "/student/post/applications";
+            link = "/student/post/my-posts";
         }
 
         return link;
@@ -271,8 +258,8 @@ class Header extends React.Component {
                 <div className={"notification " + receivedCss}
                     onClick={this.openNotification}
                     key={"notification" + notification.notificationId}
-                    id={"notification_" + notification.notificationId + "___" + this.getNotificationLink(notification.notificationType) + "___" + notification.notificationId}>
-                    <div className="notification-message">{this.getNotificationTitle(notification.notificationType)}</div>
+                    id={"notification_" + notification.notificationId + "___" + this.getNotificationLink(notification.notificationType, notification.messageBody) + "___" + notification.notificationId}>
+                    <div className="notification-message" dangerouslySetInnerHTML={{ __html: notification.messageTitle}} />
                     <div className="notification-time">{SharedMethods.dateSince(notification.timestamp)}</div>
                 </div>
             )
