@@ -1,6 +1,4 @@
-FROM node:13:12:0-alpine
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
+FROM node:alpine
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
 COPY package-lock.json ./

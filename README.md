@@ -28,26 +28,46 @@ The project constists of the following services
 
 # Installation
 
-To run this system, you must first follow each of the previous links and pull them. Then follow the installation in each README.md
-
-If you want to run this using a docker compose, be sure you've first created the images of all the services before running the commands bellow.
+To run this project, you must first follow each of the previous links and pull them (save them in folders named after the repo's name).
+Then, run ` mvn clean install ` to make the .jar files in each one.
 
 ## Install and deploy all with docker compose
 
-- Make sure the all the other service images are created inside their pull folders
-- Run compose ``` docker-compose -f docker-compose.yaml up ```
+- Build compose ``` docker-compose -f docker-compose.yaml --project-name lab_exchange build ```
+- Run compose ``` docker-compose -f docker-compose.yaml --project-name lab_exchange up ```
 - Stop it ``` docker-compose -f docker-compose.yaml down ```
 
-## Install using npm
+## Install web app only using npm
 
-- install all necessary packages `npm install`, `npm install stompjs`, `npm install sockjs`, `npm install react-router-dom`
+- install all necessary packages:
+  - `npm install`
+  - `npm install stompjs`
+  - `npm install sockjs`
+  - `npm install react-router-dom`
 - run the webapp `npm run`
 
-## Install using docker
+## Install web app using docker
 
-- Run the spring boot service
-  - build the image ``` npm build -t webApplication ```
+- Run the react web app
+  - build the web app ` npm run build `
+  - build the image ``` docker build -t webapp . ```
   - find the image and its ID ``` docker image ls ```
   - create and run the container by image ID ``` docker run -it --rm -p 8080:8080 {ID} ```
   - see all docker containers and find ID ``` docker ps ```
   - stop / start containers ``` docker container stop {ID} ```
+
+
+### notes
+
+- Ensure that the app runs perfectly now using docker compose and its ready
+
+ 
+
+- Start search on how to set up the k8 process
+
+- I can not set up CICD on the first local environment
+
+
+ - When everything works, I can later use the google run to deploy the 4 services
+ - use mlab to deploy mongo
+ - final problem is the rabbitmq ?

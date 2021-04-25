@@ -98,7 +98,7 @@ class LabExchanges extends React.Component {
         var labExchanges = this.state.labExchanges.map((application, index) => {
             return (
                 <div className="tile" id={"application" + application.applicationId + index} key={"class_tile_key" + application.applicationId + index}>
-                    <div className="tile-header">{application.user.username}</div>
+                    <div className="tile-header">{application.user.name + " " + application.user.lastname + ", " + application.post.user.name + " " + application.post.user.lastname}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Class</div>

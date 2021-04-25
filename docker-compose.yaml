@@ -1,15 +1,100 @@
-version: '1'
+version: '3.9'
 services:
-  authentication:
-    image: Authentication/authentication
-    ports:
-    - 8081:8081
-  mongodb:
+
+  mongodb_service:
+    container_name: mongodb_container
     image: mongo
+    volumes:
+      - ./mongoDB/testapp:/data/db
     ports:
-    - 27017:27017
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin
-  webApplication:
-    image: webApplication
+      - 27017:27017
+    networks:
+      - internal_net
+
+  rabbitmq_service:
+    container_name: rabbitmq_container
+    build: 
+      context: ../Notifications-service
+      dockerfile: Dockerfile_RabbitMQ
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 61613:61613
+    volumes:
+      - ./rabbitMQ/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./rabbitMQ/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - internal_net
+
+  authentication_service:
+    container_name: authentication_container
+    build: 
+      context: ../Authentication-service
+      dockerfile: ../Authentication-service/Dockerfile
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongodb_service
+    networks:
+      - internal_net
+
+  classes_service:
+    container_name: classes_container
+    build: 
+      context: ../Classes-service
+      dockerfile: Dockerfile
+    ports:
+      - 8082:8082
+    depends_on:
+      - mongodb_service
+      - authentication_service
+      - notifications_service
+    networks:
+      - internal_net
+
+  messenger_service:
+    container_name: messenger_container
+    build: 
+      context: ../Messenger-service
+      dockerfile: Dockerfile
+    ports:
+      - 8084:8084
+    depends_on:
+      - mongodb_service
+    networks:
+      - internal_net
+
+  notifications_service:
+    container_name: notifications_container
+    build: 
+      context: ../Notifications-service
+      dockerfile: Dockerfile
+    ports:
+      - 8083:8083
+    depends_on:
+      - mongodb_service
+      - rabbitmq_service
+    networks:
+      - internal_net
+      
+  webapp_service:
+    container_name: webapp_container
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:3000
+    depends_on:
+      - mongodb_service
+      - rabbitmq_service
+      - authentication_service
+      - classes_service
+      - messenger_service
+      - notifications_service
+    networks:
+      - internal_net
+
+networks:
+  internal_net:
+    name: internal_net
+    driver: bridge

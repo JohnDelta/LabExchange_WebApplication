@@ -53,12 +53,20 @@ class NewPost extends React.Component {
         var url = ServiceHosts.getClassesHost()+"/classes/student/get/by/me";
 
         var jsonBody = JSON.stringify({body:""});
-        
+
+        var el = document.getElementById("labClassDropdown");
+
         SharedMethods.authPost(url, jsonBody, (sucess) => {
             this.setState({
                 labClassesAndLabs: sucess.body
             }, () => {
+
+                if (typeof this.state.labClassId !== "undefined" && this.state.labClassId !== "") {
+                    el.value = this.state.labClassId;
+                }
+                 
                 this.loadUserLab();
+
             });
         }, (err) => {Authentication.logout(this.props.history);});
 
@@ -79,9 +87,6 @@ class NewPost extends React.Component {
             this.setState({
                 providedLab: sucess.body
             }, () => {
-                if (this.state.labClassId !== "" && typeof this.state.labClassId !== "undefined") {
-                    el.value = this.state.labClassId;
-                }
                 this.loadLabClassLabs();
             });
         }, (err) => {Authentication.logout(this.props.history);});

@@ -81,7 +81,7 @@ class Applications extends React.Component {
         var applications = this.state.applications.map((application, index) => {
             return (
                 <div className="tile" id={"application" + application.applicationId + index} key={"class_tile_key" + application.applicationId + index}>
-                    <div className="tile-header">{application.user.username}</div>
+                    <div className="tile-header">{application.post.user.name + " " + application.post.user.lastname + " (" + application.post.user.username + ")"}</div>
                     <div className="tile-body">
                         <div className="tile-info">
                             <div className="tile-info-header">Class</div>
