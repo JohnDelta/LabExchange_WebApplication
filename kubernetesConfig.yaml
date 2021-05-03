@@ -1,0 +1,263 @@
+# =================== MongoDB =====================
+
+# K8 Service Config | MongoDB Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongoDB_service
+spec:
+  selector:
+    app: mongoDB
+ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017 
+
+---
+
+# K8 Persistent Volume Config | MongoDB Service
+
+apiVersion: 1v
+kind: PersistentVolume
+metadata:
+  name: mongoDB_volume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10M
+  hostPath:
+    path: ./mongoDB/testapp
+    type: Directory
+  persistentVolumeReclaimPolicy: Retain
+
+---
+
+# K8 Persistent Volume Claim Config | MongoDB Service
+
+apiVersion: 1v
+kind: PersistentVolumeClaim
+metadata:
+  name: mongoDB_pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10M
+  volumeName: mongoDB_volume
+
+---
+
+# K8 Deployment Config | MongoDB Service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongoDB_deployment
+  labels:
+    app: mongoDB
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongoDB
+  template:
+    metadata:
+      labels:
+        app: mongoDB
+    spec:
+      containers:
+      - name: mongoDB
+        image: mongodb
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - mountPath: "/data/db"
+            name: mongoDB_volume
+        ports:
+        - containerPort: 27017
+      volumes:
+        - name: mongoDB_volume
+          persistentVolumeClaim:
+            claimName: mongoDB_pvc
+
+---
+
+# =================== RabbitMQ =====================
+
+# K8 Service Config | RabbitMQ Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitMQ_service
+spec:
+  selector:
+    app: rabbitMQ
+ports:
+  - protocol: TCP
+    port: 5672
+    targetPort: 5672
+  - protocol: TCP
+    port: 15672
+    targetPort: 15672
+  - protocol: TCP
+    port: 61613
+    targetPort: 61613
+
+---
+
+# K8 Persistent Volume 1 Config | RabbitMQ Service
+
+apiVersion: 1v
+kind: PersistentVolume
+metadata:
+  name: rabbitMQ_volume0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10M
+  hostPath:
+    path: ./rabbitMQ/.docker-conf/rabbitmq/data/
+    type: Directory
+  persistentVolumeReclaimPolicy: Retain
+
+---
+
+# K8 Persistent Volume 2 Config | RabbitMQ Service
+
+apiVersion: 1v
+kind: PersistentVolume
+metadata:
+  name: rabbitMQ_volume1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10M
+  hostPath:
+    path: ./rabbitMQ/.docker-conf/rabbitmq/log/
+    type: Directory
+  persistentVolumeReclaimPolicy: Retain
+
+---
+
+# K8 Persistent Volume Claim 1 Config | RabbitMQ Service
+
+apiVersion: 1v
+kind: PersistentVolumeClaim
+metadata:
+  name: rabbitMQ_pvc0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10M
+  volumeName: rabbitMQ_volume0
+
+---
+
+# K8 Persistent Volume Claim 2 Config | RabbitMQ Service
+
+apiVersion: 1v
+kind: PersistentVolumeClaim
+metadata:
+  name: rabbitMQ_pvc0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10M
+  volumeName: rabbitMQ_volume0
+
+---
+
+# K8 Deployment Config | RabbitMQ Service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitMQ_deployment
+  labels:
+    app: rabbitMQ
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitMQ
+  template:
+    metadata:
+      labels:
+        app: rabbitMQ
+    spec:
+      containers:
+      - name: rabbitMQ
+        image: rabbitMQ_service
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - mountPath: "/var/lib/rabbitmq/"
+            name: rabbitMQ_volume0
+          - mountPath: "/var/log/rabbitmq"
+            name: rabbitMQ_volume1
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+        - containerPort: 61613
+      volumes:
+        - name: rabbitMQ_volume0
+          persistentVolumeClaim:
+            claimName: rabbitMQ_pvc0
+        - name: rabbitMQ_volume1
+          persistentVolumeClaim:
+            claimName: rabbitMQ_pvc1
+
+---
+
+# =================== Authentication =====================
+
+# K8 Service Config | Authentication Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentication_service
+spec:
+  selector:
+    app: authentication
+ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017 
+
+---
+
+# K8 Deployment Config | Authentication Service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication_deployment
+  labels:
+    app: authentication
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentication
+  template:
+    metadata:
+      labels:
+        app: authentication
+    spec:
+      containers:
+      - name: authentication
+        image: authentication_service
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 27017
+
+---
