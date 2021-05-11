@@ -1,3 +1,29 @@
+# =================== Ingress =====================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: default-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+    nginx.org/ssl-services: "my-svc" # fake kubernetes certificate
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: lab-exchange.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: webapp-service 
+            port:
+              number: 8080
+
+---
+
 # =================== MongoDB =====================
 
 # K8 Service Config | MongoDB Service
@@ -5,48 +31,31 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongoDB_service
+  name: mongodb-service
+  labels:
+    app: mongodb
 spec:
   selector:
-    app: mongoDB
-ports:
-  - protocol: TCP
-    port: 27017
-    targetPort: 27017 
-
----
-
-# K8 Persistent Volume Config | MongoDB Service
-
-apiVersion: 1v
-kind: PersistentVolume
-metadata:
-  name: mongoDB_volume
-spec:
-  accessModes:
-    - ReadWriteOnce
-  capacity:
-    storage: 10M
-  hostPath:
-    path: ./mongoDB/testapp
-    type: Directory
-  persistentVolumeReclaimPolicy: Retain
+    app: mongodb
+  ports:
+    - port: 27017
+      targetPort: 27017
+  type: NodePort
 
 ---
 
 # K8 Persistent Volume Claim Config | MongoDB Service
 
-apiVersion: 1v
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongoDB_pvc
+  name: mongodb-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10M
-  volumeName: mongoDB_volume
+      storage: 10Mi
 
 ---
 
@@ -55,32 +64,32 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongoDB_deployment
+  name: mongodb-deployment
   labels:
-    app: mongoDB
+    app: mongodb
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mongoDB
+      app: mongodb
   template:
     metadata:
       labels:
-        app: mongoDB
+        app: mongodb
     spec:
-      containers:
-      - name: mongoDB
-        image: mongodb
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-          - mountPath: "/data/db"
-            name: mongoDB_volume
-        ports:
-        - containerPort: 27017
       volumes:
-        - name: mongoDB_volume
-          persistentVolumeClaim:
-            claimName: mongoDB_pvc
+          - name: storage
+            persistentVolumeClaim:
+              claimName: mongodb-pvc
+      containers:
+      - name: mongodb
+        image: mongo
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 27017
+        volumeMounts:
+          - mountPath: /data/db
+            name: storage
 
 ---
 
@@ -91,88 +100,39 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rabbitMQ_service
+  name: rabbitmq-service
 spec:
   selector:
-    app: rabbitMQ
-ports:
-  - protocol: TCP
-    port: 5672
-    targetPort: 5672
-  - protocol: TCP
-    port: 15672
-    targetPort: 15672
-  - protocol: TCP
-    port: 61613
-    targetPort: 61613
-
----
-
-# K8 Persistent Volume 1 Config | RabbitMQ Service
-
-apiVersion: 1v
-kind: PersistentVolume
-metadata:
-  name: rabbitMQ_volume0
-spec:
-  accessModes:
-    - ReadWriteOnce
-  capacity:
-    storage: 10M
-  hostPath:
-    path: ./rabbitMQ/.docker-conf/rabbitmq/data/
-    type: Directory
-  persistentVolumeReclaimPolicy: Retain
-
----
-
-# K8 Persistent Volume 2 Config | RabbitMQ Service
-
-apiVersion: 1v
-kind: PersistentVolume
-metadata:
-  name: rabbitMQ_volume1
-spec:
-  accessModes:
-    - ReadWriteOnce
-  capacity:
-    storage: 10M
-  hostPath:
-    path: ./rabbitMQ/.docker-conf/rabbitmq/log/
-    type: Directory
-  persistentVolumeReclaimPolicy: Retain
+    app: rabbitmq
+  ports:
+    - protocol: TCP
+      name: rabbitmq-p0
+      port: 5672
+      targetPort: 5672
+    - protocol: TCP
+      name: rabbitmq-p1
+      port: 15672
+      targetPort: 15672
+    - protocol: TCP
+      name: rabbitmq-p2
+      port: 61613
+      targetPort: 61613
+  type: NodePort
 
 ---
 
 # K8 Persistent Volume Claim 1 Config | RabbitMQ Service
 
-apiVersion: 1v
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: rabbitMQ_pvc0
+  name: rabbitmq-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10M
-  volumeName: rabbitMQ_volume0
-
----
-
-# K8 Persistent Volume Claim 2 Config | RabbitMQ Service
-
-apiVersion: 1v
-kind: PersistentVolumeClaim
-metadata:
-  name: rabbitMQ_pvc0
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10M
-  volumeName: rabbitMQ_volume0
+      storage: 10Mi
 
 ---
 
@@ -181,39 +141,36 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rabbitMQ_deployment
+  name: rabbitmq-deployment
   labels:
-    app: rabbitMQ
+    app: rabbitmq
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: rabbitMQ
+      app: rabbitmq
   template:
     metadata:
       labels:
-        app: rabbitMQ
+        app: rabbitmq
     spec:
       containers:
-      - name: rabbitMQ
-        image: rabbitMQ_service
+      - name: rabbitmq
+        image: lab_exchange_rabbitmq_service
         imagePullPolicy: IfNotPresent
         volumeMounts:
           - mountPath: "/var/lib/rabbitmq/"
-            name: rabbitMQ_volume0
+            name: storage
           - mountPath: "/var/log/rabbitmq"
-            name: rabbitMQ_volume1
+            name: storage
         ports:
         - containerPort: 5672
         - containerPort: 15672
         - containerPort: 61613
       volumes:
-        - name: rabbitMQ_volume0
+        - name: storage
           persistentVolumeClaim:
-            claimName: rabbitMQ_pvc0
-        - name: rabbitMQ_volume1
-          persistentVolumeClaim:
-            claimName: rabbitMQ_pvc1
+            claimName: rabbitmq-pvc
 
 ---
 
@@ -224,14 +181,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: authentication_service
+  name: authentication-service
 spec:
   selector:
     app: authentication
-ports:
-  - protocol: TCP
-    port: 27017
-    targetPort: 27017 
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: NodePort
 
 ---
 
@@ -240,7 +198,7 @@ ports:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: authentication_deployment
+  name: authentication-deployment
   labels:
     app: authentication
 spec:
@@ -255,9 +213,205 @@ spec:
     spec:
       containers:
       - name: authentication
-        image: authentication_service
+        image: lab_exchange_authentication_service
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 27017
+        - containerPort: 8081
+        env:
+          - name: MONGO_URL
+            value: mongodb://mongodb-service:27017/authentication
+
+---
+
+# =================== Classes =====================
+
+# K8 Service Config | Classes Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: classes-service
+spec:
+  selector:
+    app: classes
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+  type: NodePort
+
+---
+
+# K8 Deployment Config | Classes Service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classes-deployment
+  labels:
+    app: classes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: classes
+  template:
+    metadata:
+      labels:
+        app: classes
+    spec:
+      containers:
+      - name: classes
+        image: lab_exchange_classes_service
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8082
+        env:
+          - name: MONGO_URL
+            value: mongodb://mongodb-service:27017/classes
+
+---
+
+# =================== Messenger =====================
+
+# K8 Service Config | Messenger Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: messenger-service
+spec:
+  selector:
+    app: messenger
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
+  type: NodePort
+
+---
+
+# K8 Deployment Config | Messenger Service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messenger-deployment
+  labels:
+    app: messenger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: messenger
+  template:
+    metadata:
+      labels:
+        app: messenger
+    spec:
+      containers:
+      - name: messenger
+        image: lab_exchange_messenger_service
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8083
+        env:
+          - name: MONGO_URL
+            value: mongodb://mongodb-service:27017/messenger
+
+---
+
+# =================== Notifications =====================
+
+# K8 Service Config | Notifications Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: notifications-service
+spec:
+  selector:
+    app: notifications
+  ports:
+    - protocol: TCP
+      port: 8084
+      targetPort: 8084
+  type: NodePort
+
+---
+
+# K8 Deployment Config | Notifications Service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications-deployment
+  labels:
+    app: notifications
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notifications
+  template:
+    metadata:
+      labels:
+        app: notifications
+    spec:
+      containers:
+      - name: notifications
+        image: lab_exchange_notifications_service
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8084
+        env:
+          - name: MONGO_URL
+            value: mongodb://mongodb-service:27017/notifications
+
+---
+
+# =================== Web Application =====================
+
+# K8 Service Config | WebApp Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  selector:
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 3000
+  type: NodePort
+
+---
+
+# K8 Deployment Config | WebApp Service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: lab_exchange_webapp_service
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
 
 ---

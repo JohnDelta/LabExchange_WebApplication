@@ -56,8 +56,30 @@ Then, run ` mvn clean install ` to make the .jar files in each one.
   - see all docker containers and find ID ``` docker ps ```
   - stop / start containers ``` docker container stop {ID} ```
 
-
 ### Kubernetes notes
+
+- Run in Kubernetes:
+  - Add to your system32/etc/host ` 127.0.0.1 lab-exchange.com ` (works for Docker Desktop K8s)
+  - First run ` mvn clean install ` to each of the projects
+  - Then run compose build ` docker-compose -f docker-compose.yaml --project-name lab_exchange build `
+  - And last apply the k8 config ` kubectl apply -f config-file.yaml `
+  - Set-up Ingress (see bellow)
+
+- Ingress: 
+  - https://stackoverflow.com/a/65771251/14434647
+  - https://kubernetes.github.io/ingress-nginx/deploy/
+  - Mandadory resources for Ingress : ` kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml `
+  - Bare-metal Ingress nginx using NodePort (kubectl) : `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.46.0/deploy/static/provider/baremetal/deploy.yaml`
+
+- Commands:
+  - Execute the configuration file (create or update) `kubectl apply -f config-file.yaml`
+  - Delete the configuration file `kubectl delete -f config-file.yaml`
+  - Log to console `kubectl logs pod-name`
+  - Get terminal `kubectl exec -it pod-name -- bin/bash`
+  - Get info about pod `kubectl describe pod pod-name` (and '-o wide' for more information)
+  - Validate that a service runs the correct pod `kubectl describe service service-name` (see the endpoints) 
+  - Get pods, services `kubectl get pod, service` (or type 'all')
+  - See the ingress controller running `kubectl get pod -n kube-system`
 
 - Every configuration file needs:
   - Metadata
@@ -199,16 +221,6 @@ spec: # Specification for the pod
   ```
 
 - Last, we need an External Service that will allow external services to talk to the pod (to run localy)
-
-- Commands:
-  - Execute the configuration file (create or update) `kubectl apply -f config-file.yaml`
-  - Delete the configuration file `kubectl delete -f config-file.yaml`
-  - Log to console `kubectl logs pod-name`
-  - Get terminal `kubectl exec -it pod-name -- bin/bash`
-  - Get info about pod `kubectl describe pod pod-name` (and '-o wide' for more information)
-  - Validate that a service runs the correct pod `kubectl describe service service-name` (see the endpoints) 
-  - Get pods, services `kubectl get pod, service` (or type 'all')
-  - See the ingress controller running `kubectl get pod -n kube-system`
 
 ### notes
 
