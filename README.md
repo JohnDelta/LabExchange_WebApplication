@@ -31,6 +31,8 @@ The project constists of the following services
 To run this project, you must first follow each of the previous links and pull them (save them in folders named after the repo's name).
 Then, run ` mvn clean install ` to make the .jar files in each one.
 
+Once Everything's ready open a browser and type  ` https://lab-exchange.com/api/classes-service/data/clean And /data/fill ` to reset DB with trash data
+
 ## Install and deploy all with docker compose
 
 - Build compose ``` docker-compose -f docker-compose.yaml --project-name lab_exchange build ```

@@ -1,19 +1,19 @@
 class ServiceHosts {
 
     static getAuthenticationHost() {
-        return "http://localhost:8081";
+        return "https://lab-exchange.com/api/authentication-service";
     }
 
     static getClassesHost() {
-        return "http://localhost:8082";
+        return "https://lab-exchange.com/api/classes-service";
     }
 
     static getNotificationsHost() {
-        return "http://localhost:8083";
+        return "https://lab-exchange.com/api/notifications-service";
     }
 
     static getMessengerHost() {
-        return "http://localhost:8084";
+        return "https://lab-exchange.com/api/messenger-service";
     }
 
 } export default ServiceHosts;
