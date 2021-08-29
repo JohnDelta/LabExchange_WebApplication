@@ -22,13 +22,19 @@ The project constists of the following services
 
 - RabbitMQ server : localhost:56014
 
+Cloud Provider Services used to deploy:
+
+- MongoDB by Microsoft Azure's CosmosDB
+
+- RabbitMQ by AWS Amazon MQ
+
 ## Services Architecture
 
 
 # Installation
 
 To run this project, you must first follow each of the previous links and pull them (save them in folders named after the repo's name).
-Then, run ` mvn clean install ` to make the .jar files in each one.
+Then, run ` mvn clean install ` to make the .jar files in each one. (choose the master branch)
 
 Once Everything's ready open a browser and type  ` https://lab-exchange.com/api/classes-service/data/clean And /data/fill ` to reset DB with trash data
 
