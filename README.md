@@ -22,16 +22,18 @@ The project constists of the following services
 
 - RabbitMQ server : localhost:56014
 
-Cloud Provider Services used to deploy:
+Cloud Provider Services used to deploy (deployed_without_k8s branch):
 
 - MongoDB by Microsoft Azure's CosmosDB
 
 - RabbitMQ by AWS Amazon MQ
 
+- Microservice hosting by Azure App Service
+
 ## Services Architecture
 
 
-# Installation
+# Installation (local with docker, kubernetes and mvn)
 
 To run this project, you must first follow each of the previous links and pull them (save them in folders named after the repo's name).
 Then, run ` mvn clean install ` to make the .jar files in each one. (choose the master branch)
