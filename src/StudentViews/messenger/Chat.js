@@ -112,8 +112,8 @@ class Chat extends React.Component {
         client.debug = null;
 
         var headers = {
-          "login": "guest",
-          "passcode": "guest",
+          "login": "admin",
+          "passcode": "adminADMIN",
           'X-Authorization': localStorage.getItem("jwt")
         };
 

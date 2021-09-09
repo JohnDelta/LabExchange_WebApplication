@@ -94,9 +94,9 @@ class Messenger extends React.Component {
         client.debug = null;
 
         var headers = {
-          "login": "guest",
-          "passcode": "guest",
-          'X-Authorization': localStorage.getItem("jwt")
+            "login": "admin",
+            "passcode": "adminADMIN",
+            'X-Authorization': localStorage.getItem("jwt")
         };
 
         client.connect(
