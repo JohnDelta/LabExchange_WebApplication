@@ -107,7 +107,7 @@ class Chat extends React.Component {
             return;
         }
 
-        var ws = new SockJS(ServiceHosts.getNotificationsHost()+'/ws');
+        var ws = new SockJS(ServiceHosts.getSTOMPHost());
         var client = Stomp.over(ws);
         client.debug = null;
 

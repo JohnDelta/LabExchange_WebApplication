@@ -12,6 +12,10 @@ class ServiceHosts {
         return "https://lab-exchange-notifications.azurewebsites.net";
     }
 
+    static getSTOMPHost() {
+        return "http://lab-exchange-notifications.azurewebsites.net/ws";
+    }
+
     static getMessengerHost() {
         return "https://lab-exchange-messenger.azurewebsites.net";
     }
