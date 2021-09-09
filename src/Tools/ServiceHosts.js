@@ -13,7 +13,7 @@ class ServiceHosts {
     }
 
     static getSTOMPHost() {
-        return "http://lab-exchange-notifications.azurewebsites.net/ws";
+        return "https://lab-exchange-notifications.azurewebsites.net/ws";
     }
 
     static getMessengerHost() {
