@@ -2,6 +2,14 @@
 
 ## Description
 
+The project is part of my diploma thesis:  <b>Methodology and development of cloud native systems and free technologies to support them</b>
+
+Which can be found here: https://polynoe.lib.uniwa.gr/xmlui/handle/11400/1437
+
+<i>The following notes describe how to run the application in a local testing environment.</i>
+
+<i>Note that some of the links bellow might be private and therefore cannot be seen currently</i>
+
 The project constists of the following services
 
 - Web Application in react : localhost:8080
