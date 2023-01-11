@@ -36,8 +36,6 @@ Cloud Provider Services used to deploy:
 
 - RabbitMQ by AWS Amazon MQ
 
-## Services Architecture
-
 
 # Installation
 
