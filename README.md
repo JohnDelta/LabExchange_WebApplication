@@ -2,9 +2,17 @@
 
 ## Description
 
-The project is part of my diploma thesis:  <b>Methodology and development of cloud native systems and free technologies to support them</b>
+This project is part of my diploma thesis:  <b>[Methodology and development of cloud native systems and free technologies to support them](https://polynoe.lib.uniwa.gr/xmlui/handle/11400/1437)</b>
 
-Which can be found here: https://polynoe.lib.uniwa.gr/xmlui/handle/11400/1437
+<i>The final part of my thesis follows the design and development of a cloud-native application that automates the
+student enrollment process in laboratories, which is architecturally based on the 12-factor methodology. The
+application consists of four microservices developed in the Spring Boot framework that consist the system’s API,
+the web application that end-users will use, implement in the React.js framework, and two backing services, the
+No-SQL MongoDB database and RabbitMQ as a message broker. The cloud native application is initially
+deployed in a local developement environment using Docker, then, it’s deployed using the Kubernetes platform.
+Last, some of the available free cloud services that were studied in the second chapted are selected and used to
+deploy the application in a hosted cloud environment. The selected services are Azure Cosmos DB for MongoDB,
+Azure App Service for the microservices and a Google Cloud VM for hosting RabbitMQ.</i>
 
 <i>The following notes describe how to run the application in a local testing environment.</i>
 
@@ -30,14 +38,7 @@ The project constists of the following services
 
 - RabbitMQ server : localhost:56014
 
-Cloud Provider Services used to deploy:
-
-- MongoDB by Microsoft Azure's CosmosDB
-
-- RabbitMQ by AWS Amazon MQ
-
-
-# Installation
+# Installation and local deployment in testing environment
 
 To run this project, you must first follow each of the previous links and pull them (save them in folders named after the repo's name).
 Then, run ` mvn clean install ` to make the .jar files in each one. (choose the master branch)
